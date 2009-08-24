@@ -1,5 +1,6 @@
 <?php
 
+require_once('../config/config.php');
 require_once('./template.inc');
 
 $page = new OutputPage();
@@ -57,25 +58,7 @@ Admin interface
 EOF;
 
 // scan problems/courses
-$course_dir = '../../courses';
-
-class DirectoryWalker {
-	var $_path;
-	var $_dir;
-	var $_subdirs;
-	var $_info;
-	
-	function DirectoryWalker($path) {
-		$this->_path = $path;
-		$this->_dir  = dir($path);
-	}
-	
-	function subdirs() {
-	}
-	
-	function info() {
-	}
-};
+$course_dir = '../courses';
 
 // -----------------------------------------------------------------------------
 // Ranges of dates/times
@@ -121,22 +104,26 @@ class Entity {
 	private $_attributes; // key=>value pairs specified in "dir.conf" or NULL if not initialized
 	private $_children;   // children array or NULL if not initialized
 	
+	// ---------------------------------------------------------------------
+	// Construction: singleton based
+	// ---------------------------------------------------------------------
+	
 	// the root entity
 	static function get_root() {
 		static $root;
 		if (!isset($root)) $root = new Entity(NULL,'');
 		return $root;
 	}
+	
 	// singleton constructor for Entities
 	static function get($path) {
 		$parts = explode('/',$path);
-		$here  = get_root();
+		$here  = Entity::get_root();
 		foreach ($parts as $part) {
 			if ($part == '') continue;
 			$here = $here->get_child($part);
 			if ($here === NULL) {
-				die("Internal error: Entity not found: $path");
-				return NULL;
+				throw new Exception("Entity not found: $path");
 			}
 		}
 	}
@@ -147,6 +134,15 @@ class Entity {
 		$this->_dir_name = $dir_name;
 		$this->_path     = $parent_path . $dir_name . '/';
 	}
+	
+	// is this the root?
+	function is_root() {
+		return $this->_parent === NULL;
+	}
+	
+	// ---------------------------------------------------------------------
+	// Children
+	// ---------------------------------------------------------------------
 	
 	// gives an array of child entities
 	function children() {
@@ -159,7 +155,30 @@ class Entity {
 		return isset($this->_children[$name]) ? $this->_children[$name] : NULL;
 	}
 	
-	// gets a spcific attribute
+	// load the directory listing of children
+	private function load_children() {
+		if (isset($this->_children)) return;
+		$this->_children = array();
+		foreach (new DirectoryIterator($this->data_path()) as $child) {
+			if ($child->isDot() || !$child->isDir()) continue;
+			// TODO: strip hidden files?
+			$this->_children[$child->getFilename()] = new Entity($this, $child->getFilename());
+		}
+	}
+	
+	// ---------------------------------------------------------------------
+	// Attributes
+	// ---------------------------------------------------------------------
+	
+	// gets an array with all attributes
+	// does not inherit all from parents!
+	// can contain NULLs
+	function attributes($key) {
+		$this->load_attributes();
+		return $this->_attributes;
+	}
+	
+	// gets a specific attribute
 	function attribute($key, $default = NULL) {
 		$this->load_attributes();
 		if (!array_key_exists($key, $this->_attributes) && isset($this->_parent)) {
@@ -175,24 +194,6 @@ class Entity {
 			$attr = $this->_attributes;
 		}
 		return is_null($attr) ? $default : $attr;
-	}
-	
-	// is this the root?
-	function is_root() {
-		return $this->_parent === NULL;
-	}
-	
-	
-	// load the directory listing of children
-	private function load_children() {
-		if (isset($this->_children)) return;
-		$this->_children = array();
-		echo "[",$this->data_path(),"]";
-		foreach (new DirectoryIterator($this->data_path()) as $child) {
-			if ($child->isDot() || !$child->isDir()) continue;
-			// TODO: strip hidden files?
-			$this->_children[$child->getFilename()] = new Entity($this, $child->getFilename());
-		}
 	}
 	
 	// load the attributes from a file
@@ -216,23 +217,6 @@ class Entity {
 // Directory listing
 // -----------------------------------------------------------------------------
 
-$base_dir= "../../courses";
-
-$d = dir($base_dir);
-$title    = "Available pages";
-$contents = "<ul>";
-while (($entry = $d->read()) !== false) {
-	echo $entry;
-	if (is_dir($base_dir . $entry) && !preg_match("@^[.]@",$entry)) {
-		if (is_dir($base_dir . $entry . '/manual-label')) {
-			$contents .= "<li><a href='label.php?page=$entry'>$entry</a>";
-		} else {
-			//$contents .= "<li>$entry";
-		}
-	}
-}
-$d->close();
-
 //require_once('template.inc');
 
 function write_tree($e) {
@@ -245,13 +229,7 @@ function write_tree($e) {
 	echo "</ul>";
 }
 
-write_tree(Entity::get_root());
-
-$e = Entity::get_root();
-$dirs = $e->children();
-foreach($dirs as $n => $d) {
-	echo "[$n]";
-	print_r($d->children());
-}
+//write_tree(Entity::get_root());
+write_tree(Entity::get("impprog"));
 
 
