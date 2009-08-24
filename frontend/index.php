@@ -1,6 +1,6 @@
 <?php
 
-require_once('../config/config.php');
+require_once('./bootstrap.inc');
 require_once('./template.inc');
 
 $page = new OutputPage();
@@ -57,8 +57,6 @@ Admin interface
 
 EOF;
 
-// scan problems/courses
-$course_dir = '../courses';
 
 // -----------------------------------------------------------------------------
 // Ranges of dates/times
@@ -92,13 +90,6 @@ class DateRange {
 	}
 }
 
-// -----------------------------------------------------------------------------
-// Bootstrapping
-// -----------------------------------------------------------------------------
-
-function __autoload($class_name) {
-	require_once "lib/$class_name.php";
-}
 
 // -----------------------------------------------------------------------------
 // Directory listing

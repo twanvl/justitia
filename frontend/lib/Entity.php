@@ -101,13 +101,17 @@ class Entity {
 	// gets a specific attribute
 	function attribute($key, $default = NULL) {
 		$this->load_attributes();
-		if (!array_key_exists($key, $this->_attributes) && isset($this->_parent)) {
-			// if it is not set, look in the parent
-			// note: key not set != null value
-			//       the latter indicates the parent doesn't have the attribute either
-			$attr = $this->_parent->attribute($key);
-			if ($attr === NULL) {
-				$attr = $this->_parent->attribute("child $key");
+		if (!array_key_exists($key, $this->_attributes)) {
+			if (isset($this->_parent)) {
+				// if it is not set, look in the parent
+				// note: key not set != null value
+				//       the latter indicates the parent doesn't have the attribute either
+				$attr = $this->_parent->attribute($key);
+				if ($attr === NULL) {
+					$attr = $this->_parent->attribute("child $key");
+				}
+			} else {
+				$attr = NULL;
 			}
 			$this->_attributes[$key] = $attr;
 		} else {
@@ -158,7 +162,6 @@ class Entity {
 	}
 	
 	private function data_path() {
-		global $course_dir;
-		return $course_dir . $this->_path;
+		return COURSE_DIR . $this->_path;
 	}
 };
