@@ -112,4 +112,13 @@ function write_tree($e) {
 //write_tree(Entity::get_root());
 write_tree(Entity::get(""));
 
+// -----------------------------------------------------------------------------
+// Authentication stuff
+// -----------------------------------------------------------------------------
 
+new Authentication();
+
+$h = make_salted_password_hash("my password");
+echo $h;
+
+echo "<br>",check_salted_password_hash("my password","44d762454ab6ceebfcca586edc3342d7f9eb6c443yVtEjzEbs");

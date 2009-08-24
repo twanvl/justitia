@@ -106,9 +106,10 @@ class Entity {
 				// if it is not set, look in the parent
 				// note: key not set != null value
 				//       the latter indicates the parent doesn't have the attribute either
-				$attr = $this->_parent->attribute($key);
+				// "child key" overrides "key"
+				$attr = $this->_parent->attribute("child $key");
 				if ($attr === NULL) {
-					$attr = $this->_parent->attribute("child $key");
+					$attr = $this->_parent->attribute($key);
 				}
 			} else {
 				$attr = NULL;
