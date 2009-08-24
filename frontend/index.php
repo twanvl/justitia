@@ -126,6 +126,7 @@ class Entity {
 				throw new Exception("Entity not found: $path");
 			}
 		}
+		return $here;
 	}
 	
 	private function __construct($parent, $dir_name) {
@@ -173,7 +174,7 @@ class Entity {
 	// gets an array with all attributes
 	// does not inherit all from parents!
 	// can contain NULLs
-	function attributes($key) {
+	function attributes() {
 		$this->load_attributes();
 		return $this->_attributes;
 	}
@@ -199,10 +200,42 @@ class Entity {
 	// load the attributes from a file
 	private function load_attributes() {
 		if (isset($this->_attributes)) return;
-		if ($this->_attributes !== NULL) return;
-		$lines = @file($this->data_path() . "dir.conf");
-		// TODO: parse...
-		$this->_attributes = array();
+		// default attributes
+		$this->_attributes = array(
+			'title' => $this->_dir_name
+		);
+		// load info file
+		$lines = @file($this->data_path() . "info", FILE_IGNORE_NEW_LINES);
+		if (!isset($lines) || $lines == false) {
+			// No info file
+		} else {
+			// parse it
+			foreach($lines as $i => $line) {
+				$line = trim($line, " \r\n\0"); // keep tabs
+				if ($line == '' || $line{0} == '#') {
+					// comment, ignore
+					unset($key);
+				} else if ($line{0} == "\t") {
+					// continuation of previous line
+					if (!isset($key)) {
+						throw new Exception("Error on line ".($i+1)." in info file for '$path':\n$line");
+					}
+					$this->_attributes[$key] .= ($key_first ? '' : "\n")
+					                         .  substr($line,1);
+					$key_first = false;
+				} else {
+					$kv = explode(':',$line,2);
+					if (count($kv) < 2) {
+						throw new Exception("Error on line ".($i+1)." in info file for '$path':\n$line");
+					} else {
+						$key   = trim($kv[0]);
+						$value = trim($kv[1]);
+						$this->_attributes[$key] = $value;
+						$key_first = $value == '';
+					}
+				}
+			}
+		}
 	}
 	
 	private function data_path() {
@@ -221,6 +254,7 @@ class Entity {
 
 function write_tree($e) {
 	echo "<ul>";
+	echo "<pre>"; print_r($e->attributes()); echo "</pre>";
 	foreach($e->children() as $n => $d) {
 		echo "<li>$n";
 		write_tree($d);
@@ -230,6 +264,6 @@ function write_tree($e) {
 }
 
 //write_tree(Entity::get_root());
-write_tree(Entity::get("impprog"));
+write_tree(Entity::get(""));
 
 
