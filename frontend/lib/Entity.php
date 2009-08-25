@@ -47,7 +47,7 @@ class Entity {
 	}
 	
 	// ---------------------------------------------------------------------
-	// Some simple attributes / properties
+	// Specific attributes / properties
 	// ---------------------------------------------------------------------
 	
 	// is this the root?
@@ -58,6 +58,30 @@ class Entity {
 	// get full path
 	function path() {
 		return $this->_path;
+	}
+	
+	
+	// get the visible date range
+	function visible_range() {
+		return new DateRange(
+			$this->attribute("show date","always"),
+			$this->attribute("hide date","never")
+		);
+	}
+	// get the active date range
+	function active_range() {
+		return new DateRange(
+			$this->attribute("start date","always"),
+			$this->attribute("end date","never")
+		);
+	}
+	// Is this entity visible?
+	function visible() {
+		return $this->attribute("visible",true)
+		    && $this->visible_range()->contains_now();
+	}
+	function active() {
+		return $this->active_range()->contains_now();
 	}
 	
 	// ---------------------------------------------------------------------

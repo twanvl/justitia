@@ -1,5 +1,9 @@
 <?php
 
+// -----------------------------------------------------------------------------
+// Password hashing
+// -----------------------------------------------------------------------------
+
 // Make a hash of a password with added salt, i.e. sha1($salt.$pass).$salt
 function make_salted_password_hash($password) {
 	// make some salt
@@ -17,6 +21,10 @@ function check_salted_password_hash($password, $password_hash) {
 	$salty = substr($salt,0,5) . $password . substr($salt,5);
 	return sha1($salty) == substr($password_hash,0,40);
 }
+
+// -----------------------------------------------------------------------------
+// Users from the database
+// -----------------------------------------------------------------------------
 
 class User {
 	private $data;
@@ -36,5 +44,9 @@ class User {
 	
 	function set_password($password) {
 		$this->data['password'] = make_salted_password_hash($password);
+	}
+	
+	function __get($attr) {
+		return $this->data[$attr];
 	}
 }
