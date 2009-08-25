@@ -82,9 +82,7 @@ class User {
 	
 	static function by_login($login) {
 		static $query;
-		if (!isset($query)) {
-			$query = db()->prepare("SELECT * FROM `user` WHERE login=?");
-		}
+		DB::prepare_query($query, "SELECT * FROM `user` WHERE login=?");
 		$query->execute(array($login));
 		return User::fetch_one($query, $login);
 	}
@@ -119,13 +117,11 @@ class User {
 	// All submissions made by this user
 	function all_submissions() {
 		static $query;
-		if (!isset($query)) {
-			$query = db()->prepare(
-				"SELECT * FROM `user_submission` LEFT JOIN `submission` ON `user_submission`.`submissionid` = `submission`.`submissionid`".
-				" WHERE `userid`=?".
-				" ORDER BY `time` DESC"
-			);
-		}
+		DB::prepare_query($query,
+			"SELECT * FROM `user_submission` LEFT JOIN `submission` ON `user_submission`.`submissionid` = `submission`.`submissionid`".
+			" WHERE `userid`=?".
+			" ORDER BY `time` DESC"
+		);
 		$query->execute(array($this->userid));
 		return Submission::fetch_all($query);
 	}
@@ -134,13 +130,11 @@ class User {
 	function submissions_to($entity) {
 		if (!$entity->attribute('submitable')) return array();
 		static $query;
-		if (!isset($query)) {
-			$query = db()->prepare(
-				"SELECT * FROM `user_submission` LEFT JOIN `submission` ON `user_submission`.`submissionid` = `submission`.`submissionid`".
-				" WHERE `userid`=? AND `entity_path`=?".
-				" ORDER BY `time` DESC"
-			);
-		}
+		DB::prepare_query($query,
+			"SELECT * FROM `user_submission` LEFT JOIN `submission` ON `user_submission`.`submissionid` = `submission`.`submissionid`".
+			" WHERE `userid`=? AND `entity_path`=?".
+			" ORDER BY `time` DESC"
+		);
 		$query->execute(array($this->userid, $entity->path()));
 		return Submission::fetch_all($query);
 	}
@@ -149,14 +143,12 @@ class User {
 	function last_submission_to($entity) {
 		if (!$entity->attribute('submitable')) return false;
 		static $query;
-		if (!isset($query)) {
-			$query = db()->prepare(
-				"SELECT * FROM `user_submission` LEFT JOIN `submission` ON `user_submission`.`submissionid` = `submission`.`submissionid`".
-				" WHERE `userid`=? AND `entity_path`=?".
-				" ORDER BY `time` DESC".
-				" LIMIT 1"
-			);
-		}
+		DB::prepare_query($query,
+			"SELECT * FROM `user_submission` LEFT JOIN `submission` ON `user_submission`.`submissionid` = `submission`.`submissionid`".
+			" WHERE `userid`=? AND `entity_path`=?".
+			" ORDER BY `time` DESC".
+			" LIMIT 1"
+		);
 		$query->execute(array($this->userid, $entity->path()));
 		// fetch submissions
 		$data = $query->fetch(PDO::FETCH_ASSOC);

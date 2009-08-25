@@ -3,7 +3,7 @@
 require_once('./bootstrap.inc');
 
 // -----------------------------------------------------------------------------
-// Allow a user do download submited files
+// Allow a user do download submitted files
 // -----------------------------------------------------------------------------
 
 // Parse arguments
@@ -19,10 +19,12 @@ if (!$subm->is_made_by(Authentication::require_user())) {
 }
 $filename = $subm->file_path . '/code/' . $subm->file_name;
 
+// Open file and pass it through
 if (!file_exists($filename)) die("file not found");
 $fp = fopen($filename, "rb");
 
 if (!function_exists('mime_content_type')) {
+	// windows doesn't have this
 	function mime_content_type() {
 		return 'application octet-stream';
 	}

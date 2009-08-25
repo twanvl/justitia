@@ -51,8 +51,11 @@
 #nav .inactive {
 	color:		rgb(128,128,128);
 }
+#nav .inactive.no-submission {
+	background:	rgb(240,240,240);
+}
 #nav .no-submission {
-	background:	rgb(192,192,192);
+	background:	rgb(200,192,192);
 }
 #nav .failed {
 	background:	rgb(255,50,50);

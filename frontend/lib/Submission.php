@@ -39,23 +39,19 @@ class Submission {
 	
 	function users() {
 		static $query;
-		if (!isset($query)) {
-			$query = db()->prepare(
-				"SELECT * FROM `user_submission`".
-				" LEFT JOIN `user` ON `user_submission`.`userid` = `user`.`userid`".
-				" WHERE submissionid=?"
-			);
-		}
+		DB::prepare_query($query,
+			"SELECT * FROM `user_submission`".
+			" LEFT JOIN `user` ON `user_submission`.`userid` = `user`.`userid`".
+			" WHERE submissionid=?"
+		);
 		$query->execute(array($this->submissionid));
 		return User::fetch_all($query);
 	}
 	function is_made_by($user) {
 		static $query;
-		if (!isset($query)) {
-			$query = db()->prepare(
-				"SELECT COUNT(*) FROM `user_submission` WHERE userid=? AND submissionid=?"
-			);
-		}
+		DB::prepare_query($query,
+			"SELECT COUNT(*) FROM `user_submission` WHERE userid=? AND submissionid=?"
+		);
 		$query->execute(array($user->userid,$this->submissionid));
 		list($num) = $query->fetch(PDO::FETCH_NUM);
 		$query->closeCursor();
@@ -72,9 +68,9 @@ class Submission {
 	
 	static function by_id($submissionid) {
 		static $query;
-		if (!isset($query)) {
-			$query = db()->prepare("SELECT * FROM `submission` WHERE submissionid=?");
-		}
+		DB::prepare_query($query,
+			"SELECT * FROM `submission` WHERE submissionid=?"
+		);
 		$query->execute(array($submissionid));
 		return Submission::fetch_one($query,$submissionid);
 	}
@@ -114,12 +110,11 @@ class Submission {
 	// Add a new submission to the database, and return it
 	static function make_new($entity,$file_path,$file_name) {
 		static $query;
-		if (!isset($query)) {
-			$query = db()->prepare(
-				"INSERT INTO `submission`".
-				       " (`time`,`entity_path`,`file_path`,`file_name`,`judge_host`,`judge_start`,`status`)".
-				" VALUES (:time, :entity_path, :file_path, :file_name,  NULL,        0,            :status)");
-		}
+		DB::prepare_query($query,
+			"INSERT INTO `submission`".
+			       " (`time`,`entity_path`,`file_path`,`file_name`,`judge_host`,`judge_start`,`status`)".
+			" VALUES (:time, :entity_path, :file_path, :file_name,  NULL,        0,            :status)"
+		);
 		$data = array();
 		$data['time']         = time();
 		$data['entity_path']  = $entity->path();
@@ -137,9 +132,7 @@ class Submission {
 	// Add a user <-> submission relation
 	function add_user($user) {
 		static $query;
-		if (!isset($query)) {
-			$query = db()->prepare("INSERT INTO `user_submission` VALUES (?,?)");
-		}
+		DB::prepare_query($query,"INSERT INTO `user_submission` VALUES (?,?)");
 		// note: it is possible that inserting fails, if the relation already exists
 		$query->execute(array($user->userid, $this->submissionid));
 		$query->closeCursor();
@@ -158,17 +151,15 @@ class Submission {
 	// it is then assigned to this judge_host
 	static function get_pending_submission($host) {
 		static $query_check, $query_take, $query_fetch;
-		if (!isset($query_check)) {
-			$query_check = db()->prepare(
-				"SELECT COUNT(*) FROM `submission` WHERE `status` = 2 AND `judge_start` < :old_start");
-			$query_take = db()->prepare(
-				"UPDATE `submission` SET `judge_start` = :new_start, `judge_host` = :host" .
-				" WHERE `status` = 2 AND `judge_start` < :old_start".
-				" LIMIT 1");
-			$query_fetch = db()->prepare(
-				"SELECT * FROM `submission`" .
-				" WHERE `status` = 2 AND `judge_start` = :new_start AND `judge_host` = :host");
-		}
+		DB::prepare_query($query_check,
+			"SELECT COUNT(*) FROM `submission` WHERE `status` = 2 AND `judge_start` < :old_start");
+		DB::prepare_query($query_take,
+			"UPDATE `submission` SET `judge_start` = :new_start, `judge_host` = :host" .
+			" WHERE `status` = 2 AND `judge_start` < :old_start".
+			" LIMIT 1");
+		DB::prepare_query($query_fetch,
+			"SELECT * FROM `submission`" .
+			" WHERE `status` = 2 AND `judge_start` = :new_start AND `judge_host` = :host");
 		
 		// are there pending submissions?
 		// this step is to make things faster

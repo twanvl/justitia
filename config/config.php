@@ -1,8 +1,9 @@
 <?php
 
 // where are courses located?
-define('COURSE_DIR',  '../courses');
-define('PENDING_DIR', '../submissions/pending');
+define('COURSE_DIR',     '../courses');
+define('SUBMISSION_DIR', '../submissions');
+define('PENDING_DIR',    '../submissions/pending');
 
 // what time are we in?
 define('TIMEZONE', 'Europe/Paris');
