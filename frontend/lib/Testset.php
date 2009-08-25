@@ -38,7 +38,7 @@ class Testset {
 	}
 	
 	// Get a list of test base files (i.e. without the ".in" extension)
-	function base_filenames() {
+	function test_cases() {
 		return $this->test_cases;
 	}
 	

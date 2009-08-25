@@ -55,6 +55,15 @@ class User {
 		return $this->firstname . ' ' . $mid . $this->lastname;
 	}
 	
+	static function names_text($array) {
+		if (empty($array)) return "no one";
+		$result = "";
+		foreach($array as $user) {
+			if (strlen($result) > 0) $result .= ', ';
+			$result .= $user->name();
+		}
+		return $result;
+	}
 	static function names_html($array) {
 		if (empty($array)) {
 			return "<em>no one</em>";

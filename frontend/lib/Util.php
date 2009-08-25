@@ -5,6 +5,10 @@
 // -----------------------------------------------------------------------------
 
 class Util {
+	// ---------------------------------------------------------------------
+	// Redirect
+	// ---------------------------------------------------------------------
+	
 	// Redirects the user to $url.
 	static function redirect($url) {
 		if ($url == '') {
@@ -22,6 +26,10 @@ class Util {
 		Util::redirect("login.php?redirect=" . urlencode(Util::current_url()));
 	}
 	
+	// ---------------------------------------------------------------------
+	// Base url, etc.
+	// ---------------------------------------------------------------------
+	
 	static function current_url() {
 		//$_SERVER["PATH_INFO"]
 		// TODO: strip base url?
@@ -35,4 +43,25 @@ class Util {
 		return $base;
 	}
 	
+	// ---------------------------------------------------------------------
+	// Files and directories
+	// ---------------------------------------------------------------------
+	
+	// Is a file sourcecode?
+	static function is_code($filename) {
+	}
+	
+	// Create a new (temporary) directory
+	static function temporary_name($parent, $prefix = '') {
+		// TODO: should we make this path relative?
+		return tempnam($parent, $prefix);
+	}
+	static function create_new_directory($parent, $prefix = '') {
+		$tempfile = Util::temporary_name($parent, $prefix);
+		if (file_exists($tempfile)) {
+			unlink($tempfile);
+		}
+		mkdir($tempfile);
+		return $tempfile;
+	}
 }

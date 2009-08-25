@@ -164,14 +164,13 @@ function write_submit_form() {
 
 }
 
-function format_date($date) {
-	return date('l, j F Y, H:i:s',$date);
-}
-function write_submission($subm) {
+function write_submission($i, $subm) {
+	$path = "download.php/" . $subm->submissionid . '/' . $subm->file_name;
+	echo '<div style="float:left;font-size:400%;font-family:sans-serif;color:green;">'.$i.'</div>';
 	echo "<table>";
 	echo "<tr><td>Submitted on</td><td>" . format_date($subm->time) . "</td>";
 	echo "<tr><td>Submitted by</td><td>" . User::names_html($subm->users()) . "</td>";
-	echo '<tr><td>Files</td><td><a href="">Download submitted files</a></td>';
+	echo '<tr><td>Files</td><td><a href="'.$path.'">Download submitted files</a></td>';
 	echo "<tr><td>Status</td><td>"       . $subm->textual_status() . "</td>";
 	echo "</table>";
 }
@@ -187,9 +186,11 @@ if ($here->attribute('submitable')) {
 		echo "<em>no submissions have been made for this assignment.</em>";
 	} else {
 		echo '<ul class="submissions">';
+		$i = count($submissions);
 		foreach($submissions as $subm) {
 			echo '<li>';
-			write_submission($subm);
+			write_submission($i, $subm);
+			$i--;
 			echo '</li>';
 		}
 		echo '</ul>';

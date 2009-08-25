@@ -1,5 +1,3 @@
-
-
 <?php
 
 require_once('bootstrap.inc');
@@ -52,13 +50,23 @@ function handle_uploaded_submission($entity, $file) {
 		}
 	}
 	// move file into pending folder
-	$temp_name = tempnam(PENDING_DIR, 'submission');
-	move_uploaded_file($file['tmp_name'], $temp_name);
-	$error = 'upload successful';
+	$subm_dir = Util::create_new_directory(PENDING_DIR, 'submission');
+	mkdir($subm_dir . '/code');
+	$file_name = str_replace('/','',$file['name']);
+	if (!move_uploaded_file($file['tmp_name'], $subm_dir . '/code/' . $file_name)) {
+		$error = "Can not move uploaded file";
+		rmdir($subm_dir . '/code');
+		rmdir($subm_dir);
+		return false;
+	}
 	// add to database
-	$subm = Submission::make_new($entity, $temp_name);
+	$subm = Submission::make_new($entity, $subm_dir, $file_name);
 	// assign users
 	$subm->add_user(Authentication::current_user());
+	// TODO: multiple users
+	// success
+	// TODO: not an error
+	$error = 'Upload successful';
 	return $subm;
 }
 

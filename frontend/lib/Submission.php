@@ -27,7 +27,12 @@ class Submission {
 		switch ($this->status) {
 			case Submission::STATUS_FAILED:   return "Failed";
 			case Submission::STATUS_PASSED:   return "Passed";
-			case Submission::STATUS_PENDING:  return "Pending";
+			case Submission::STATUS_PENDING:
+				if ($this->judge_start >= time() - REJUDGE_TIMEOUT) {
+					return "Judging";
+				} else {
+					return "Pending";
+				}
 			case Submission::STATUS_NOT_DONE: return "Not submitted";
 		}
 	}
@@ -43,6 +48,22 @@ class Submission {
 		}
 		$query->execute(array($this->submissionid));
 		return User::fetch_all($query);
+	}
+	function is_made_by($user) {
+		static $query;
+		if (!isset($query)) {
+			$query = db()->prepare(
+				"SELECT COUNT(*) FROM `user_submission` WHERE userid=? AND submissionid=?"
+			);
+		}
+		$query->execute(array($user->userid,$this->submissionid));
+		list($num) = $query->fetch(PDO::FETCH_NUM);
+		$query->closeCursor();
+		return $num > 0;
+	}
+	
+	function entity() {
+		return Entity::get($this->entity_path);
 	}
 	
 	// ---------------------------------------------------------------------
@@ -91,18 +112,19 @@ class Submission {
 	// ---------------------------------------------------------------------
 	
 	// Add a new submission to the database, and return it
-	static function make_new($entity,$file_path) {
+	static function make_new($entity,$file_path,$file_name) {
 		static $query;
 		if (!isset($query)) {
 			$query = db()->prepare(
 				"INSERT INTO `submission`".
-				       " (`time`,`entity_path`,`file_path`,`judge_host`,`judge_start`,`status`)".
-				" VALUES (:time, :entity_path, :file_path, NULL,        0,            :status)");
+				       " (`time`,`entity_path`,`file_path`,`file_name`,`judge_host`,`judge_start`,`status`)".
+				" VALUES (:time, :entity_path, :file_path, :file_name,  NULL,        0,            :status)");
 		}
 		$data = array();
 		$data['time']         = time();
 		$data['entity_path']  = $entity->path();
 		$data['file_path']    = $file_path;
+		$data['file_name']    = $file_name;
 		$data['status']       = Submission::STATUS_PENDING;
 		$query->execute($data);
 		$data['judge_host']   = NULL;
@@ -123,6 +145,11 @@ class Submission {
 		$query->closeCursor();
 	}
 	
+	// Alter the status of the submission
+	// This also moves the associated files
+	function set_status($status, $new_file) {
+	}
+	
 	// ---------------------------------------------------------------------
 	// For judge hosts
 	// ---------------------------------------------------------------------
@@ -140,7 +167,7 @@ class Submission {
 				" LIMIT 1");
 			$query_fetch = db()->prepare(
 				"SELECT * FROM `submission`" .
-				" WHERE `status` = 2 AND `judge_start` = :new_start, `judge_host` = :host");
+				" WHERE `status` = 2 AND `judge_start` = :new_start AND `judge_host` = :host");
 		}
 		
 		// are there pending submissions?

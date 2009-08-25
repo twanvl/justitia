@@ -1,7 +1,7 @@
 <?php
 
 // -----------------------------------------------------------------------------
-// Ranges of dates/times
+// Date utilities
 // -----------------------------------------------------------------------------
 
 function parse_date($date_str, $rel=NULL) {
@@ -20,6 +20,14 @@ function now() {
 }
 
 date_default_timezone_set(TIMEZONE);
+
+function format_date($date) {
+	return date('l, j F Y, H:i:s',$date);
+}
+
+// -----------------------------------------------------------------------------
+// Ranges of dates/times
+// -----------------------------------------------------------------------------
 
 class DateRange {
 	// start/end timestamps
