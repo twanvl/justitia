@@ -140,7 +140,34 @@ class Submission {
 	
 	// Alter the status of the submission
 	// This also moves the associated files
-	function set_status($status, $new_file) {
+	function set_status($new_status) {
+		// what will the new filename be?
+		// this can be as fancy as we like
+		switch ($new_status) {
+			case Submission::STATUS_FAILED: $statusdir = "failed"; break;
+			case Submission::STATUS_PASSED: $statusdir = "passed"; break;
+			default: throw new Exception("Can't set status to: ".$new_status);
+		}
+		$new_path_base = SUBMISSION_DIR . $this->entity_path . $statusdir;
+		$new_path = $new_path_base . '/' . $this->submissionid;
+		// move
+		@mkdir($new_path_base,0777,true);
+		rename($this->file_path, $new_path);
+		// update db
+		static $query;
+		DB::prepare_query($query,
+			"UPDATE `submission` SET `file_path` = :file_path, `status` = :status".
+			" WHERE `submissionid` = :submissionid");
+		$query->execute(array(
+			'file_path'    => $new_path,
+			'status'       => $new_status,
+			'submissionid' => $this->submissionid
+		));
+		$query->closeCursor();
+		// update object
+		$this->status    = $new_status;
+		$this->file_path = $new_path;
+		
 	}
 	
 	// ---------------------------------------------------------------------
