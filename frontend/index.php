@@ -118,9 +118,15 @@ new Testset(Entity::get("impprog0910/week1/welkom"));
 // Authentication stuff
 // -----------------------------------------------------------------------------
 
-new Authentication();
+/*new Authentication();
 
-$h = make_salted_password_hash("my password");
+$h = make_salted_password_hash("password");
 echo $h;
 
-echo "<br>",check_salted_password_hash("my password","44d762454ab6ceebfcca586edc3342d7f9eb6c443yVtEjzEbs");
+echo "<br>",check_salted_password_hash("password","44d762454ab6ceebfcca586edc3342d7f9eb6c443yVtEjzEbs");
+*/
+
+$u = new User('admin');
+print_r($u);
+
+echo $u->check_password('password');
