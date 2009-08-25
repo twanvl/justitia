@@ -63,6 +63,29 @@
 #nav .passed {
 	background:	rgb(150,255,100);
 }
-#nav .pending {
+#nav .pending, #nav .judging {
 	background:	rgb(245,245,100);
+}
+
+.submissions {
+	list-style:	none;
+}
+.submissions .ordinal {
+	float:		left;
+	font-size:	400%;
+	font-family:	sans-serif;
+}
+.submissions .failed .ordinal {
+	color:		rgb(192,0,0);
+}
+.submissions .passed .ordinal {
+	color:		rgb(50,192,0);
+}
+.submissions .pending .ordinal {
+	color:		rgb(202,192,0);
+}
+
+
+td {
+	padding-right:	.5em;
 }

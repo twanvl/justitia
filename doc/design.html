@@ -71,8 +71,8 @@
           <td>the filename
       <tr><th><tt>visible</tt>
           <td>Is this entity visible?
-              Possible values are <tt>yes</tt> and <tt>no</tt>
-          <td><tt>yes</tt>
+              Possible values are <tt>true</tt> and <tt>false</tt>
+          <td><tt>true</tt>
       <tr><th><tt>show date</tt>
           <td>When does this entity become visible to students?
               Should be an ISO date, like "<tt>2009-09-01 09:00</tt>".
@@ -87,7 +87,7 @@
       <tr><th colspan="3">Submitting
       <tr><th><tt>submitable</tt>
           <td>Can submissions be made for this entity, i.e. is it an assignment?.
-          <td><tt>no</tt>
+          <td><tt>false</tt>
       <tr><th><tt>start date</tt>
           <td>When does this assignment become available for submission?
           <td><tt>always</tt>
@@ -98,17 +98,17 @@
       <tr><th colspan="3">Compiling
       <tr><th><tt>language</tt>
           <td>The programming language the submissions must be made in.
-          <td><i>none</i>
+          <td><i>by extension</i>
       <tr><th><tt>filename regex</tt>
           <td>Regular expression that filename of submissions is matched against.
               By default based on <tt>language</tt>
           <td><i>none</i>
       <tr><th><tt>allow archives</tt>
           <td>Can multi-file archives be submitted?
-          <td><tt>no</tt>
+          <td><tt>false</tt>
       <tr><th><tt>compile</tt>
           <td>Should submissions be compiled?
-          <td><tt>no</tt>
+          <td><tt>true</tt>
       <tr><th><tt>compiler flags</tt>
           <td>Optional flags to pass to the compiler.
           <td>""
@@ -131,7 +131,7 @@
       <tr><th colspan="3">Feedback
       <tr><th><tt>show compile errors</i></tt>
           <td>Should compiler errors be shown? (syntax errors, typing errors, etc.)
-          <td>yes
+          <td>true
       <tr><th><tt>show run errors</i></tt>
           <td>Should runtime errors be shown? (stack overflow, div by 0, etc.) For which test cases?
               Possible values are:
@@ -158,5 +158,5 @@
           <td><i>unbounded</i>
       <tr><th><tt>defines groups</tt>
           <td>Groups are by default formed for the duration of this entity.
-          <td><tt>yes</t> for courses
+          <td><tt>true</t> for courses
     </table>

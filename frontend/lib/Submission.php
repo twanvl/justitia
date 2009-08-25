@@ -36,6 +36,19 @@ class Submission {
 			case Submission::STATUS_NOT_DONE: return "Not submitted";
 		}
 	}
+	static function status_css_class($subm) {
+		if ($subm === false) return 'no-submission';
+		$status = is_object($subm) ? $subm->status : $subm;
+		if ($subm->status == Submission::STATUS_FAILED)  return 'failed';
+		if ($subm->status == Submission::STATUS_PASSED)  return 'passed';
+		if ($subm->status == Submission::STATUS_PENDING) {
+			if (is_object($subm) && $subm->judge_start >= time() - REJUDGE_TIMEOUT) {
+				return "judging";
+			} else {
+				return "pending";
+			}
+		}
+	}
 	
 	function users() {
 		static $query;

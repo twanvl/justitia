@@ -1,6 +1,59 @@
 <?php
 
 // -----------------------------------------------------------------------------
+// Programming languages
+// -----------------------------------------------------------------------------
+
+global $languages, $languages_by_extension;
+$languages = array(
+	'c' => array(
+		'is_language'		=> true,
+		'name'			=> 'c',
+		'filename_regex'	=> '.*\.c'
+	),
+	'c++' => array(
+		'is_language'		=> true,
+		'name'			=> 'c++',
+		'filename_regex'	=> '.*\.(c++|cc|cxx)'
+	),
+	'java' => array(
+		'is_language'		=> true,
+		'name'			=> 'java',
+		'filename_regex'	=> '.*\.(java)'
+	),
+	'haskell' => array(
+		'is_language'		=> true,
+		'name'			=> 'haskell',
+		'filename_regex'	=> '.*\.(hs|lhs)'
+	),
+	'any' => array(
+		'is_language'		=> false,
+		'name'			=> 'any',
+		'filename_regex'	=> '.*'
+	),
+	'unknown' => array(
+		'is_language'		=> false,
+		'name'			=> 'unknown',
+		'filename_regex'	=> ''
+	)
+);
+$languages['']    = $languages['any'];
+$languages['cpp'] = $languages['c++'];
+
+// extension -> language
+$languages_by_extension = array(
+	'c'    => $languages['c'],
+	'cc'   => $languages['c++'],
+	'cxx'  => $languages['c++'],
+	'cpp'  => $languages['c++'],
+	'c++'  => $languages['c++'],
+	'java' => $languages['java'],
+	'hs'   => $languages['haskell'],
+	'lhs'  => $languages['haskell'],
+	//'zip'  => $languages['zip'],
+);
+
+// -----------------------------------------------------------------------------
 // Utility functions
 // -----------------------------------------------------------------------------
 
@@ -37,8 +90,8 @@ class Util {
 	}
 	
 	static function base_url() {
-		$pathinfo = pathinfo($_SERVER["SCRIPT_NAME"]);
-		$base = 'http://' . $_SERVER["SERVER_NAME"] . $pathinfo['dirname'];
+		$dirname = pathinfo($_SERVER["SCRIPT_NAME"], PATHINFO_DIRNAME);
+		$base = 'http://' . $_SERVER["SERVER_NAME"] . $dirname;
 		if (substr($base,-1) != '/') $base .= '/';
 		return $base;
 	}
@@ -49,6 +102,27 @@ class Util {
 	
 	// Is a file sourcecode?
 	static function is_code($filename) {
+		$lang = Util::language_from_filename($filename);
+		return $lang['is_language'];
+	}
+	
+	static function language_from_filename($filename) {
+		$ext = pathinfo($filename, PATHINFO_EXTENSION);
+		global $languages_by_extension;
+		if (isset($languages_by_extension[$ext])) {
+			return $languages_by_extension[$ext];
+		} else {
+			global $languages;
+			return $languages['unknown'];
+		}
+	}
+	static function language_info($code) {
+		global $languages;
+		if (isset($languages[$code])) {
+			return $languages[$code];
+		} else {
+			return $languages['unknown'];
+		}
 	}
 	
 	// Create a new (temporary) directory

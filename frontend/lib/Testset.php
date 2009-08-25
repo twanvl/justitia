@@ -19,11 +19,11 @@ class Testset {
 			$filename = $child->getFilename();
 			if ($filename{0} == '.') continue;
 			if (substr($filename,-3) == '.in') {
-				$this->test_cases []= $filename;
+				$this->test_cases []= substr($filename,0,-3);
 			}
 			// for convenience, pick the first program source file as the reference impl, if none is set
 			if ($this->reference_impl === NULL) {
-				if (substr($filename,-2) == '.c' || substr($filename,-4) == '.cpp' || substr($filename,-5) == '.java' || substr($filename,-3) == '.hs') {
+				if (Util::is_code($filename)) {
 					$this->reference_impl = $filename;
 				}
 			}

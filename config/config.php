@@ -1,9 +1,10 @@
 <?php
 
 // where are courses located?
-define('COURSE_DIR',     '../courses');
-define('SUBMISSION_DIR', '../submissions');
-define('PENDING_DIR',    '../submissions/pending');
+define('COURSE_DIR',       '../courses');
+define('SUBMISSION_DIR',   '../submissions');
+define('PENDING_DIR',      '../submissions/pending');
+define('TEMP_JUDGING_DIR', ''); // empty string for system wide temp dir
 
 // what time are we in?
 define('TIMEZONE', 'Europe/Paris');
@@ -28,4 +29,6 @@ $attribute_defaults['show date']      = 'always';
 $attribute_defaults['hide date']      = 'never';
 $attribute_defaults['start date']     = 'always';
 $attribute_defaults['end date']       = 'never';
+$attribute_defaults['timelimit']      = 1;
+$attribute_defaults['timelimit']      = 100000;
 

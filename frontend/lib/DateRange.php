@@ -22,6 +22,7 @@ function now() {
 date_default_timezone_set(TIMEZONE);
 
 function format_date($date) {
+	if ($date >= 1e99) return "never";
 	return date('l, j F Y, H:i:s',$date);
 }
 

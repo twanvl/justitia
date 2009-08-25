@@ -112,10 +112,7 @@ function write_children_nav($e, $here) {
 		}
 		if ($e->attribute_bool('submitable')) {
 			$subm = Authentication::current_user()->last_submission_to($e);
-			if (!$subm) $class .= 'no-submission ';
-			else if ($subm->status == Submission::STATUS_FAILED)  $class .= 'failed ';
-			else if ($subm->status == Submission::STATUS_PASSED)  $class .= 'passed ';
-			else if ($subm->status == Submission::STATUS_PENDING) $class .= 'pending ';
+			$class .= Submission::status_css_class($subm) . ' ';
 		}
 		if (!$e->active()) {
 			$class .= 'inactive ';
@@ -141,6 +138,18 @@ function write_nav2($here) {
 $here = Entity::get(@$_SERVER['PATH_INFO']);
 write_nav2($here);
 
+function format_bool($b) {
+	return $b ? "yes" : "no";
+}
+function write_submitable_entity_info($entity) {
+	echo "<table>";
+	echo "<tr><td>Can submit</td><td>" . format_bool($entity->active()) . "</td>";
+	echo "<tr><td>Deadline</td><td>"   . format_date($entity->active_range()->end) . "</td>";
+	echo "<tr><td>Language</td><td>"   . ($entity->attribute('language')) . "</td>";
+	echo "<tr><td>Archives allowed</td><td>" . format_bool($entity->attribute_bool('allow archives')) . "</td>";
+	echo "</table>";
+}
+
 
 function write_submit_form() {
 	
@@ -164,7 +173,7 @@ function write_submit_form() {
 
 function write_submission($i, $subm) {
 	$path = "download.php/" . $subm->submissionid . '/' . $subm->file_name;
-	echo '<div style="float:left;font-size:400%;font-family:sans-serif;color:green;">'.$i.'</div>';
+	echo '<div class="ordinal">'.$i.'</div>';
 	echo "<table>";
 	echo "<tr><td>Submitted on</td><td>" . format_date($subm->time) . "</td>";
 	echo "<tr><td>Submitted by</td><td>" . User::names_html($subm->users()) . "</td>";
@@ -174,6 +183,8 @@ function write_submission($i, $subm) {
 }
 
 if ($here->attribute_bool('submitable')) {
+	write_submitable_entity_info($here);
+	
 	// submission form
 	echo "<h2>Submit</h2>";
 	write_submit_form();
@@ -186,7 +197,7 @@ if ($here->attribute_bool('submitable')) {
 		echo '<ul class="submissions">';
 		$i = count($submissions);
 		foreach($submissions as $subm) {
-			echo '<li>';
+			echo '<li class="submission '.Submission::status_css_class($subm).'">';
 			write_submission($i, $subm);
 			$i--;
 			echo '</li>';
