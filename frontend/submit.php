@@ -29,7 +29,7 @@ $entity = Entity::get(@$_SERVER['PATH_INFO']);
 
 function handle_uploaded_submission($entity, $file) {
 	global $error;
-	if (!$entity->attribute('submitable')) {
+	if (!$entity->attribute_bool('submitable')) {
 		$error = "No submissions can be made here.";
 		return false;
 	}
@@ -42,7 +42,7 @@ function handle_uploaded_submission($entity, $file) {
 		return false;
 	}
 	// match filename with regex
-	$file_regex = $entity->attribute('filename regex','');
+	$file_regex = $entity->attribute('filename regex');
 	if ($file_regex != '') {
 		if (!preg_match("/$file_regex/", $file['name'])) {
 			$error = "Uploaded file does not match specified filename pattern";
@@ -70,7 +70,7 @@ function handle_uploaded_submission($entity, $file) {
 	return $subm;
 }
 
-if ($entity->attribute('submitable')) {
+if ($entity->attribute_bool('submitable')) {
 	if (isset($_FILES['file'])) {
 		$file = $_FILES['file'];
 		handle_uploaded_submission($entity, $file);

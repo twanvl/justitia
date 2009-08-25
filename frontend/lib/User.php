@@ -128,7 +128,7 @@ class User {
 	
 	// All submissions made by this user to $entity
 	function submissions_to($entity) {
-		if (!$entity->attribute('submitable')) return array();
+		if (!$entity->attribute_bool('submitable')) return array();
 		static $query;
 		DB::prepare_query($query,
 			"SELECT * FROM `user_submission` LEFT JOIN `submission` ON `user_submission`.`submissionid` = `submission`.`submissionid`".
@@ -141,7 +141,7 @@ class User {
 	
 	// Last submission made by user to entity
 	function last_submission_to($entity) {
-		if (!$entity->attribute('submitable')) return false;
+		if (!$entity->attribute_bool('submitable')) return false;
 		static $query;
 		DB::prepare_query($query,
 			"SELECT * FROM `user_submission` LEFT JOIN `submission` ON `user_submission`.`submissionid` = `submission`.`submissionid`".

@@ -124,7 +124,7 @@ class Submission {
 		$query->execute($data);
 		$data['judge_host']   = NULL;
 		$data['judge_start']  = 0;
-		$data['submissionid'] = db()->lastInsertId();
+		$data['submissionid'] = DB::get()->lastInsertId();
 		$query->closeCursor();
 		return new Submission($data);
 	}

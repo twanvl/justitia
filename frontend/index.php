@@ -89,8 +89,6 @@ function write_tree($e) {
 //write_tree(Entity::get_root());
 //write_tree(Entity::get(""));
 
-new Testset(Entity::get("impprog0910/week1/welkom"));
-
 echo "<hr>";
 
 function write_nav($here) {
@@ -112,7 +110,7 @@ function write_children_nav($e, $here) {
 		if ($e->is_ancestor_of($here)) {
 			$class .= 'ancestor ';
 		}
-		if ($e->attribute('submitable')) {
+		if ($e->attribute_bool('submitable')) {
 			$subm = Authentication::current_user()->last_submission_to($e);
 			if (!$subm) $class .= 'no-submission ';
 			else if ($subm->status == Submission::STATUS_FAILED)  $class .= 'failed ';
@@ -175,7 +173,7 @@ function write_submission($i, $subm) {
 	echo "</table>";
 }
 
-if ($here->attribute('submitable')) {
+if ($here->attribute_bool('submitable')) {
 	// submission form
 	echo "<h2>Submit</h2>";
 	write_submit_form();

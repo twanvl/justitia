@@ -9,11 +9,23 @@ define('PENDING_DIR',    '../submissions/pending');
 define('TIMEZONE', 'Europe/Paris');
 
 // how long before submissions are re-judged if no answer has yet been received (in seconds)?
-define('REJUDGE_TIMEOUT', 120);
+//define('REJUDGE_TIMEOUT', 120);
+define('REJUDGE_TIMEOUT', 1);//Debug
 
 // the database connection
 define('DB_PATH',     'mysql:host=localhost;dbname=new_athena');
 define('DB_USERNAME', 'new_athena');
 define('DB_PASSWORD', 'Klqonhtak7');
 define('DB_PERSISTENT', true);
+
+// default attribute values
+$attribute_defaults['allow archives'] = false;
+$attribute_defaults['submitable']     = false;
+$attribute_defaults['compile']        = true;
+$attribute_defaults['filename regex'] = '';
+$attribute_defaults['visible']        = true;
+$attribute_defaults['show date']      = 'always';
+$attribute_defaults['hide date']      = 'never';
+$attribute_defaults['start date']     = 'always';
+$attribute_defaults['end date']       = 'never';
 

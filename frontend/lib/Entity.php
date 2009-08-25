@@ -79,20 +79,20 @@ class Entity {
 	// get the visible date range
 	function visible_range() {
 		return new DateRange(
-			$this->attribute("show date","always"),
-			$this->attribute("hide date","never")
+			$this->attribute("show date"),
+			$this->attribute("hide date")
 		);
 	}
 	// get the active date range
 	function active_range() {
 		return new DateRange(
-			$this->attribute("start date","always"),
-			$this->attribute("end date","never")
+			$this->attribute("start date"),
+			$this->attribute("end date")
 		);
 	}
 	// Is this entity visible?
 	function visible() {
-		return $this->attribute("visible",true)
+		return $this->attribute("visible")
 		    && $this->visible_range()->contains_now();
 	}
 	function active() {
@@ -139,7 +139,7 @@ class Entity {
 	}
 	
 	// gets a specific attribute
-	function attribute($key, $default = NULL) {
+	function attribute($key) {
 		$this->load_attributes();
 		if (!array_key_exists($key, $this->_attributes)) {
 			if (isset($this->_parent)) {
@@ -158,7 +158,16 @@ class Entity {
 		} else {
 			$attr = $this->_attributes[$key];
 		}
-		return is_null($attr) ? $default : $attr;
+		if (is_null($attr)) {
+			global $attribute_defaults;
+			return isset($attribute_defaults[$key]) ? $attribute_defaults[$key] : NULL;
+		} else {
+			return $attr;
+		}
+	}
+	function attribute_bool($key) {
+		$attr = $this->attribute($key);
+		return intval($attr) > 0 || $attr == "true" || $attr == "yes";
 	}
 	
 	// load the attributes from a file
