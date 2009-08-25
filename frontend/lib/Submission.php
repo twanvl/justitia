@@ -23,13 +23,31 @@ class Submission {
 		return $this->data[$attr];
 	}
 	
+	function textual_status() {
+		switch ($this->status) {
+			case Submission::STATUS_FAILED:   return "Failed";
+			case Submission::STATUS_PASSED:   return "Passed";
+			case Submission::STATUS_PENDING:  return "Pending";
+			case Submission::STATUS_NOT_DONE: return "Not submitted";
+		}
+	}
+	
+	function users() {
+		static $query;
+		if (!isset($query)) {
+			$query = db()->prepare(
+				"SELECT * FROM `user_submission`".
+				" LEFT JOIN `user` ON `user_submission`.`userid` = `user`.`userid`".
+				" WHERE submissionid=?"
+			);
+		}
+		$query->execute(array($this->submissionid));
+		return User::fetch_all($query);
+	}
+	
 	// ---------------------------------------------------------------------
 	// Constructing / fetching
 	// ---------------------------------------------------------------------
-	
-	function __construct($data) {
-		$this->data = $data;
-	}
 	
 	static function by_id($submissionid) {
 		static $query;
@@ -44,6 +62,10 @@ class Submission {
 	static function no_submission() {
 		return new Submission(array('status' => STATUS_NOT_DONE));
 	}*/
+	
+	function __construct($data) {
+		$this->data = $data;
+	}
 	
 	static function fetch_one($query, $info='') {
 		$data = $query->fetch(PDO::FETCH_ASSOC);

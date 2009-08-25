@@ -10,6 +10,7 @@ class Util {
 		if ($url == '') {
 			$url = 'index.php';
 		}
+		if ($url{0} != '/') $url = Util::base_url() . $url;
 		header("HTTP/1.1 301 Moved Permanently");
 		header("Location: $url");
 		echo "This resource may be found at <a href=\"$url\">$url</a>.";

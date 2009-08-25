@@ -27,20 +27,11 @@ function check_salted_password_hash($password, $password_hash) {
 // -----------------------------------------------------------------------------
 
 class User {
-	private $data;
+	// ---------------------------------------------------------------------
+	// Properties
+	// ---------------------------------------------------------------------
 	
-	function __construct($login) {
-		static $query;
-		if (!isset($query)) {
-			$query = db()->prepare("SELECT * FROM `user` WHERE login=?");
-		}
-		$query->execute(array($login));
-		$this->data = $query->fetch(PDO::FETCH_ASSOC);
-		$query->closeCursor();
-		if ($this->data === false) {
-			throw new Exception("User not found: $login");
-		}
-	}
+	private $data;
 	
 	function check_password($password, $throw) {
 		$ok = check_salted_password_hash($password, $this->data['password']);
@@ -62,6 +53,54 @@ class User {
 		$mid = $this->midname;
 		if ($mid != '') $mid .= ' ';
 		return $this->firstname . ' ' . $mid . $this->lastname;
+	}
+	
+	static function names_html($array) {
+		if (empty($array)) {
+			return "<em>no one</em>";
+		}
+		$result = "";
+		foreach($array as $user) {
+			if (strlen($result) > 0) $result .= ', ';
+			$result .= htmlspecialchars($user->name());
+		}
+		return $result;
+	}
+	
+	// ---------------------------------------------------------------------
+	// Constructing / fetching
+	// ---------------------------------------------------------------------
+	
+	static function by_login($login) {
+		static $query;
+		if (!isset($query)) {
+			$query = db()->prepare("SELECT * FROM `user` WHERE login=?");
+		}
+		$query->execute(array($login));
+		return User::fetch_one($query, $login);
+	}
+	
+	private function __construct($data) {
+		$this->data = $data;
+	}
+		
+	static function fetch_one($query, $info='') {
+		$data = $query->fetch(PDO::FETCH_ASSOC);
+		if ($data === false) {
+			throw new Exception("User not found: $info");
+		}
+		$query->closeCursor();
+		return new User($data);
+	}
+	static function fetch_all($query) {
+		// fetch submissions
+		$result = array();
+		$query->setFetchMode(PDO::FETCH_ASSOC);
+		foreach($query as $user) {
+			$result []= new User($user);
+		}
+		$query->closeCursor();
+		return $result;
 	}
 	
 	// ---------------------------------------------------------------------

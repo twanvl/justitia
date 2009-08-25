@@ -5,3 +5,57 @@
 	padding:	.5em;
 	margin:		1em;
 }
+
+#nav {
+	list-style:	none;
+	margin:		0;
+	padding:	0;
+	overflow:	hidden;
+	display:	table;
+	background:	rgb(220,230,255);
+	border-spacing:	5px;
+	font-family:	sans-serif, arial;
+	font-size:	80%;
+}
+#nav > li {
+	background:	white;
+	border-left:	1px solid gray;
+	display:	table-cell;
+	vertical-align:	top;
+	margin:		5px;
+	padding:	2px;
+}
+#nav ul {
+	min-width:		8em;
+	float:		left;
+	list-style:	none;
+	margin:		0;
+	padding:	0;
+}
+#nav a {
+	min-width:		8em;
+	display:	block;
+	padding:	1px;
+	padding-right:	5px;
+	color:		black;
+	text-decoration:none;
+}
+
+#nav .ancestor {
+	font-weight:	bold;
+}
+#nav .inactive {
+	color:		rgb(128,128,128);
+}
+#nav .no-submission {
+	background:	rgb(192,192,192);
+}
+#nav .failed {
+	background:	rgb(255,50,50);
+}
+#nav .passed {
+	background:	rgb(150,255,100);
+}
+#nav .pending {
+	background:	rgb(230,200,0);
+}

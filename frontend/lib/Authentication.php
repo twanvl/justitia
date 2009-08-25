@@ -24,7 +24,7 @@ class Authentication {
 		
 		Authentication::session_start();
 		if (isset($_SESSION['login'])) {
-			$current_user = new User($_SESSION['login']);
+			$current_user = User::by_login($_SESSION['login']);
 		} else {
 			$current_user = false;
 		}

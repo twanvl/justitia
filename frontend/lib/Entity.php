@@ -54,10 +54,25 @@ class Entity {
 	function is_root() {
 		return $this->_parent === NULL;
 	}
+	function is_ancestor_of($that) {
+		return substr($that->_path,0,strlen($this->_path)) == $this->_path;
+	}
 	
 	// get full path
 	function path() {
 		return $this->_path;
+	}
+	
+	function parent() {
+		return $this->_parent;
+	}
+	// ancestors of this entity, the root first
+	function ancestors() {
+		$ancestors = array();
+		for ($here = $this ; $here !== NULL ; $here = $here->_parent) {
+			$ancestors []= $here;
+		}
+		return array_reverse($ancestors);
 	}
 	
 	
