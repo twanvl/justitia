@@ -80,9 +80,10 @@ class Entity {
 		if (isset($this->_children)) return;
 		$this->_children = array();
 		foreach (new DirectoryIterator($this->data_path()) as $child) {
-			if ($child->isDot() || !$child->isDir()) continue;
-			// TODO: strip hidden files?
-			$this->_children[$child->getFilename()] = new Entity($this, $child->getFilename());
+			// skip hidden files and non-directories
+			$filename = $child->getFilename();
+			if ($child->isDot() || !$child->isDir() || $filename[0] == '.') continue;
+			$this->_children[$filename] = new Entity($this, $filename);
 		}
 	}
 	
@@ -129,40 +130,43 @@ class Entity {
 			'title' => $this->_dir_name
 		);
 		// load info file
-		$lines = @file($this->data_path() . "info", FILE_IGNORE_NEW_LINES);
-		if (!isset($lines) || $lines == false) {
-			// No info file
-		} else {
-			// parse it
-			foreach($lines as $i => $line) {
-				$line = trim($line, " \r\n\0"); // keep tabs
-				if ($line == '' || $line{0} == '#') {
-					// comment, ignore
-					unset($key);
-				} else if ($line{0} == "\t") {
-					// continuation of previous line
-					if (!isset($key)) {
-						throw new Exception("Error on line ".($i+1)." in info file for '$path':\n$line");
-					}
-					$this->_attributes[$key] .= ($key_first ? '' : "\n")
-					                         .  substr($line,1);
-					$key_first = false;
-				} else {
-					$kv = explode(':',$line,2);
-					if (count($kv) < 2) {
-						throw new Exception("Error on line ".($i+1)." in info file for '$path':\n$line");
-					} else {
-						$key   = trim($kv[0]);
-						$value = trim($kv[1]);
-						$this->_attributes[$key] = $value;
-						$key_first = $value == '';
-					}
-				}
-			}
-		}
+		parse_attribute_file($this->_attributes, $this->data_path() . "info");
 	}
 	
-	private function data_path() {
+	function data_path() {
 		return COURSE_DIR . $this->_path;
 	}
 };
+
+function parse_attribute_file(&$attributes, $filename) {
+	$lines = @file($filename, FILE_IGNORE_NEW_LINES);
+	if (!isset($lines) || $lines == false) {
+		// No info file, not an error
+		return;
+	}
+	// parse it
+	foreach($lines as $i => $line) {
+		$line = trim($line, " \r\n\0"); // keep tabs
+		if ($line == '' || $line{0} == '#') {
+			// comment, ignore
+			unset($key);
+		} else if ($line{0} == "\t") {
+			// continuation of previous line
+			if (!isset($key)) {
+				throw new Exception("Error on line ".($i+1)." in info '$filename':\n$line");
+			}
+			$attributes[$key] .= ($key_first ? '' : "\n") .  substr($line,1);
+			$key_first = false;
+		} else {
+			$kv = explode(':',$line,2);
+			if (count($kv) < 2) {
+				throw new Exception("Error on line ".($i+1)." in info '$filename':\n$line");
+			}
+			$key   = trim($kv[0]);
+			$value = trim($kv[1]);
+			$attributes[$key] = $value;
+			$key_first = $value == '';
+		}
+	}
+	return $attributes;
+}

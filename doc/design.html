@@ -32,6 +32,37 @@
         It is a deamon shellscript that continually asks the webserver for new submissions over HTTP.
         Multiple backends can be running at the same time.
  
+  <h2>Directory structure</h2>
+    <pre>
+      * submissions/
+          * pending/
+             * submission1234-username,username
+          * all/
+             * course/
+                * section/
+                 .. 
+                  * problem/
+                     * passed/
+                     * failed/
+                        * submission1-username,username,username/
+                           * info?
+                           * files
+                           * test1.in  (?)
+                           * test1.out
+                           * test1.diff
+                           * test1.err
+                           * compiler.err
+      * courses/
+        * ..
+           * problem/
+              * info
+              * test1.in
+              * reference.java
+              * .generated/
+                  * test1.out
+    </pre>
+
+
   <h2>Attributes</h2>
     <table>
       <tr><th colspan="3">Description
@@ -83,6 +114,9 @@
           <td>""
           
       <tr><th colspan="3">Testing
+      <tr><th><tt>reference implementation</tt>
+          <td>Path to the source code of a reference implementation.
+          <td><i>automatic</i>
       <tr><th><tt>checker</tt>
           <td>Program used to check the output. Default is a simple diff like program.
               Note that the checker is only used if there are any test cases, in files name <tt><i>x</i>.in</tt>.

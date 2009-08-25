@@ -36,7 +36,11 @@ class User {
 	static function init_database() {
 		Authentication::require_admin();
 		db()->execute(
-			"CREATE TABLE
+			"CREATE TABLE users
+			"
+		);
+		db()->execute(
+			"CREATE TABLE users
 			"
 		);
 	}
@@ -46,7 +50,7 @@ class User {
 	
 	// Retrieve a user from the database
 	static function retrieve($username) {
-		$u = db()->perpare("SELECT * FROM `user` WHERE username=?")
+		$u = db()->perpare("SELECT * FROM `users` WHERE username=?")
 		         ->execute(array($username));
 		
 	}

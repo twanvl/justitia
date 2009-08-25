@@ -112,6 +112,8 @@ function write_tree($e) {
 //write_tree(Entity::get_root());
 write_tree(Entity::get(""));
 
+new Testset(Entity::get("impprog0910/week1/welkom"));
+
 // -----------------------------------------------------------------------------
 // Authentication stuff
 // -----------------------------------------------------------------------------
