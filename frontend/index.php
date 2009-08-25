@@ -146,7 +146,9 @@ write_nav2($here);
 
 function write_submit_form() {
 	
-?><form action="submit.php" method="post" enctype="multipart/form-data">
+	$suffix = @$_SERVER['PATH_INFO'];
+	
+?><form action="submit.php<?php echo $suffix; ?>" method="post" enctype="multipart/form-data">
   <label>Select file</label> <input type="file" name="file" id="file"><br>
   <input type="submit" name="submit" value="Submit" id="submit">
 </form>

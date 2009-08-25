@@ -14,7 +14,7 @@ if (Authentication::current_user() !== false) {
 // Try to log in
 if (isset($_REQUEST['login'],$_REQUEST['password'])) {
 	try {
-		$user = new User($_REQUEST['login']);
+		$user = User::by_login($_REQUEST['login']);
 		$user->check_password($_REQUEST['password']);
 		Authentication::set_current_user($user);
 		Util::redirect(@$_REQEST['redirect']);

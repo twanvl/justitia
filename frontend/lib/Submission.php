@@ -97,17 +97,16 @@ class Submission {
 			$query = db()->prepare(
 				"INSERT INTO `submission`".
 				       " (`time`,`entity_path`,`file_path`,`judge_host`,`judge_start`,`status`)".
-				" VALUES (:time, :entity_path, :file_path, NULL,        0,            ". STATUS_PENDING .")");
+				" VALUES (:time, :entity_path, :file_path, NULL,        0,            :status)");
 		}
-		$data = array(
-			'time'        => time(),
-			'entity_path' => $entity->path(),
-			'file_path'   => file_path,
-			'judge_host'  => NULL,
-			'judge_start' => 0,
-			'status'      => STATUS_PENDING
-		);
+		$data = array();
+		$data['time']         = time();
+		$data['entity_path']  = $entity->path();
+		$data['file_path']    = $file_path;
+		$data['status']       = Submission::STATUS_PENDING;
 		$query->execute($data);
+		$data['judge_host']   = NULL;
+		$data['judge_start']  = 0;
 		$data['submissionid'] = db()->lastInsertId();
 		$query->closeCursor();
 		return new Submission($data);
@@ -146,11 +145,8 @@ class Submission {
 		
 		// are there pending submissions?
 		// this step is to make things faster
-		$params = array(
-			'old_start' => time() - REJUDGE_TIMEOUT,
-			'new_start' => time(),
-			'host'      => $host
-		);
+		$params = array();
+		$params['old_start'] = time() - REJUDGE_TIMEOUT;
 		$query_check->execute($params);
 		list($num) = $query_check->fetch(PDO::FETCH_NUM);
 		$query_check->closeCursor();
@@ -159,6 +155,8 @@ class Submission {
 		}
 		
 		// if so, take one
+		$params['new_start'] = time();
+		$params['host']      = $host;
 		$query_take->execute($params);
 		$num = $query_take->rowCount();
 		$query_check->closeCursor();
@@ -167,6 +165,7 @@ class Submission {
 		}
 		
 		// and return it
+		unset($params['old_start']);
 		$query_fetch->execute($params);
 		return Submission::fetch_one($query_fetch);
 	}

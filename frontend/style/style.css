@@ -12,7 +12,7 @@
 	padding:	0;
 	overflow:	hidden;
 	display:	table;
-	background:	rgb(220,230,255);
+	background:	rgb(210,230,255);
 	border-spacing:	5px;
 	font-family:	sans-serif, arial;
 	font-size:	80%;
@@ -57,5 +57,5 @@
 	background:	rgb(150,255,100);
 }
 #nav .pending {
-	background:	rgb(230,200,0);
+	background:	rgb(245,245,100);
 }
