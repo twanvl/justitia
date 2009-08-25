@@ -160,6 +160,7 @@ class Entity {
 	function data_path() {
 		return COURSE_DIR . $this->_path;
 	}
+	
 };
 
 function parse_attribute_file(&$attributes, $filename) {

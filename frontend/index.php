@@ -4,8 +4,8 @@ require_once('./bootstrap.inc');
 require_once('./template.inc');
 
 
-$u = Authentication::require_user();
-echo "Hello $u->login";
+$user = Authentication::require_user();
+echo "Hello " . $user->name();
 
 
 
@@ -74,6 +74,7 @@ EOF;
 function write_tree($e) {
 	echo "<ul>";
 	echo "<pre>"; print_r($e->attributes()); echo "</pre>";
+	echo "<pre>"; print_r(Authentication::current_user()->submissions_to($e)); echo "</pre>";
 	foreach($e->children() as $n => $d) {
 		echo "<li><a href='index.php". $d->path() ."'>" . htmlspecialchars($d->attribute("title")) .  "</a>";
 		echo $d->visible()    ? 'V+ ' : 'V- ' ;
@@ -108,3 +109,9 @@ print_r($u);
 
 echo $u->check_password('password');
 */
+
+// -----------------------------------------------------------------------------
+// Submission stuff
+// -----------------------------------------------------------------------------
+
+print_r($user->all_submissions());

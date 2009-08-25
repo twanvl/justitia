@@ -2,11 +2,16 @@
 
 require_once('./bootstrap.inc');
 
+// -----------------------------------------------------------------------------
+// Logging in
+// -----------------------------------------------------------------------------
+
+// Already logged in?
 if (Authentication::current_user() !== false) {
 	Util::redirect( @$_REQEST['redirect']);
 }
 
-
+// Try to log in
 $redirect = @$_REQEST['redirect'];
 $login = @$_REQUEST['login'];
 if (isset($_REQUEST['login'],$_REQUEST['password'])) {
@@ -18,6 +23,22 @@ if (isset($_REQUEST['login'],$_REQUEST['password'])) {
 		$error = "Incorrect username or password.";
 	}
 }
+
+// -----------------------------------------------------------------------------
+// Page template
+// -----------------------------------------------------------------------------
+
+/*
+class Page extends Template {
+	function title() {
+		return "Log in";
+	}
+	function write_body() {
+		
+	}
+}
+new Page()->render();
+*/
 
 ?>
 
