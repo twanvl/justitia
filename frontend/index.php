@@ -3,15 +3,14 @@
 require_once('./bootstrap.inc');
 require_once('./template.inc');
 
+class Page extends Template {
+function title() {
+	return "Welcome";
+}
+function write_body() {
 
 $user = Authentication::require_user();
 echo "Hello " . $user->name();
-
-
-
-$page = new OutputPage();
-$page->title = "Welcome";
-$page->show();
 
 
 echo "Welcome to the Apollo programming assigment verification system";
@@ -115,3 +114,5 @@ echo $u->check_password('password');
 // -----------------------------------------------------------------------------
 
 print_r($user->all_submissions());
+
+}}new Page();

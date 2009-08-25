@@ -42,8 +42,12 @@ class User {
 		}
 	}
 	
-	function check_password($password) {
-		return check_salted_password_hash($password, $this->data['password']);
+	function check_password($password, $throw) {
+		$ok = check_salted_password_hash($password, $this->data['password']);
+		if ($throw && !$ok) {
+			throw new Exception("User not found: $this->login");
+		}
+		return $ok;
 	}
 	
 	function set_password($password) {

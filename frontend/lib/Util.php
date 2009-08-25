@@ -16,14 +16,22 @@ class Util {
 		exit();
 	}
 	
+	// Redirects the user to the login page
+	static function login() {
+		Util::redirect("login.php?redirect=" . urlencode(Util::current_url()));
+	}
+	
 	static function current_url() {
 		//$_SERVER["PATH_INFO"]
 		// TODO: strip base url?
 		return $_SERVER['REQUEST_URI'];
 	}
 	
-	// Redirects the user to the login page
-	static function login() {
-		Util::redirect("login.php?redirect=" . urlencode(Util::current_url()));
+	static function base_url() {
+		$pathinfo = pathinfo($_SERVER["SCRIPT_NAME"]);
+		$base = 'http://' . $_SERVER["SERVER_NAME"] . $pathinfo['dirname'];
+		if (substr($base,-1) != '/') $base .= '/';
+		return $base;
 	}
+	
 }

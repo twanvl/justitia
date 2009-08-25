@@ -68,8 +68,27 @@ class Submission {
 	// Updating
 	// ---------------------------------------------------------------------
 	
-	// Add a new submission to the database
-	static function make_new() {
+	// Add a new submission to the database, and return it
+	static function make_new($entity,$file_path) {
+		static $query;
+		if (!isset($query)) {
+			$query = db()->prepare(
+				"INSERT INTO `submission`".
+				       " (`time`,`entity_path`,`file_path`,`judge_host`,`judge_start`,`status`)".
+				" VALUES (:time, :entity_path, :file_path, NULL,        0,            ". STATUS_PENDING .")");
+		}
+		$data = array(
+			'time'        => time(),
+			'entity_path' => $entity->path(),
+			'file_path'   => file_path,
+			'judge_host'  => NULL,
+			'judge_start' => 0,
+			'status'      => STATUS_PENDING
+		);
+		$query->execute($data);
+		$data['submissionid'] = db()->lastInsertId();
+		$query->closeCursor();
+		return new Submission($data);
 	}
 	
 	// Add a user <-> submission relation
