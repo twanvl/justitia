@@ -36,12 +36,10 @@ class Page extends Template {
 
 ?>
   <form action="login.php" method="post">
-  <input type="hidden" name="redirect" value="<?php echo htmlspecialchars(@$_REQEST['redirect']) ?>">
+  <?php $this->write_form_preserve('redirect'); ?>
   <table>
-    <tr><td><label for="login">Login</label></td>
-        <td><input type="text" id="login" name="login" value="<?php echo htmlspecialchars(@$_REQUEST['login']) ?>"></td></tr>
-    <tr><td><label for="password">Password</label></td>
-        <td><input type="password" id="password" name="password" value=""></td></tr>
+    <?php $this->write_form_table_field('login',   'login',    'Login',    @$_REQUEST['login']); ?>
+    <?php $this->write_form_table_field('password','password', 'Password', ''); ?>
   </table>
   <input type="submit" value="Log in">
 </form><?php

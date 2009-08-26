@@ -31,7 +31,7 @@ class User {
 	// Properties
 	// ---------------------------------------------------------------------
 	
-	private $data;
+	public $data;
 	
 	function check_password($password, $throw = true) {
 		$ok = check_salted_password_hash($password, $this->data['password']);
@@ -80,23 +80,69 @@ class User {
 	// Constructing / fetching
 	// ---------------------------------------------------------------------
 	
-	static function by_login($login) {
+	static function by_login($login, $throw=true) {
 		static $query;
 		DB::prepare_query($query, "SELECT * FROM `user` WHERE login=?");
 		$query->execute(array($login));
-		return User::fetch_one($query, $login);
+		return User::fetch_one($query, $login, $throw);
+	}
+	
+	static function all($filter = "%") {
+		static $query;
+		DB::prepare_query($query,
+			"SELECT * FROM `user`".
+			" WHERE `login` LIKE ? OR CONCAT(`firstname`,' ',`midname`,' ',`lastname`) LIKE ?".
+			" ORDER BY `lastname`,`firstname`"
+		);
+		$query->execute(array($filter,$filter));
+		return User::fetch_all($query);
+	}
+	
+	static function add($login,$password,$firstname,$midname,$lastname,$is_admin=false) {
+		if (User::by_login($login,false) !== false) {
+			throw new Exception("User with that login already exists");
+		}
+		$data = array(
+			'login'     => $login,
+			'password'  => make_salted_password_hash($password),
+			'firstname' => $firstname,
+			'midname'   => $midname,
+			'lastname'  => $lastname,
+			'is_admin'  => $is_admin,
+		);
+		static $query;
+		DB::prepare_query($query,
+			"INSERT INTO `user` (`login`,`password`,`firstname`,`midname`,`lastname`,`is_admin`)".
+			            "VALUES (:login, :password, :firstname, :midname, :lastname, :is_admin)");
+		$query->execute();
+		if ($query->rowCount() != 1) {
+			throw new Exception("Create user failed");
+		}
+		$data['userid'] = DB::get()->lastInsertId();
+		$query->closeCursor();
+		return new User();
+	}
+	
+	static function delete($login) {
+		// delete user
+		static $query;
+		DB::prepare_query($query, "DELETE FROM `user` WHERE login=?");
+		$query->execute(array($login));
+		$query->closeCursor();
+		// delete submissions
 	}
 	
 	private function __construct($data) {
 		$this->data = $data;
 	}
 		
-	static function fetch_one($query, $info='') {
+	static function fetch_one($query, $info='', $throw=true) {
 		$data = $query->fetch(PDO::FETCH_ASSOC);
-		if ($data === false) {
-			throw new Exception("User not found: $info");
-		}
 		$query->closeCursor();
+		if ($data === false) {
+			if ($throw) throw new Exception("User not found: $info");
+			else        return false;
+		}
 		return new User($data);
 	}
 	static function fetch_all($query) {

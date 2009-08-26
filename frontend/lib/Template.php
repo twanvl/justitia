@@ -39,6 +39,18 @@ abstract class Template {
 		unset($messages[$what]);
 	}
 	
+	// Form utilities
+	function write_form_preserve($what) {
+		if (!isset($_REQUEST[$what])) return;
+		echo '<input type="hidden" name="'.$what.'" value="'
+		    . htmlspecialchars($_REQUEST[$what]) . '">';
+	}
+	function write_form_table_field($type, $name, $label, $value) {
+		echo "<tr><td><label for=\"$name\">$label</label></td>\n";
+		echo "    <td><input type=\"$type\" id=\"$name\" name=\"$name\" value=\"". htmlspecialchars($value) ."\"></td></tr>\n";
+	}
+	
+	
 	function write() {
 		$base  = htmlspecialchars(Util::base_url());
 		$title = htmlspecialchars($this->title());
