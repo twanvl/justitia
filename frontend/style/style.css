@@ -92,7 +92,7 @@ h1 {
 	color:		rgb(128,128,128);
 }
 #nav .inactive.no-submission {
-	background:	rgb(240,240,240);
+	background:	white;
 }
 #nav .no-submission {
 	background:	rgb(200,192,192);

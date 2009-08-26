@@ -29,13 +29,16 @@ class Entity {
 	}
 	
 	// singleton constructor for Entities
-	static function get($path) {
+	static function get($path, $require_visible = false) {
 		$parts = explode('/',$path);
 		$here  = Entity::get_root();
 		foreach ($parts as $part) {
 			if ($part == '') continue;
 			$here = $here->get_child($part);
 			if ($here === NULL) {
+				throw new Exception("Entity not found: $path");
+			}
+			if (!$here->visible() && $require_visible) {
 				throw new Exception("Entity not found: $path");
 			}
 		}
@@ -116,11 +119,11 @@ class Entity {
 	}
 	function show_runtime_errors_for($case) {
 		return Authentication::is_admin()
-		    || Entity::is_allowed_testcase($base,$this->attribute('show run errors'));
+		    || Entity::is_allowed_testcase($case,$this->attribute('show run errors'));
 	}
 	function show_input_output_for($case) {
 		return Authentication::is_admin()
-		    || Entity::is_allowed_testcase($base,$this->attribute('show input/output'));
+		    || Entity::is_allowed_testcase($case,$this->attribute('show input/output'));
 	}
 	private static function is_allowed_testcase($case, $pattern) {
 		if ($pattern == 'all')  return true;

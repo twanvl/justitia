@@ -20,12 +20,17 @@ class Page extends Template {
 	
 	function __construct() {
 		// find active entity
-		Authentication::require_user();
-		$this->entity = Entity::get(@$_SERVER['PATH_INFO']);
-		$uploaded = handle_uploaded_submission($this->entity);
-		if ($uploaded || $this->entity->count_pending_submissions() > 0) {
-			$this->auto_refresh_to = 'index.php' . $this->entity->path();
-			$this->auto_refresh    = 1;
+		try {
+			$user = Authentication::require_user();
+			$this->entity = Entity::get(@$_SERVER['PATH_INFO'], !$user->is_admin);
+			// submit?
+			$uploaded = handle_uploaded_submission($this->entity);
+			if ($uploaded || $this->entity->count_pending_submissions() > 0) {
+				$this->auto_refresh_to = 'index.php' . $this->entity->path();
+				$this->auto_refresh    = 1;
+			}
+		} catch (Exception $e) {
+			ErrorPage::die_fancy($e->getMessage());
 		}
 	}
 	
@@ -137,11 +142,13 @@ class Page extends Template {
 		$this->write_block_end();
 		
 		// submission form
-		$last_submission = Authentication::current_user()->last_submission_to($this->entity);
-		$passed = Status::to_status($last_submission) >= Status::PENDING;
-		$this->write_block_begin('Submit', 'collapsable block' . ($passed ? ' collapsed' : ''));
-		$this->write_submit_form();
-		$this->write_block_end();
+		if ($this->entity->active()) {
+			$last_submission = Authentication::current_user()->last_submission_to($this->entity);
+			$passed = Status::to_status($last_submission) >= Status::PENDING;
+			$this->write_block_begin('Submit', 'collapsable block' . ($passed ? ' collapsed' : ''));
+			$this->write_submit_form();
+			$this->write_block_end();
+		}
 		
 		echo "<h2>Submissions</h2>";
 		$this->write_messages('submit-confirm');
@@ -175,15 +182,6 @@ class Page extends Template {
 		// testcase output
 		$testset = new TestSet($this->entity);
 		foreach ($testset->test_cases() as $case) {
-			// description
-			$desc_file = $subm->input_filename("$case.desc");
-			if (file_exists($desc_file)) {
-				$desc = "Hint: " . file_get_contents($desc_file);
-			} else {
-				// TODO: description from attributes?
-				$desc = '';
-			}
-			
 			// status, this is a bit of a hack, we should look at exit codes
 			$case_status = "unknown";
 			$diff_file = $subm->output_filename("$case.diff");
@@ -191,10 +189,8 @@ class Page extends Template {
 				if (!file_exists($subm->output_filename("$case.out"))) {
 					$class = 'skipped';
 					$case_status = "Skipped";
-					$desc = ''; // don't give hint
 				} else {
 					$class = 'failed';
-					$runtime_error = true;
 					$case_status = "Runtime error";
 				}
 			} else if (filesize($diff_file) > 0) {
@@ -203,13 +199,24 @@ class Page extends Template {
 				$runtime_error = false;
 				$case_status = "Wrong output";
 			} else {
-				$class = 'Passed';
+				$class = 'passed';
 				$case_status = "Passed";
+			}
+			
+			// description/hint
+			$desc = '';
+			if ($class == 'failed') {
+				$desc_file = $subm->input_filename("$case.desc");
+				if (file_exists($desc_file)) {
+					$desc = "Hint: " . file_get_contents($desc_file);
+				} else {
+					// TODO: description from attributes?
+				}
 			}
 			
 			// input/output/error downloads
 			$downloads = '';
-			if ($class != 'skipped' && $this->entity->show_runtime_errors_for($case)) {
+			if ($class != 'skipped' && $this->entity->show_input_output_for($case)) {
 				if (file_exists($subm->input_filename("$case.in"))) {
 					$downloads .= download_link($subm,"in/$case.in", 'input') . ' | ';
 				}
@@ -223,7 +230,7 @@ class Page extends Template {
 					$downloads .= download_link($subm,"out/$case.diff",'difference') . ' | ';
 				}
 			}
-			if ($runtime_error && $this->entity->show_runtime_errors_for($case)) {
+			if ($case_status == 'Runtime error' && $this->entity->show_runtime_errors_for($case)) {
 				if (file_exists($subm->output_filename("$case.err"))) {
 					$downloads .= download_link($subm,"out/$case.err",'error message') . ' | ';
 				}
@@ -244,6 +251,7 @@ class Page extends Template {
 	// ---------------------------------------------------------------------
 	
 	function write_overview_item($e) {
+		if (!$e->visible()) return;
 		$class = '';
 		if ($e->attribute_bool('submitable')) {
 			$subm = Authentication::current_user()->status_of_last_submission_to($e);
