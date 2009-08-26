@@ -43,7 +43,7 @@ body {
 }
 h1 {
 	margin-top:	.2em;
-	margin-bottom:	.1em;
+	margin-bottom:	.2em;
 }
 #main {
 	padding:	1em;
@@ -104,6 +104,34 @@ h1 {
 #nav .pending, #nav .judging {
 	background:	rgb(245,245,100);
 }
+
+.block {
+	border:		2px solid rgb(210,210,210);
+	padding:	.5em;
+	margin-top:	0em;
+	margin:		1em;
+	-moz-border-radius: .2em;
+}
+.block .title {
+	background:	rgb(210,210,210);
+	margin:		-.5em;
+	margin-bottom:	.5em;
+	padding:	.1em;
+	padding-top:	0;
+}
+.block h2 {
+	margin:		0;
+	margin-left:	.1em;
+	font-size:	130%;
+	font-weight:	normal;
+}
+
+.block.failed		{ border-color:	rgb(255,100,100); }
+.block.failed .title	{ background:	rgb(255,100,100); }
+.block.passed		{ border-color:	rgb(100,255,100); }
+.block.passed .title	{ background:	rgb(100,255,100); }
+.block.pending		{ border-color:	rgb(255,255,50); }
+.block.pending .title	{ background:	rgb(255,255,50); }
 
 .submissions {
 	list-style:	none;

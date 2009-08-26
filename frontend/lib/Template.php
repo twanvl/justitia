@@ -11,7 +11,6 @@ abstract class Template {
 	
 	abstract function title();
 	abstract function write_body();
-	function write_nav() {}
 	
 	// ---------------------------------------------------------------------
 	// Message utilities
@@ -58,6 +57,45 @@ abstract class Template {
 			echo "<tr><td><label for=\"$name\">$label</label></td>\n";
 			echo "    <td><input type=\"$type\" id=\"$name\" name=\"$name\" value=\"". htmlspecialchars($value) ."\"></td></tr>\n";
 		}
+	}
+	
+	// ---------------------------------------------------------------------
+	// Blocks
+	// ---------------------------------------------------------------------
+	
+	function write_block_begin($title, $class='block') {
+		echo "<div class=\"$class\">";
+		echo "<div class=\"title\"><h2>".htmlspecialchars($title)."</h2></div>";
+	}
+	function write_block_end() {
+		echo "</div>";
+	}
+	
+	// ---------------------------------------------------------------------
+	// Navigation
+	// ---------------------------------------------------------------------
+	
+	function get_nav() {
+		return array();
+	}
+	
+	function write_nav_item($items) {
+		if (count($items) == 0) return;
+		echo "<li><ul>";
+		foreach ($items as $i) {
+			echo '<li><a href="'. $i['url'] .'"'
+				. (@$i['class'] ? ' class="'.$i['class'].'"' : '')
+				. '>'
+				. htmlspecialchars($i['title']) . '</a></li>';
+		}
+		echo "</ul></li>";
+	}
+	function write_nav() {
+		echo '<ul id="nav">';
+		foreach ($this->get_nav() as $item) {
+			$this->write_nav_item($item);
+		}
+		echo '</ul>';
 	}
 	
 	// ---------------------------------------------------------------------
