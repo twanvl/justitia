@@ -47,7 +47,7 @@ abstract class Template {
 ?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
   <head>
-    <title><?php echo $title; ?></title>
+    <title><?php echo $title; ?> - NewAthena</title>
     <link rel="stylesheet" type="text/css" href="<?php echo $base; ?>style/style.css">
     <base href="<?php echo $base; ?>">
   </head>

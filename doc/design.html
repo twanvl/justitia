@@ -102,28 +102,29 @@
       <tr><th><tt>filename regex</tt>
           <td>Regular expression that filename of submissions is matched against.
               By default based on <tt>language</tt>
-          <td><i>none</i>
+          <td><i>by language</i>
       <tr><th><tt>allow archives</tt>
           <td>Can multi-file archives be submitted?
           <td><tt>false</tt>
       <tr><th><tt>compile</tt>
           <td>Should submissions be compiled?
           <td><tt>true</tt>
-      <tr><th><tt>compiler flags</tt>
-          <td>Optional flags to pass to the compiler.
-          <td>""
+      <tr><th><tt>compiler</tt>
+          <td>Compiler script to use (from <tt>backend/compiler</tt>).
+          <td><i>by language</i>
           
       <tr><th colspan="3">Testing
       <tr><th><tt>reference implementation</tt>
           <td>Path to the source code of a reference implementation.
           <td><i>automatic</i>
       <tr><th><tt>runner</tt>
-          <td>Wrapper for running the program
+          <td>Wrapper for running the program (from <tt>backend/runner</tt>).
           <td>"<tt>run</tt>"
       <tr><th><tt>checker</tt>
-          <td>Program used to check the output. Default is a simple diff like program.
+          <td>Program used to check the output (from <tt>backend/checker</tt>).
+              Default is the simple unix diff program.
               Note that the checker is only used if there are any test cases, in files name <tt><i>x</i>.in</tt>.
-          <td>"<tt>simple_diff</tt>"
+          <td>"<tt>diff</tt>"
       <tr><th><tt>timelimit</tt>
           <td>Timelimit for running the program on a single test case, in seconds
           <td>1
