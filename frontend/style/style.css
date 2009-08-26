@@ -136,8 +136,14 @@ h1 {
 	display:	none;
 }
 
+.block hr {
+	border:		0;
+	height:		2px;
+}
+
 .block.failed		{ border-color:	rgb(255,100,100); }
-.block.failed .title	{ background:	rgb(255,100,100); }
+.block.failed .title,
+.block.failed hr	{ background:	rgb(255,100,100); }
 .block.passed		{ border-color:	rgb(100,255,100); }
 .block.passed .title	{ background:	rgb(100,255,100); }
 .block.pending		{ border-color:	rgb(255,255,50); }

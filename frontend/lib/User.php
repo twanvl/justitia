@@ -220,7 +220,7 @@ class User {
 			DB::prepare_query($query,
 				"SELECT * FROM `user_submission` LEFT JOIN `submission` ON `user_submission`.`submissionid` = `submission`.`submissionid`".
 				" WHERE `userid`=? AND `entity_path`=?".
-				" ORDER BY `status` DESC".
+				" ORDER BY `status` DESC, `time` DESC".
 				" LIMIT 1"
 			);
 			$query->execute(array($this->userid, $entity->path()));
