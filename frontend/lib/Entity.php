@@ -141,6 +141,7 @@ class Entity {
 			if ($child->isDot() || !$child->isDir() || $filename[0] == '.') continue;
 			$this->_children[$filename] = new Entity($this, $filename);
 		}
+		ksort($this->_children);
 	}
 	
 	// ---------------------------------------------------------------------

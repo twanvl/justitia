@@ -5,18 +5,17 @@
 // -----------------------------------------------------------------------------
 
 abstract class Template {
+	// ---------------------------------------------------------------------
+	// Overloadable interface
+	// ---------------------------------------------------------------------
+	
 	abstract function title();
 	abstract function write_body();
 	function write_nav() {}
 	
-	function write_user_header() {
-		$user = Authentication::current_user();
-		if (!$user) return;
-		echo '<div id="user">';
-		echo $user->name();
-		echo ' (<a href="logout.php">log out</a>)';
-		echo "</div>";
-	}
+	// ---------------------------------------------------------------------
+	// Message utilities
+	// ---------------------------------------------------------------------
 	
 	static $messages;
 	function add_message($what,$good,$msg) {
@@ -38,7 +37,10 @@ abstract class Template {
 		return isset($messages,$messages[$what]);
 	}
 	
+	// ---------------------------------------------------------------------
 	// Form utilities
+	// ---------------------------------------------------------------------
+	
 	function write_form_hidden($name,$value) {
 		echo '<input type="hidden" name="'.$name.'" value="'. htmlspecialchars($value) .'">';
 	}
@@ -56,6 +58,19 @@ abstract class Template {
 			echo "<tr><td><label for=\"$name\">$label</label></td>\n";
 			echo "    <td><input type=\"$type\" id=\"$name\" name=\"$name\" value=\"". htmlspecialchars($value) ."\"></td></tr>\n";
 		}
+	}
+	
+	// ---------------------------------------------------------------------
+	// Writing
+	// ---------------------------------------------------------------------
+	
+	function write_user_header() {
+		$user = Authentication::current_user();
+		if (!$user) return;
+		echo '<div id="user">';
+		echo $user->name();
+		echo ' (<a href="logout.php">log out</a>)';
+		echo "</div>";
 	}
 	
 	

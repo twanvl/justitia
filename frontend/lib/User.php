@@ -58,6 +58,9 @@ class User {
 		if ($mid != '') $mid .= ' ';
 		return $this->firstname . ' ' . $mid . $this->lastname;
 	}
+	function sort_name() {
+		return $this->lastname.','.$this->firstname . ',' . $this->midname;
+	}
 	
 	static function names_text($array) {
 		if (empty($array)) return "no one";
