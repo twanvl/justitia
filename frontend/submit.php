@@ -28,24 +28,23 @@ function file_upload_error_message($error_code) {
 $entity = Entity::get(@$_SERVER['PATH_INFO']);
 
 function handle_uploaded_submission($entity, $file) {
-	global $error;
 	if (!$entity->attribute_bool('submitable')) {
-		$error = "No submissions can be made here.";
+		Template::add_message('submit','error', "No submissions can be made here.");
 		return false;
 	}
 	if (!$entity->active()) {
-		$error = "The deadline has passed for this assignment.";
+		Template::add_message('submit','error', "The deadline has passed for this assignment.");
 		return false;
 	}
 	if ($file['error'] != UPLOAD_ERR_OK) {
-		$error = file_upload_error_message($file['error']);
+		Template::add_message('submit','error', file_upload_error_message($file['error']));
 		return false;
 	}
 	// match filename with regex
 	$file_regex = $entity->attribute('filename regex');
 	if ($file_regex != '') {
 		if (!preg_match("/$file_regex/", $file['name'])) {
-			$error = "Uploaded file does not match specified filename pattern";
+			add_message('submit','error', "Uploaded file does not match specified filename pattern");
 			return false;
 		}
 	}
@@ -54,7 +53,7 @@ function handle_uploaded_submission($entity, $file) {
 	mkdir($subm_dir . '/code');
 	$file_name = str_replace('/','',$file['name']);
 	if (!move_uploaded_file($file['tmp_name'], $subm_dir . '/code/' . $file_name)) {
-		$error = "Can not move uploaded file";
+		Template::add_message('submit','error', "Can not move uploaded file");
 		rmdir($subm_dir . '/code');
 		rmdir($subm_dir);
 		return false;
@@ -66,7 +65,7 @@ function handle_uploaded_submission($entity, $file) {
 	// TODO: multiple users
 	// success
 	// TODO: not an error
-	$error = 'Upload successful';
+	Template::add_message('submit','confirm', 'Upload successful');
 	return $subm;
 }
 
@@ -81,10 +80,7 @@ if ($entity->attribute_bool('submitable')) {
 class Page extends Template {
 	function title() { return "A simple submission form"; }
 	function write_body() {
-		global $error;
-		if (isset($error)) {
-			echo "<div class=\"error\">$error</div>";
-		}
+		$this->write_messages('submit');
 		$suffix = @$_SERVER['PATH_INFO'];
 	
 ?><form action="submit.php<?php echo $suffix; ?>" method="post" enctype="multipart/form-data">

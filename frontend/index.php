@@ -1,19 +1,62 @@
 <?php
 
 require_once('./bootstrap.inc');
-require_once('./template.inc');
+
+// -----------------------------------------------------------------------------
+// Main 'entity' page
+// -----------------------------------------------------------------------------
 
 class Page extends Template {
-function title() {
-	return "Welcome";
-}
+	private $entity;
+	
+	function __construct() {
+		// find active entity
+		$this->entity = Entity::get(@$_SERVER['PATH_INFO']);
+	}
+	
+	function title() {
+		return $this->entity->attribute("title");
+	}
+	
+	// Navigation
+	function write_nav_children($e) {
+		if (count($e->children()) == 0) return;
+		echo "<li><ul>";
+		foreach ($e->children() as $e) {
+			if (!$e->visible()) continue;
+			
+			$class = '';
+			if ($e->is_ancestor_of($this->entity)) {
+				$class .= 'ancestor ';
+			}
+			if ($e->attribute_bool('submitable')) {
+				$subm = Authentication::current_user()->last_submission_to($e);
+				$class .= Submission::status_css_class($subm) . ' ';
+			}
+			if (!$e->active()) {
+				$class .= 'inactive ';
+			}
+			
+			echo "<li>";
+			echo '<a href="index.php' . $e->path() .'"'
+				. ($class ? ' class="'.$class.'"' : '')
+				. '>'
+				. htmlspecialchars($e->attribute("title")) . '</a>';
+			echo "</li>";
+		}
+		echo "</ul></li>";
+	}
+	function write_nav() {
+		echo '<ul id="nav">';
+		foreach ($this->entity->ancestors() as $e) {
+			$this->write_nav_children($e);
+		}
+		echo '</ul>';
+	}
+
 function write_body() {
 
 $user = Authentication::require_user();
-echo "Hello " . $user->name();
-
-
-echo "Welcome to the Apollo programming assigment verification system";
 
 $ignore= <<<EOF
 
@@ -89,7 +132,6 @@ function write_tree($e) {
 //write_tree(Entity::get_root());
 //write_tree(Entity::get(""));
 
-echo "<hr>";
 
 function write_nav($here) {
 	echo "<ul>";
@@ -101,42 +143,8 @@ function write_nav($here) {
 	echo "</ul>";
 }
 
-function write_children_nav($e, $here) {
-	if (count($e->children()) == 0) return;
-	echo "<li><ul>";
-	foreach ($e->children() as $e) {
-		if (!$e->visible()) continue;
-		$class = '';
-		if ($e->is_ancestor_of($here)) {
-			$class .= 'ancestor ';
-		}
-		if ($e->attribute_bool('submitable')) {
-			$subm = Authentication::current_user()->last_submission_to($e);
-			$class .= Submission::status_css_class($subm) . ' ';
-		}
-		if (!$e->active()) {
-			$class .= 'inactive ';
-		}
-		
-		echo "<li>";
-		echo '<a href="index.php' . $e->path() .'"'
-			. ($class ? ' class="'.$class.'"' : '')
-			. '>'
-			. htmlspecialchars($e->attribute("title")) . '</a>';
-		echo "</li>";
-	}
-	echo "</ul></li>";
-}
-function write_nav2($here) {
-	echo '<ul id="nav">';
-	foreach ($here->ancestors() as $e) {
-		write_children_nav($e,$here);
-	}
-	echo '</ul>';
-}
 
 $here = Entity::get(@$_SERVER['PATH_INFO']);
-write_nav2($here);
 
 function format_bool($b) {
 	return $b ? "yes" : "no";

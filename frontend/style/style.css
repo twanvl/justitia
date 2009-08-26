@@ -1,29 +1,67 @@
 
-.error {
+.error-message {
 	background:	rgb(255,200,200);
 	border:		2px solid red;
 	padding:	.5em;
 	margin:		1em;
 }
+.confirm-message {
+	background:	rgb(200,255,200);
+	border:		2px solid rgb(0,255,0);
+	padding:	.5em;
+	margin:		1em;
+}
 
-.submissions li {
-	margin-bottom:	1em;
+
+body {
+	margin:		0;
+	padding:	0;
+	font-family:	sans-serif;
+	font-size:	90%;
+}
+#header {
+	margin:		0;
+	background:	rgb(40,60,180);
+	color:		white;
+	padding:	.3em;
+	overflow:	hidden;
+}
+#header a {
+	color:		white;
+}
+#appname {
+	float:		left;
+}
+#user {
+	float:		right;
+}
+#nav-wrap {
+	background:	rgb(210,230,255);
+	margin:		0;
+	padding:	.2em;
+	padding-left:	1em;
+}
+h1 {
+	margin-top:	.2em;
+	margin-bottom:	.1em;
+}
+#main {
+	padding:	1em;
+	padding-top:	0;
 }
 
 #nav {
 	list-style:	none;
-	margin:		0;
+	margin:		5px 0;
 	padding:	0;
 	overflow:	hidden;
 	display:	table;
-	background:	rgb(210,230,255);
-	border-spacing:	5px;
 	font-family:	sans-serif, arial;
-	font-size:	80%;
+	font-size:	93%;
 }
 #nav > li {
 	background:	white;
-	border-left:	1px solid gray;
+	border-left:	5px solid rgb(200,220,250);
 	display:	table-cell;
 	vertical-align:	top;
 	margin:		5px;
@@ -69,11 +107,18 @@
 
 .submissions {
 	list-style:	none;
+	margin:		0;
+	margin-left:	1em;
+	padding:	0;
+}
+.submissions li {
+	margin-bottom:	1em;
 }
 .submissions .ordinal {
 	float:		left;
 	font-size:	400%;
 	font-family:	sans-serif;
+	margin-right:	5px;
 }
 .submissions .failed .ordinal {
 	color:		rgb(192,0,0);
@@ -81,7 +126,8 @@
 .submissions .passed .ordinal {
 	color:		rgb(50,192,0);
 }
-.submissions .pending .ordinal {
+.submissions .pending .ordinal,
+.submissions .judging .ordinal {
 	color:		rgb(202,192,0);
 }
 

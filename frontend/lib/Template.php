@@ -7,6 +7,7 @@
 abstract class Template {
 	abstract function title();
 	abstract function write_body();
+	function write_nav() {}
 	
 	// write out the page
 	function __destruct() {
@@ -20,6 +21,22 @@ abstract class Template {
 		echo $user->name();
 		echo ' (<a href="logout.php">log out</a>)';
 		echo "</div>";
+	}
+	
+	static $messages;
+	function add_message($what,$good,$msg) {
+		global $messages;
+		if (!isset($messages))        $messages = array();
+		if (!isset($messages[$what])) $messages[$what] = array();
+		$messages[$what][] = array('good'=>$good, 'msg'=>$msg);
+	}
+	function write_messages($what) {
+		global $messages;
+		if (!isset($messages,$messages[$what])) return;
+		foreach($messages[$what] as $it) {
+			echo '<div class="'.$it['good'].'-message">'.$it['msg'].'</div>';
+		}
+		unset($messages[$what]);
 	}
 	
 	function write() {
@@ -36,11 +53,16 @@ abstract class Template {
   </head>
   <body>
     <div id="header">
-      NewAthena
+      <div id="appname">NewAthena</div>
       <?php $this->write_user_header(); ?>
     </div>
-    <h1><?php echo $title; ?></h1>
-    <?php $this->write_body(); ?>
+    <div id="nav-wrap">
+      <?php $this->write_nav(); ?>
+    </div>
+    <div id="main">
+      <h1><?php echo $title; ?></h1>
+      <?php $this->write_body(); ?>
+    </div>
   </body>
 </html>
 <?php
