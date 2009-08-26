@@ -5,17 +5,18 @@
 // -----------------------------------------------------------------------------
 
 class Status {
+	// higher status is better
 	const NOT_DONE        = 0;        // no submission attempt has been made
-	const PENDING         = 10000000; // submission still in judge queue
-	const JUDGING         = 11000000; // submission still in judge queue, but being processed
-	const PASSED          = 20000000;
-	const PASSED_DEFAULT  = 20000000; // accepted without compiling
-	const PASSED_COMPARE  = 21000000; // + #of test cases attempted
-	const FAILED          = 30000000;
-	const FAILED_LANGUAGE = 31000000;
-	const FAILED_COMPILE  = 32000000;
-	const FAILED_RUN      = 33000000; // + #of test cases attempted
-	const FAILED_COMPARE  = 34000000; // + #of test cases attempted
+	const FAILED          = 10000000;
+	const FAILED_LANGUAGE = 11000000;
+	const FAILED_COMPILE  = 12000000;
+	const FAILED_RUN      = 13000000; // + #of test cases attempted
+	const FAILED_COMPARE  = 14000000; // + #of test cases attempted
+	const PENDING         = 20000000; // submission still in judge queue
+	const JUDGING         = 21000000; // submission still in judge queue, but being processed
+	const PASSED          = 30000000;
+	const PASSED_DEFAULT  = 30000000; // accepted without compiling
+	const PASSED_COMPARE  = 31000000; // + #of test cases attempted
 	
 	// one of the constants
 	static function base_status($status) {
@@ -57,8 +58,8 @@ class Status {
 		switch (Status::base_status_group($status)) {
 			case Status::NOT_DONE:         return "none";
 			case Status::PENDING:          return "pending";
-			case Status::PASSED:           return "pass";
-			case Status::FAILED:           return "fail";
+			case Status::PASSED:           return "passed";
+			case Status::FAILED:           return "failed";
 			default:                       return "?";
 		}
 	}

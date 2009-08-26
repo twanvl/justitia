@@ -135,3 +135,32 @@ h1 {
 td {
 	padding-right:	.5em;
 }
+th {
+	padding-right:	.5em;
+	text-align:	left;
+	vertical-align:	top;
+}
+
+
+
+
+.results {
+	border:		1px solid rgb(50,50,50);
+	border-collapse:collapse;
+}
+.results td, .results th {
+	border:		1px solid rgb(50,50,50);
+	padding:	2px;
+}
+.results .no-submission {
+	background:	rgb(200,192,192);
+}
+.results .failed {
+	background:	rgb(255,50,50);
+}
+.results .passed {
+	background:	rgb(150,255,100);
+}
+.results .pending {
+	background:	rgb(245,245,100);
+}

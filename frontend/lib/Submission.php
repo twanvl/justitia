@@ -39,13 +39,23 @@ class Submission {
 		$query->execute(array($this->submissionid));
 		return User::fetch_all($query);
 	}
+	
+	function userids() {
+		static $query;
+		DB::prepare_query($query,
+			"SELECT `userid` FROM `user_submission` WHERE submissionid=?"
+		);
+		$query->execute(array($this->submissionid));
+		return $query->fetchAll(PDO::FETCH_COLUMN,0);
+	}
+	
 	function is_made_by($user) {
 		static $query;
 		DB::prepare_query($query,
 			"SELECT COUNT(*) FROM `user_submission` WHERE userid=? AND submissionid=?"
 		);
 		$query->execute(array($user->userid,$this->submissionid));
-		list($num) = $query->fetch(PDO::FETCH_NUM);
+		$num = $query->fetchColumn();
 		$query->closeCursor();
 		return $num > 0;
 	}
@@ -76,12 +86,13 @@ class Submission {
 		$this->data = $data;
 	}
 	
-	static function fetch_one($query, $info='') {
+	static function fetch_one($query, $info='', $throw = true) {
 		$data = $query->fetch(PDO::FETCH_ASSOC);
-		if ($data === false) {
-			throw new Exception("Submission not found: $info");
-		}
 		$query->closeCursor();
+		if ($data === false) {
+			if ($throw) throw new Exception("Submission not found: $info");
+			else        return false;
+		}
 		return new Submission($data);
 	}
 	static function fetch_all($query) {
@@ -185,7 +196,7 @@ class Submission {
 		$params = array();
 		$params['old_start'] = time() - REJUDGE_TIMEOUT;
 		$query_check->execute($params);
-		list($num) = $query_check->fetch(PDO::FETCH_NUM);
+		$num = $query_check->fetchColumn();
 		$query_check->closeCursor();
 		if ($num == 0) {
 			return false;

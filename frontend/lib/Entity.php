@@ -118,6 +118,19 @@ class Entity {
 		return isset($this->_children[$name]) ? $this->_children[$name] : NULL;
 	}
 	
+	function descendants() {
+		$out = array();
+		$this->get_descendants($out);
+		return $out;
+	}
+	private function get_descendants(&$out) {
+		$this->load_children();
+		$out []= $this;
+		foreach ($this->_children as $child) {
+			$child->get_descendants($out);
+		}
+	}
+	
 	// load the directory listing of children
 	private function load_children() {
 		if (isset($this->_children)) return;
@@ -128,6 +141,22 @@ class Entity {
 			if ($child->isDot() || !$child->isDir() || $filename[0] == '.') continue;
 			$this->_children[$filename] = new Entity($this, $filename);
 		}
+	}
+	
+	// ---------------------------------------------------------------------
+	// Submissions
+	// ---------------------------------------------------------------------
+	
+	// All submissions, oldest one FIRST
+	function all_submissions() {
+		static $query;
+		DB::prepare_query($query,
+			"SELECT * FROM `submission`".
+			" WHERE `entity_path`=?".
+			" ORDER BY `time` ASC"
+		);
+		$query->execute(array($this->path()));
+		return Submission::fetch_all($query);
 	}
 	
 	// ---------------------------------------------------------------------

@@ -84,9 +84,15 @@ class User {
 	// Constructing / fetching
 	// ---------------------------------------------------------------------
 	
+	static function by_id($userid, $throw=true) {
+		static $query;
+		DB::prepare_query($query, "SELECT * FROM `user` WHERE `userid`=?");
+		$query->execute(array($userid));
+		return User::fetch_one($query, $userid, $throw);
+	}
 	static function by_login($login, $throw=true) {
 		static $query;
-		DB::prepare_query($query, "SELECT * FROM `user` WHERE login=?");
+		DB::prepare_query($query, "SELECT * FROM `user` WHERE `login`=?");
 		$query->execute(array($login));
 		return User::fetch_one($query, $login, $throw);
 	}
@@ -215,13 +221,6 @@ class User {
 		);
 		$query->execute(array($this->userid, $entity->path()));
 		// fetch submissions
-		$data = $query->fetch(PDO::FETCH_ASSOC);
-		$query->closeCursor();
-		if ($data === false) {
-			// no submission
-			return false;
-		} else {
-			return new Submission($data);
-		}
+		return Submission::fetch_one($query,'',false);
 	}
 }
