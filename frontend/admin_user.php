@@ -33,7 +33,6 @@ class Page extends Template {
 		if ($editing) {
 			$user = User::by_login($_REQUEST['edit']);
 			$data = $user->data();
-			unset($data['password']);
 		} else {
 			$data = array(
 				'login'     => '',
@@ -45,6 +44,7 @@ class Page extends Template {
 		}
 		
 		if (@$_REQUEST['filled']) {
+			$data['password'] = $data['password2'] = '';
 			get_request_data($data,'user_','login');
 			get_request_data($data,'user_','password');
 			get_request_data($data,'user_','password2');
@@ -54,15 +54,12 @@ class Page extends Template {
 			get_request_bool($data,'user_','is_admin');
 			
 			// validate
-			if (isset($data['password'])) {
-				if ($data['password'] != $data['password2']) {
-					$this->add_message('user','error',"Passwords do not match");
-				}
-				if ($data['password'] == '' && $editing) {
-					unsert($data['password']);
-				} else if (strlen($data['password']) < 5) {
-					$this->add_message('user','error',"Enter a password");
-				}
+			if (($data['password'] == '' || $data['password2'] == '') && $editing) {
+				unset($data['password']);
+			} else if (strlen($data['password']) < 5) {
+				$this->add_message('user','error',"Password too short");
+			} else if ($data['password'] != $data['password2']) {
+				$this->add_message('user','error',"Passwords do not match");
 			}
 			unset($data['password2']);
 			if (strlen($data['login']) < 3) {
@@ -111,6 +108,7 @@ class Page extends Template {
 		    <?php $this->write_form_table_field('text',    'user_firstname','First name',   $data['firstname']); ?>
 		    <?php $this->write_form_table_field('text',    'user_midname',  'Middle name',  $data['midname']); ?>
 		    <?php $this->write_form_table_field('text',    'user_lastname', 'Last name',    $data['lastname']); ?>
+		    <?php $this->write_form_table_field('checkbox','user_is_admin', 'Administrator',$data['is_admin']); ?>
 		  </table>
 		  <input type="submit" value="<?php echo $editing ? 'Update user' : 'Add user'; ?>">
 		</form><?php

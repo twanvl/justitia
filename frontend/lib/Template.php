@@ -47,8 +47,15 @@ abstract class Template {
 		$this->write_form_hidden($what,$_REQUEST[$what]);
 	}
 	function write_form_table_field($type, $name, $label, $value) {
-		echo "<tr><td><label for=\"$name\">$label</label></td>\n";
-		echo "    <td><input type=\"$type\" id=\"$name\" name=\"$name\" value=\"". htmlspecialchars($value) ."\"></td></tr>\n";
+		if ($type == 'checkbox') {
+			echo "<tr><td></td>\n";
+			echo "    <td><label><input type=\"$type\" id=\"$name\" name=\"$name\"".($value ? ' checked="checked"' : '').">\n";
+			echo "        $label</label>";
+			echo "   </td></tr>\n";
+		} else {
+			echo "<tr><td><label for=\"$name\">$label</label></td>\n";
+			echo "    <td><input type=\"$type\" id=\"$name\" name=\"$name\" value=\"". htmlspecialchars($value) ."\"></td></tr>\n";
+		}
 	}
 	
 	
