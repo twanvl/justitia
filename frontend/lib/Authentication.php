@@ -1,21 +1,5 @@
 <?php
 
-function die_fancy($message) {
-	// Utility: error pages
-	class ErrorPage extends template {
-		function __construct($message) {
-			$this->message = $message;
-		}
-		function title() { return "Error"; }
-		function write_body() {
-			echo $this->message;
-		}
-	}
-	$page = new ErrorPage($message);
-	$page->write();
-	exit();
-}
-
 class Authentication {
 	// Require that a user is logged in
 	static function require_user() {
@@ -28,7 +12,7 @@ class Authentication {
 	static function require_admin() {
 		$user = Authentication::require_user();
 		if (!$user->is_admin) {
-			die_fancy("Administrators only");
+			ErrorPage::die_fancy("Administrators only");
 		}
 		return $user;
 	}
