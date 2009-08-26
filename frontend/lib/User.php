@@ -33,7 +33,7 @@ class User {
 	
 	private $data;
 	
-	function check_password($password, $throw) {
+	function check_password($password, $throw = true) {
 		$ok = check_salted_password_hash($password, $this->data['password']);
 		if ($throw && !$ok) {
 			throw new Exception("User not found: $this->login");

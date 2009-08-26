@@ -12,6 +12,7 @@ class Page extends Template {
 	
 	function __construct() {
 		// find active entity
+		Authentication::require_user();
 		$this->entity = Entity::get(@$_SERVER['PATH_INFO']);
 		handle_uploaded_submission($this->entity);
 	}

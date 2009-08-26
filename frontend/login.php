@@ -19,7 +19,7 @@ if (isset($_REQUEST['login'],$_REQUEST['password'])) {
 		Authentication::set_current_user($user);
 		Util::redirect(@$_REQEST['redirect']);
 	} catch (Exception $e) {
-		$error = "Incorrect username or password.";
+		Template::add_message('login','error', "Incorrect username or password.");
 	}
 }
 
@@ -32,13 +32,9 @@ class Page extends Template {
 		return "Log in";
 	}
 	function write_body() {
-		global $error;
+		$this->write_messages('login');
 
-?><?php
-    if (isset($error)) {
-      echo "<div class=\"error\">$error</div>";
-    }
-  ?>
+?>
   <form action="login.php" method="post">
   <input type="hidden" name="redirect" value="<?php echo htmlspecialchars(@$_REQEST['redirect']) ?>">
   <table>
