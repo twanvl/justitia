@@ -63,12 +63,19 @@ abstract class Template {
 	// Blocks
 	// ---------------------------------------------------------------------
 	
-	function write_block_begin($title, $class='block') {
+	function write_block_begin($title, $class='block', $url='') {
 		echo "<div class=\"$class\">";
-		echo "<div class=\"title\"><h2>".htmlspecialchars($title)."</h2></div>";
+		$titleHTML = htmlspecialchars($title);
+		if ($url) {
+			$titleHTML = '<a href="'.htmlspecialchars($url).'">'.$titleHTML.'</a>';
+		} else {
+			$titleHTML = "<span>".$titleHTML."</span>";
+		}
+		echo "<div class=\"title\">".$titleHTML."</div>";
+		echo "<div class=\"content\">";
 	}
 	function write_block_end() {
-		echo "</div>";
+		echo "</div></div>";
 	}
 	
 	// ---------------------------------------------------------------------
@@ -76,7 +83,24 @@ abstract class Template {
 	// ---------------------------------------------------------------------
 	
 	function get_nav() {
-		return array();
+		$user = Authentication::current_user();
+		if (!$user) return array();
+		$result = array();
+		$result []= array(
+			'title' => 'Courses',
+			'url'   => 'index.php'
+		);
+		if ($user->is_admin) {
+			$result []= array(
+				'title' => 'Users',
+				'url'   => 'admin_user.php'
+			);
+			$result []= array(
+				'title' => 'Results',
+				'url'   => 'admin_results.php' . @$_SERVER['PATH_INFO']
+			);
+		}
+		return array($result);
 	}
 	
 	function write_nav_item($items) {
@@ -122,6 +146,8 @@ abstract class Template {
   <head>
     <title><?php echo $title; ?> - NewAthena</title>
     <link rel="stylesheet" type="text/css" href="<?php echo $base; ?>style/style.css">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+    <script type="text/javascript" src="<?php echo $base; ?>style/script.js"></script>
     <base href="<?php echo $base; ?>">
   </head>
   <body>

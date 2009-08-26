@@ -212,18 +212,32 @@ class User {
 		return Submission::fetch_all($query);
 	}
 	
-	// Last submission made by user to entity
+	// Last/best submission made by user to entity
 	function last_submission_to($entity) {
 		if (!$entity->attribute_bool('submitable')) return false;
-		static $query;
-		DB::prepare_query($query,
-			"SELECT * FROM `user_submission` LEFT JOIN `submission` ON `user_submission`.`submissionid` = `submission`.`submissionid`".
-			" WHERE `userid`=? AND `entity_path`=?".
-			" ORDER BY `time` DESC".
-			" LIMIT 1"
-		);
-		$query->execute(array($this->userid, $entity->path()));
-		// fetch submissions
-		return Submission::fetch_one($query,'',false);
+		if ($entity->attribute_bool('keep best')) {
+			static $query;
+			DB::prepare_query($query,
+				"SELECT * FROM `user_submission` LEFT JOIN `submission` ON `user_submission`.`submissionid` = `submission`.`submissionid`".
+				" WHERE `userid`=? AND `entity_path`=?".
+				" ORDER BY `status` DESC".
+				" LIMIT 1"
+			);
+			$query->execute(array($this->userid, $entity->path()));
+			return Submission::fetch_one($query,'',false);
+		} else {
+			static $query;
+			DB::prepare_query($query,
+				"SELECT * FROM `user_submission` LEFT JOIN `submission` ON `user_submission`.`submissionid` = `submission`.`submissionid`".
+				" WHERE `userid`=? AND `entity_path`=?".
+				" ORDER BY `time` DESC".
+				" LIMIT 1"
+			);
+			$query->execute(array($this->userid, $entity->path()));
+			return Submission::fetch_one($query,'',false);
+		}
+	}
+	function status_of_last_submission_to($entity) {
+		return Status::to_status($this->last_submission_to($entity));
 	}
 }

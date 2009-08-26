@@ -47,7 +47,7 @@ class Page extends Template {
 				$class .= 'ancestor ';
 			}
 			if ($e->attribute_bool('submitable')) {
-				$subm = Authentication::current_user()->last_submission_to($e);
+				$subm = Authentication::current_user()->status_of_last_submission_to($e);
 				$class .= Status::to_css_class($subm) . ' ';
 			}
 			if (!$e->active()) {
@@ -63,12 +63,7 @@ class Page extends Template {
 		return $result;
 	}
 	function get_nav() {
-		$result = array(array(
-			array(
-				'title' => 'Courses',
-				'url'   => 'index.php'
-			)
-		));
+		$result = parent::get_nav();
 		foreach ($this->entity->ancestors() as $e) {
 			$result []= $this->get_nav_children($e);
 		}
@@ -116,24 +111,33 @@ class Page extends Template {
 	}
 	
 	function write_submitable_page() {
+		$submissions = Authentication::current_user()->submissions_to($this->entity);
+		
 		$this->write_block_begin('Problem description');
 		$this->write_submitable_entity_info();
 		$this->write_block_end();
 		
 		// submission form
-		$this->write_block_begin('Submit');
+		$last_submission = Authentication::current_user()->last_submission_to($this->entity);
+		$passed = Status::is_passed(Status::to_status($last_submission));
+		$this->write_block_begin('Submit', 'collapsable block' . ($passed ? ' collapsed' : ''));
 		$this->write_submit_form();
 		$this->write_block_end();
 		
-		// submissions that were made
 		echo "<h2>Submissions</h2>";
-		$submissions = Authentication::current_user()->submissions_to($this->entity);
+		
+		// submissions that were made
 		if (empty($submissions)) {
 			echo "<em>no submissions have been made for this assignment.</em>";
 		} else {
 			$i = count($submissions);
 			foreach($submissions as $subm) {
-				$this->write_block_begin('Submission '. $i, 'block submission '.Status::to_css_class($subm));
+				$this->write_block_begin(
+					'Submission '. $i,
+					'collapsable block submission '
+					 . ($subm->submissionid == $last_submission->submissionid ? '' : 'collapsed ')
+					 . Status::to_css_class($subm)
+				);
 				$this->write_submission($subm);
 				$this->write_block_end();
 				$i--;
@@ -148,13 +152,13 @@ class Page extends Template {
 	function write_overview_item($e) {
 		$class = '';
 		if ($e->attribute_bool('submitable')) {
-			$subm = Authentication::current_user()->last_submission_to($e);
+			$subm = Authentication::current_user()->status_of_last_submission_to($e);
 			$class .= Status::to_css_class($subm) . ' ';
 		}
 		if (!$e->active()) {
 			$class .= 'inactive ';
 		}
-		$this->write_block_begin($e->title(), 'block '.$class);
+		$this->write_block_begin($e->title(), 'collapsed block '.$class, 'index.php' . $e->path());
 		$this->write_block_end();
 	}
 	function write_overview_page() {

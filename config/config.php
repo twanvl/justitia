@@ -31,4 +31,5 @@ $attribute_defaults['start date']     = 'always';
 $attribute_defaults['end date']       = 'never';
 $attribute_defaults['timelimit']      = 1;
 $attribute_defaults['timelimit']      = 100000;
+$attribute_defaults['keep best']      = true;
 

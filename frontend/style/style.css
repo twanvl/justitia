@@ -18,6 +18,8 @@ body {
 	padding:	0;
 	font-family:	sans-serif;
 	font-size:	90%;
+	color:		black;
+	background:	white;
 }
 #header {
 	margin:		0;
@@ -107,23 +109,31 @@ h1 {
 
 .block {
 	border:		2px solid rgb(210,210,210);
-	padding:	.5em;
 	margin-top:	0em;
 	margin:		1em;
 	-moz-border-radius: .2em;
 }
 .block .title {
 	background:	rgb(210,210,210);
-	margin:		-.5em;
-	margin-bottom:	.5em;
 	padding:	.1em;
+	padding-left:	.2em;
 	padding-top:	0;
 }
-.block h2 {
-	margin:		0;
-	margin-left:	.1em;
+.block .title span,
+.block .title a {
 	font-size:	130%;
 	font-weight:	normal;
+}
+.block .title a {
+	text-decoration:none;
+	color:		black;
+	display:	block;
+}
+.block .content {
+	padding:	.5em;
+}
+.collapsed .content {
+	display:	none;
 }
 
 .block.failed		{ border-color:	rgb(255,100,100); }
