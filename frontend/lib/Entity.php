@@ -19,10 +19,13 @@ class Entity {
 	// ---------------------------------------------------------------------
 	
 	// the root entity
+	private static $root;
 	static function get_root() {
-		static $root;
-		if (!isset($root)) $root = new Entity(NULL,'');
-		return $root;
+		if (!isset($root)) Entity::$root = new Entity(NULL,'');
+		return Entity::$root;
+	}
+	static function clear_cache() {
+		Entity::$root = NULL;
 	}
 	
 	// singleton constructor for Entities

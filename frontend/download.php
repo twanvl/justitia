@@ -23,7 +23,7 @@ function is_allowed_file($subm,$entity,$user,$dir,$filename) {
 	}
 	if ($dir == 'code') {
 		// the file send by the user
-		return $subm->file_path . '/' . $subm->file_name;
+		return $subm->code_filename();
 	} else if ($dir == 'out') {
 		$ext = pathinfo($filename, PATHINFO_EXTENSION);
 		$base = pathinfo($filename, PATHINFO_FILENAME);
@@ -32,7 +32,7 @@ function is_allowed_file($subm,$entity,$user,$dir,$filename) {
 		else if ($ext == 'out' || $ext == 'diff') $ok = is_allowed_testcase($base,$entity->attribute('show input/output'));
 		else                                      $ok = false;
 		if ($ok || $user->is_admin) {
-			return $subm->file_path . '/out/' . $filename;
+			return $subm->output_filename($filename);
 		}
 	} else if ($dir == 'in') {
 		$ext  = pathinfo($filename, PATHINFO_EXTENSION);
@@ -41,7 +41,7 @@ function is_allowed_file($subm,$entity,$user,$dir,$filename) {
 		else if ($ext == 'in' || $ext == 'out') $ok = is_allowed_testcase($base,$entity->attribute('show input/output'));
 		else                                    $ok = false;
 		if ($ok || $user->is_admin) {
-			return COURSE_DIR . $subm->entity_path . $matches[1];
+			return $subm->input_filename($filename);
 		}
 	}
 	return false; // unknown file

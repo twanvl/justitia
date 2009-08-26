@@ -174,6 +174,20 @@ class Submission {
 	}
 	
 	// ---------------------------------------------------------------------
+	// Files
+	// ---------------------------------------------------------------------
+	
+	function code_filename() {
+		return $this->file_path . '/' . $this->file_name;
+	}
+	function output_filename($filename) {
+		return $this->file_path . '/out/' . $filename;
+	}
+	function input_filename($filename) {
+		return COURSE_DIR . $this->entity_path . $filename;
+	}
+	
+	// ---------------------------------------------------------------------
 	// For judge hosts
 	// ---------------------------------------------------------------------
 	
