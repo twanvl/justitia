@@ -68,7 +68,8 @@ class Util {
 			$url = 'index.php';
 		}
 		if ($url{0} != '/') $url = Util::base_url() . $url;
-		header("HTTP/1.1 301 Moved Permanently");
+		//header("HTTP/1.1 301 Moved Permanently");
+		header("HTTP/1.1 302 Found");
 		header("Location: $url");
 		echo "This resource may be found at <a href=\"$url\">$url</a>.";
 		exit();
@@ -91,7 +92,11 @@ class Util {
 	
 	static function base_url() {
 		$dirname = pathinfo($_SERVER["SCRIPT_NAME"], PATHINFO_DIRNAME);
-		$base = 'http://' . $_SERVER["SERVER_NAME"] . $dirname;
+		$server = $_SERVER["SERVER_NAME"];
+		if ($_SERVER['SERVER_PORT'] != 80) {
+			$server .= ':' . $_SERVER['SERVER_PORT'];
+		}
+		$base = 'http://' . $server . $dirname;
 		if (substr($base,-1) != '/') $base .= '/';
 		return $base;
 	}
