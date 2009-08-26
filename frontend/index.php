@@ -34,7 +34,7 @@ class Page extends Template {
 			}
 			if ($e->attribute_bool('submitable')) {
 				$subm = Authentication::current_user()->last_submission_to($e);
-				$class .= Submission::status_css_class($subm) . ' ';
+				$class .= Status::to_css_class($subm) . ' ';
 			}
 			if (!$e->active()) {
 				$class .= 'inactive ';
@@ -188,7 +188,7 @@ function write_submission($i, $subm) {
 	echo "<tr><td>Submitted on</td><td>" . format_date($subm->time) . "</td>";
 	echo "<tr><td>Submitted by</td><td>" . User::names_html($subm->users()) . "</td>";
 	echo '<tr><td>Files</td><td><a href="'.$path.'">Download submitted files</a></td>';
-	echo "<tr><td>Status</td><td>"       . $subm->textual_status() . "</td>";
+	echo "<tr><td>Status</td><td>"       . Status::to_text($subm) . "</td>";
 	echo "</table>";
 }
 
@@ -207,7 +207,7 @@ if ($here->attribute_bool('submitable')) {
 		echo '<ul class="submissions">';
 		$i = count($submissions);
 		foreach($submissions as $subm) {
-			echo '<li class="submission '.Submission::status_css_class($subm).'">';
+			echo '<li class="submission '.Status::to_css_class($subm).'">';
 			write_submission($i, $subm);
 			$i--;
 			echo '</li>';

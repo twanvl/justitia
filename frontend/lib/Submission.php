@@ -1,16 +1,10 @@
 <?php
 
+// -----------------------------------------------------------------------------
+// Submissions
+// -----------------------------------------------------------------------------
 
 class Submission {
-	// ---------------------------------------------------------------------
-	// Status codes
-	// ---------------------------------------------------------------------
-	
-	// Status codes
-	const STATUS_FAILED   = 0;
-	const STATUS_PASSED   = 1;
-	const STATUS_PENDING  = 2; // submission still in judge queue
-	const STATUS_NOT_DONE = 3; // no submission attempt has been made
 	
 	// ---------------------------------------------------------------------
 	// Data
@@ -23,30 +17,15 @@ class Submission {
 		return $this->data[$attr];
 	}
 	
-	function textual_status() {
-		switch ($this->status) {
-			case Submission::STATUS_FAILED:   return "Failed";
-			case Submission::STATUS_PASSED:   return "Passed";
-			case Submission::STATUS_PENDING:
-				if ($this->judge_start >= time() - REJUDGE_TIMEOUT) {
-					return "Judging";
-				} else {
-					return "Pending";
-				}
-			case Submission::STATUS_NOT_DONE: return "Not submitted";
-		}
-	}
-	static function status_css_class($subm) {
-		if ($subm === false) return 'no-submission';
-		$status = is_object($subm) ? $subm->status : $subm;
-		if ($subm->status == Submission::STATUS_FAILED)  return 'failed';
-		if ($subm->status == Submission::STATUS_PASSED)  return 'passed';
-		if ($subm->status == Submission::STATUS_PENDING) {
-			if (is_object($subm) && $subm->judge_start >= time() - REJUDGE_TIMEOUT) {
-				return "judging";
+	function status() {
+		if ($this->status == Status::PENDING) {
+			if ($this->judge_start >= time() - REJUDGE_TIMEOUT) {
+				return Status::JUDGING;
 			} else {
-				return "pending";
+				return Status::PENDING;
 			}
+		} else {
+			return $this->status;
 		}
 	}
 	
@@ -133,7 +112,7 @@ class Submission {
 		$data['entity_path']  = $entity->path();
 		$data['file_path']    = $file_path;
 		$data['file_name']    = $file_name;
-		$data['status']       = Submission::STATUS_PENDING;
+		$data['status']       = Status::PENDING;
 		$query->execute($data);
 		$data['judge_host']   = NULL;
 		$data['judge_start']  = 0;
@@ -156,10 +135,10 @@ class Submission {
 	function set_status($new_status) {
 		// what will the new filename be?
 		// this can be as fancy as we like
-		switch ($new_status) {
-			case Submission::STATUS_FAILED: $statusdir = "failed"; break;
-			case Submission::STATUS_PASSED: $statusdir = "passed"; break;
-			default: throw new Exception("Can't set status to: ".$new_status);
+		if      (Status::is_passed($new_status)) $statusdir = "passed";
+		else if (Status::is_failed($new_status)) $statusdir = "failed";
+		else {
+			throw new Exception("Can't set status to: ".$new_status);
 		}
 		$new_path_base = SUBMISSION_DIR . $this->entity_path . $statusdir;
 		$new_path = $new_path_base . '/' . $this->submissionid;
@@ -192,14 +171,14 @@ class Submission {
 	static function get_pending_submission($host) {
 		static $query_check, $query_take, $query_fetch;
 		DB::prepare_query($query_check,
-			"SELECT COUNT(*) FROM `submission` WHERE `status` = 2 AND `judge_start` < :old_start");
+			"SELECT COUNT(*) FROM `submission` WHERE `status` = ".Status::PENDING." AND `judge_start` < :old_start");
 		DB::prepare_query($query_take,
 			"UPDATE `submission` SET `judge_start` = :new_start, `judge_host` = :host" .
-			" WHERE `status` = 2 AND `judge_start` < :old_start".
+			" WHERE `status` = ".Status::PENDING." AND `judge_start` < :old_start".
 			" LIMIT 1");
 		DB::prepare_query($query_fetch,
 			"SELECT * FROM `submission`" .
-			" WHERE `status` = 2 AND `judge_start` = :new_start AND `judge_host` = :host");
+			" WHERE `status` = ".Status::PENDING." AND `judge_start` = :new_start AND `judge_host` = :host");
 		
 		// are there pending submissions?
 		// this step is to make things faster
