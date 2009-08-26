@@ -1,6 +1,7 @@
 <?php
 
 require_once('./bootstrap.inc');
+require_once('./submit.inc');
 
 // -----------------------------------------------------------------------------
 // Main 'entity' page
@@ -12,6 +13,7 @@ class Page extends Template {
 	function __construct() {
 		// find active entity
 		$this->entity = Entity::get(@$_SERVER['PATH_INFO']);
+		handle_uploaded_submission($this->entity);
 	}
 	
 	function title() {
@@ -53,6 +55,25 @@ class Page extends Template {
 		}
 		echo '</ul>';
 	}
+	
+	
+	function write_submit_form() {
+		$this->write_messages('submit');
+?><form action="index.php<?php echo $this->entity->path(); ?>" method="post" enctype="multipart/form-data">
+  <label>Select file</label> <input type="file" name="file" id="file"><br>
+  <input type="submit" name="submit" value="Submit" id="submit">
+</form>
+<script type="text/javascript">
+<!--
+  var file_control = document.getElementById('file');
+  file_control.onchange = function() {
+	var ok = file_control.value.match(/<?php echo ".*\\.(java|c)"; ?>/);
+	document.getElementById('submit').style.backgroundColor = ok ? 'white' : 'red';
+  }
+//-->
+</script><?php
+	}
+
 
 function write_body() {
 
@@ -159,26 +180,6 @@ function write_submitable_entity_info($entity) {
 }
 
 
-function write_submit_form() {
-	
-	$suffix = @$_SERVER['PATH_INFO'];
-	
-?><form action="submit.php<?php echo $suffix; ?>" method="post" enctype="multipart/form-data">
-  <label>Select file</label> <input type="file" name="file" id="file"><br>
-  <input type="submit" name="submit" value="Submit" id="submit">
-</form>
-<script type="text/javascript">
-<!--
-  var file_control = document.getElementById('file');
-  file_control.onchange = function() {
-	var ok = file_control.value.match(/\.java$/);
-	document.getElementById('submit').style.backgroundColor = ok ? 'white' : 'red';
-  }
-//-->
-</script><?php
-
-}
-
 function write_submission($i, $subm) {
 	$path = "download.php/" . $subm->submissionid . '/' . $subm->file_name;
 	echo '<div class="ordinal">'.$i.'</div>';
@@ -195,7 +196,7 @@ if ($here->attribute_bool('submitable')) {
 	
 	// submission form
 	echo "<h2>Submit</h2>";
-	write_submit_form();
+	$this->write_submit_form();
 	
 	echo "<h2>Submissions</h2>";
 	$submissions = Authentication::current_user()->submissions_to($here);
