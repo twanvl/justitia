@@ -150,6 +150,7 @@ class Entity {
 	
 	// All submissions, oldest one FIRST
 	function all_submissions() {
+		if (!$this->attribute_bool('submitable')) return;
 		static $query;
 		DB::prepare_query($query,
 			"SELECT * FROM `submission`".
@@ -158,6 +159,17 @@ class Entity {
 		);
 		$query->execute(array($this->path()));
 		return Submission::fetch_all($query);
+	}
+	// Are there pending submissions?
+	function count_pending_submissions() {
+		if (!$this->attribute_bool('submitable')) return 0;
+		static $query;
+		DB::prepare_query($query,
+			"SELECT COUNT(*) FROM `submission`".
+			" WHERE `entity_path`=? AND `status` = ".Status::PENDING
+		);
+		$query->execute(array($this->path()));
+		return $query->fetchColumn();
 	}
 	
 	// ---------------------------------------------------------------------

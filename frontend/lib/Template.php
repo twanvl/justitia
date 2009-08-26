@@ -9,6 +9,9 @@ abstract class Template {
 	// Overloadable interface
 	// ---------------------------------------------------------------------
 	
+	protected $auto_refresh = 0;
+	protected $auto_refresh_to;
+	
 	abstract function title();
 	abstract function write_body();
 	
@@ -148,6 +151,12 @@ abstract class Template {
     <link rel="stylesheet" type="text/css" href="<?php echo $base; ?>style/style.css">
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
     <script type="text/javascript" src="<?php echo $base; ?>style/script.js"></script>
+    <?php
+	if ($this->auto_refresh) {
+		$url = isset($this->auto_refresh_to) ? ";url=".htmlspecialchars($base . $this->auto_refresh_to) : "";
+		echo '<meta http-equiv="refresh" content="'.$this->auto_refresh.$url.'">';
+	}
+    ?>
     <base href="<?php echo $base; ?>">
   </head>
   <body>

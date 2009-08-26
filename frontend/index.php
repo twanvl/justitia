@@ -18,7 +18,11 @@ class Page extends Template {
 		// find active entity
 		Authentication::require_user();
 		$this->entity = Entity::get(@$_SERVER['PATH_INFO']);
-		handle_uploaded_submission($this->entity);
+		$uploaded = handle_uploaded_submission($this->entity);
+		if ($uploaded || $this->entity->count_pending_submissions() > 0) {
+			$this->auto_refresh_to = 'index.php' . $this->entity->path();
+			$this->auto_refresh    = 1;
+		}
 	}
 	
 	function title() {
@@ -101,14 +105,22 @@ class Page extends Template {
 	}
 
 	function write_submission($subm) {
+		$type = Status::base_status($subm->status);
 		echo "<table>";
 		echo "<tr><td>Submitted on</td><td>" . format_date($subm->time) . "</td>";
 		echo "<tr><td>Submitted by</td><td>" . User::names_html($subm->users()) . "</td>";
 		echo '<tr><td>Files</td><td><a href="download.php/'.$subm->submissionid.'/code/'.urlencode($subm->file_name)
 		                           .'">Download submitted files</a></td>';
-		echo "<tr><td>Status</td><td>"       . Status::to_text($subm) . "</td>";
+		echo "<tr><td>Status</td><td>" . Status::to_text($subm);
+		if ($type == Status::FAILED_COMPILE) {
+			echo " (<a href=\"download.php/$subm->submissionid/out/compiler.err\">view error message</a>)";
+		}
+		echo "</td>";
 		echo "</table>";
-		$this->write_failure_details($subm);
+		if ($type == Status::FAILED_COMPARE || $type == Status::FAILED_RUN) {
+			echo "<hr>";
+			$this->write_testset_details($subm);
+		}
 	}
 	
 	function write_submitable_page() {
@@ -145,31 +157,12 @@ class Page extends Template {
 				$i--;
 			}
 		}
+		
 	}
 	
 	// ---------------------------------------------------------------------
 	// Failure details
 	// ---------------------------------------------------------------------
-	
-	function write_failure_details($subm) {
-		$type = Status::base_status($subm->status);
-		if ($type == Status::FAILED_COMPILE) {
-			echo "<hr>";
-			$this->write_compile_failure_details($subm);
-		} else if ($type == Status::FAILED_COMPARE || $type == Status::FAILED_RUN) {
-			echo "<hr>";
-			$this->write_testset_details($subm);
-		} else {
-			// no failure or unknown
-		}
-	}
-	
-	function write_compile_failure_details($subm) {
-		echo "<table class=\"failure-details\">";
-		echo "<tr><td rowspan=\"2\">Compiler</td>";
-		echo "<td><a href=\"download.php/$subm->submissionid/out/compiler.err\">error message</a></td></tr>";
-		echo "</table>";
-	}
 	
 	function write_testset_details($subm) {
 		echo "<table class=\"failure-details\">";

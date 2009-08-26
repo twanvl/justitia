@@ -35,6 +35,10 @@ class Status {
 	static function is_failed($status) {
 		return Status::base_status_group($status) == Status::FAILED;
 	}
+	// Is it a pending status?
+	static function is_pending($status) {
+		return Status::base_status_group($status) == Status::PENDING;
+	}
 	
 	
 	static function to_text($status) {
