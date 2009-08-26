@@ -30,6 +30,10 @@ class Authentication {
 		}
 		return $current_user;
 	}
+	static function is_admin() {
+		$user = Authentication::current_user();
+		return $user && $user->is_admin;
+	}
 	
 	// Set the currently loged in user
 	static function set_current_user($u) {

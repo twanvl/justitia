@@ -11,6 +11,10 @@ function format_bool($b) {
 	return $b ? "yes" : "no";
 }
 
+function download_link($subm,$file,$text) {
+	return "<a href=\"download.php/$subm->submissionid/$file\">$text</a>";
+}
+
 class Page extends Template {
 	private $entity;
 	
@@ -113,7 +117,9 @@ class Page extends Template {
 		                           .'">Download submitted files</a></td>';
 		echo "<tr><td>Status</td><td>" . Status::to_text($subm);
 		if ($type == Status::FAILED_COMPILE) {
-			echo " (<a href=\"download.php/$subm->submissionid/out/compiler.err\">view error message</a>)";
+			if ($this->entity->show_compile_errors()) {
+				echo ' ('.download_link($subm,'out/compiler.err','view error message').')';
+			}
 		}
 		echo "</td>";
 		echo "</table>";
@@ -165,17 +171,70 @@ class Page extends Template {
 	// ---------------------------------------------------------------------
 	
 	function write_testset_details($subm) {
-		echo "<table class=\"failure-details\">";
+		echo "<table class=\"testcase-details\">";
 		// testcase output
 		$testset = new TestSet($this->entity);
 		foreach ($testset->test_cases() as $case) {
+			// description
+			$desc_file = $subm->input_filename("$case.desc");
+			if (file_exists($desc_file)) {
+				$desc = "Hint: " . file_get_contents($desc_file);
+			} else {
+				// TODO: description from attributes?
+				$desc = '';
+			}
+			
+			// status, this is a bit of a hack, we should look at exit codes
 			$case_status = "unknown";
-			echo "<tr><td rowspan=\"2\">Test case " . htmlspecialchars($case) . "</td><td>$case_status</td></tr>";
-			echo "<tr><td>Bedenk zelf nog een paar testgevallen.</td>";
-			echo "<tr><td><a href=\"\">input</a> | <a href=\"\">expected output</a> | <a href=\"\">your output</a> | <a href=\"\">difference</a></td>";
-			echo "<tr><td><a href=\"\">input</a> | <a href=\"\">output</a></td>";
-			echo "<tr><td><a href=\"\">input</a> | <a href=\"\">expected output</a> | <a href=\"\">error message</a></td>";
-			echo "<tr><td><a href=\"\">error message</a></td>";
+			$diff_file = $subm->output_filename("$case.diff");
+			if (!file_exists($diff_file)) {
+				if (!file_exists($subm->output_filename("$case.out"))) {
+					$class = 'skipped';
+					$case_status = "Skipped";
+					$desc = ''; // don't give hint
+				} else {
+					$class = 'failed';
+					$runtime_error = true;
+					$case_status = "Runtime error";
+				}
+			} else if (filesize($diff_file) > 0) {
+				$class = 'failed';
+				$failed = true;
+				$runtime_error = false;
+				$case_status = "Wrong output";
+			} else {
+				$class = 'Passed';
+				$case_status = "Passed";
+			}
+			
+			// input/output/error downloads
+			$downloads = '';
+			if ($class != 'skipped' && $this->entity->show_runtime_errors_for($case)) {
+				if (file_exists($subm->input_filename("$case.in"))) {
+					$downloads .= download_link($subm,"in/$case.in", 'input') . ' | ';
+				}
+				if (file_exists($subm->input_filename("$case.out"))) {
+					$downloads .= download_link($subm,"in/$case.out",'expected output') . ' | ';
+				}
+				if (file_exists($subm->output_filename("$case.out"))) {
+					$downloads .= download_link($subm,"out/$case.out",'your output') . ' | ';
+				}
+				if (file_exists($subm->output_filename("$case.diff"))) {
+					$downloads .= download_link($subm,"out/$case.diff",'difference') . ' | ';
+				}
+			}
+			if ($runtime_error && $this->entity->show_runtime_errors_for($case)) {
+				if (file_exists($subm->output_filename("$case.err"))) {
+					$downloads .= download_link($subm,"out/$case.err",'error message') . ' | ';
+				}
+			}
+			$downloads = substr($downloads,0,-3);
+			
+			// write it
+			$rows  = 1 + (strlen($desc) > 0 ? 1 : 0) + (strlen($downloads) > 0 ? 1 : 0);
+			echo "<tr class=\"$class\"><td rowspan=\"$rows\">Test case " . htmlspecialchars($case) . "</td><td><span>$case_status</span></td></tr>";
+			if (strlen($desc) > 0)      echo "<tr><td>$desc</td></tr>";
+			if (strlen($downloads) > 0) echo "<tr><td>$downloads</td></tr>";
 		}
 		echo "</table>";
 	}
@@ -201,43 +260,7 @@ class Page extends Template {
 			$this->write_overview_item($e);
 		}
 	}
-
-	// -----------------------------------------------------------------------------
-	// Directory listing
-	// -----------------------------------------------------------------------------
-
-	//require_once('template.inc');
-
-	function write_tree($e) {
-		echo "<ul>";
-		echo "<pre>"; print_r($e->attributes()); echo "</pre>";
-		echo "<pre>"; print_r(Authentication::current_user()->submissions_to($e)); echo "</pre>";
-		foreach($e->children() as $n => $d) {
-			echo "<li><a href='index.php". $d->path() ."'>" . htmlspecialchars($d->title()) .  "</a>";
-			echo $d->visible()    ? 'V+ ' : 'V- ' ;
-			echo $d->active() ? 'A+ ' : 'A- ' ;
-			//echo $d->submitable() ? 'S+ ' : 'S- ' ;
-			write_tree($d);
-			
-			echo "</li>";
-		}
-		echo "</ul>";
-	}
-
-	//write_tree(Entity::get_root());
-	//write_tree(Entity::get(""));
-
-
-	function write_nav_tree($here) {
-		echo "<ul>";
-		foreach ($here->ancestors() as $e) {
-			echo "<li>";
-			echo '<a href="index.php' . $e->path() .'">' . htmlspecialchars($e->title()) . '</a>';
-			echo "</li>";
-		}
-		echo "</ul>";
-	}
-
+	
 }
 
 $page = new Page();

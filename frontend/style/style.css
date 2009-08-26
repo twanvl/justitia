@@ -208,3 +208,14 @@ th {
 .results .pending {
 	background:	rgb(245,245,100);
 }
+
+.testcase-details .skipped {
+	background:	rgb(192,192,192);
+}
+.testcase-details .failed {
+	background:	rgb(255,100,100);
+}
+.testcase-details .passed {
+	background:	rgb(100,255,100);
+}
+

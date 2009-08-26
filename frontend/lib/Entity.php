@@ -95,15 +95,38 @@ class Entity {
 	}
 	// Is this entity visible?
 	function visible() {
-		return $this->attribute("visible")
+		return $this->attribute_bool("visible")
 		    && $this->visible_range()->contains_now();
 	}
 	function active() {
 		return $this->active_range()->contains_now();
 	}
 	
+	function submitable() {
+		return $this->attribute_bool('submitable');
+	}
+	
 	function title() {
 		return $this->attribute("title");
+	}
+	
+	function show_compile_errors() {
+		return Authentication::is_admin()
+		    || $this->attribute_bool('show compile errors');
+	}
+	function show_runtime_errors_for($case) {
+		return Authentication::is_admin()
+		    || Entity::is_allowed_testcase($base,$this->attribute('show run errors'));
+	}
+	function show_input_output_for($case) {
+		return Authentication::is_admin()
+		    || Entity::is_allowed_testcase($base,$this->attribute('show input/output'));
+	}
+	private static function is_allowed_testcase($case, $pattern) {
+		if ($pattern == 'all')  return true;
+		if ($pattern == 'none') return false;
+		if (in_array($case,explode(' ',$pattern))) return true;
+		return false;
 	}
 	
 	// ---------------------------------------------------------------------

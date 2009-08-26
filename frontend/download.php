@@ -27,20 +27,20 @@ function is_allowed_file($subm,$entity,$user,$dir,$filename) {
 	} else if ($dir == 'out') {
 		$ext = pathinfo($filename, PATHINFO_EXTENSION);
 		$base = pathinfo($filename, PATHINFO_FILENAME);
-		if ($filename == 'compiler.err')          $ok = $entity->attribute_bool('show compile errors');
-		else if ($ext == 'err')                   $ok = is_allowed_testcase($base,$entity->attribute('show run errors'));
-		else if ($ext == 'out' || $ext == 'diff') $ok = is_allowed_testcase($base,$entity->attribute('show input/output'));
+		if ($filename == 'compiler.err')          $ok = $entity->show_compile_errors();
+		else if ($ext == 'err')                   $ok = $entity->show_runtime_errors_for($base);
+		else if ($ext == 'out' || $ext == 'diff') $ok = $entity->show_input_output_for($base);
 		else                                      $ok = false;
-		if ($ok || $user->is_admin) {
+		if ($ok) {
 			return $subm->output_filename($filename);
 		}
 	} else if ($dir == 'in') {
 		$ext  = pathinfo($filename, PATHINFO_EXTENSION);
 		$base = pathinfo($filename, PATHINFO_FILENAME);
 		if      ($ext == 'desc')                $ok = true;
-		else if ($ext == 'in' || $ext == 'out') $ok = is_allowed_testcase($base,$entity->attribute('show input/output'));
+		else if ($ext == 'in' || $ext == 'out') $ok = $entity->show_input_output_for($base);
 		else                                    $ok = false;
-		if ($ok || $user->is_admin) {
+		if ($ok) {
 			return $subm->input_filename($filename);
 		}
 	}
