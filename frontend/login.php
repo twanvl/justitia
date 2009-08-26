@@ -47,4 +47,5 @@ class Page extends Template {
 	}
 }
 
-new Page();
+$page = new Page();
+$page->write();

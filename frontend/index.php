@@ -237,4 +237,7 @@ echo $u->check_password('password');
 
 //print_r($user->all_submissions());
 
-}}new Page();
+}}
+
+$page = new Page();
+$page->write();

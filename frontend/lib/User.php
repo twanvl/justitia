@@ -31,7 +31,7 @@ class User {
 	// Properties
 	// ---------------------------------------------------------------------
 	
-	public $data;
+	private $data;
 	
 	function check_password($password, $throw = true) {
 		$ok = check_salted_password_hash($password, $this->data['password']);
@@ -47,6 +47,10 @@ class User {
 	
 	function __get($attr) {
 		return $this->data[$attr];
+	}
+	
+	function data() {
+		return $this->data;
 	}
 	
 	function name() {
@@ -98,39 +102,53 @@ class User {
 		return User::fetch_all($query);
 	}
 	
-	static function add($login,$password,$firstname,$midname,$lastname,$is_admin=false) {
-		if (User::by_login($login,false) !== false) {
+	static function add($data) {
+		if (User::by_login($data['login'],false) !== false) {
 			throw new Exception("User with that login already exists");
 		}
-		$data = array(
-			'login'     => $login,
-			'password'  => make_salted_password_hash($password),
-			'firstname' => $firstname,
-			'midname'   => $midname,
-			'lastname'  => $lastname,
-			'is_admin'  => $is_admin,
-		);
+		$data['password'] = make_salted_password_hash($data['password']);
+		$data['is_admin'] = $data['is_admin']?1:0;
 		static $query;
 		DB::prepare_query($query,
 			"INSERT INTO `user` (`login`,`password`,`firstname`,`midname`,`lastname`,`is_admin`)".
 			            "VALUES (:login, :password, :firstname, :midname, :lastname, :is_admin)");
-		$query->execute();
+		$query->execute($data);
 		if ($query->rowCount() != 1) {
 			throw new Exception("Create user failed");
 		}
 		$data['userid'] = DB::get()->lastInsertId();
 		$query->closeCursor();
-		return new User();
+		return new User($data);
 	}
 	
-	static function delete($login) {
+	function alter($data) {
+		$other = User::by_login($data['login'],false);
+		if ($other !== false && $other->userid != $this->userid) {
+			throw new Exception("Another user with that login already exists");
+		}
+		if (isset($data['password'])) {
+			$data['password'] = make_salted_password_hash($data['password']);
+		} else {
+			$data['password'] = $this->password;
+		}
+		$data['is_admin'] = $data['is_admin']?1:0;
+		static $query;
+		DB::prepare_query($query,
+			"UPDATE `user` SET `login` = :login, `password` = :password, `firstname` = :firstname, `midname` = :midname, `lastname` = :lastname, `is_admin` = :is_admin".
+			" WHERE `userid` = :userid");
+		$query->execute($data);
+		$query->closeCursor();
+	}
+	
+	/*static function delete($login) {
 		// delete user
 		static $query;
 		DB::prepare_query($query, "DELETE FROM `user` WHERE login=?");
 		$query->execute(array($login));
 		$query->closeCursor();
 		// delete submissions
-	}
+		// TODO : do we want this?
+	}*/
 	
 	private function __construct($data) {
 		$this->data = $data;

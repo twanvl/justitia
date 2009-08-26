@@ -98,4 +98,6 @@ class Page extends Template {
 </script>
 <?php
 }}
-new Page();
+
+$page = new Page();
+$page->write();

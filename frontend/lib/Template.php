@@ -9,11 +9,6 @@ abstract class Template {
 	abstract function write_body();
 	function write_nav() {}
 	
-	// write out the page
-	function __destruct() {
-		$this->write();
-	}
-	
 	function write_user_header() {
 		$user = Authentication::current_user();
 		if (!$user) return;
@@ -38,12 +33,18 @@ abstract class Template {
 		}
 		unset($messages[$what]);
 	}
+	function has_messages($what) {
+		global $messages;
+		return isset($messages,$messages[$what]);
+	}
 	
 	// Form utilities
+	function write_form_hidden($name,$value) {
+		echo '<input type="hidden" name="'.$name.'" value="'. htmlspecialchars($value) .'">';
+	}
 	function write_form_preserve($what) {
 		if (!isset($_REQUEST[$what])) return;
-		echo '<input type="hidden" name="'.$what.'" value="'
-		    . htmlspecialchars($_REQUEST[$what]) . '">';
+		$this->write_form_hidden($what,$_REQUEST[$what]);
 	}
 	function write_form_table_field($type, $name, $label, $value) {
 		echo "<tr><td><label for=\"$name\">$label</label></td>\n";
