@@ -99,6 +99,10 @@ class Entity {
 		return $this->active_range()->contains_now();
 	}
 	
+	function title() {
+		return $this->attribute("title");
+	}
+	
 	// ---------------------------------------------------------------------
 	// Children
 	// ---------------------------------------------------------------------

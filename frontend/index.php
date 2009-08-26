@@ -18,7 +18,7 @@ class Page extends Template {
 	}
 	
 	function title() {
-		return $this->entity->attribute("title");
+		return $this->entity->title();
 	}
 	
 	// Navigation
@@ -44,7 +44,7 @@ class Page extends Template {
 			echo '<a href="index.php' . $e->path() .'"'
 				. ($class ? ' class="'.$class.'"' : '')
 				. '>'
-				. htmlspecialchars($e->attribute("title")) . '</a>';
+				. htmlspecialchars($e->title()) . '</a>';
 			echo "</li>";
 		}
 		echo "</ul></li>";
@@ -140,7 +140,7 @@ function write_tree($e) {
 	echo "<pre>"; print_r($e->attributes()); echo "</pre>";
 	echo "<pre>"; print_r(Authentication::current_user()->submissions_to($e)); echo "</pre>";
 	foreach($e->children() as $n => $d) {
-		echo "<li><a href='index.php". $d->path() ."'>" . htmlspecialchars($d->attribute("title")) .  "</a>";
+		echo "<li><a href='index.php". $d->path() ."'>" . htmlspecialchars($d->title()) .  "</a>";
 		echo $d->visible()    ? 'V+ ' : 'V- ' ;
 		echo $d->active() ? 'A+ ' : 'A- ' ;
 		//echo $d->submitable() ? 'S+ ' : 'S- ' ;
@@ -159,7 +159,7 @@ function write_nav($here) {
 	echo "<ul>";
 	foreach ($here->ancestors() as $e) {
 		echo "<li>";
-		echo '<a href="index.php' . $e->path() .'">' . htmlspecialchars($e->attribute("title")) . '</a>';
+		echo '<a href="index.php' . $e->path() .'">' . htmlspecialchars($e->title()) . '</a>';
 		echo "</li>";
 	}
 	echo "</ul>";

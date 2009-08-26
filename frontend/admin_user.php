@@ -16,8 +16,6 @@ function get_request_bool(&$data, $prefix, $name) {
 }
 
 class Page extends Template {
-	private $entity;
-	
 	function __construct() {
 		// find active entity
 		Authentication::require_admin();
@@ -137,8 +135,8 @@ class Page extends Template {
 			echo '<td>',htmlspecialchars($user->login),'</td>';
 			echo '<td>',htmlspecialchars($user->name()),'</td>';
 			echo '<td>',($user->is_admin?'yes':''),'</td>';
-			echo '<td><a href="admin_user.php?edit='.htmlspecialchars($user->login)
-			                               .'&amp;filter='.htmlspecialchars($_REQUEST['filter'])
+			echo '<td><a href="admin_user.php?edit='.urlencode($user->login)
+			                               .'&amp;filter='.urlencode($_REQUEST['filter'])
 			                               .'">edit</a></td>';
 			/*echo '<td><form action="admin_user.php">'.
 			           '<input type="hidden" name="delete" value="'.htmlspecialchars($user->login).'">'.

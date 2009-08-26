@@ -52,6 +52,16 @@ class Status {
 			default:                       return "Unknown status";
 		}
 	}
+	static function to_short_text($status) {
+		$status = Status::to_status($status);
+		switch (Status::base_status_group($status)) {
+			case Status::NOT_DONE:         return "none";
+			case Status::PENDING:          return "pending";
+			case Status::PASSED:           return "pass";
+			case Status::FAILED:           return "fail";
+			default:                       return "?";
+		}
+	}
 	
 	static function to_css_class($status) {
 		$status = Status::to_status($status);

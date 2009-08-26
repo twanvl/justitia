@@ -14,7 +14,8 @@ list($submissionid) = explode('/',$path,2); // only the first part
 
 // Find submission
 $subm = Submission::by_id($submissionid);
-if (!$subm->is_made_by(Authentication::require_user())) {
+$user = Authentication::require_user();
+if (!$user->is_admin && !$subm->is_made_by($user)) {
 	die("You have no rights to view this submission.");
 }
 $filename = $subm->file_path . '/code/' . $subm->file_name;
