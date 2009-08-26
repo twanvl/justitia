@@ -120,12 +120,13 @@ class Page extends Template {
 		
 		// submission form
 		$last_submission = Authentication::current_user()->last_submission_to($this->entity);
-		$passed = Status::is_passed(Status::to_status($last_submission));
+		$passed = Status::to_status($last_submission) >= Status::PENDING;
 		$this->write_block_begin('Submit', 'collapsable block' . ($passed ? ' collapsed' : ''));
 		$this->write_submit_form();
 		$this->write_block_end();
 		
 		echo "<h2>Submissions</h2>";
+		$this->write_messages('submit-confirm');
 		
 		// submissions that were made
 		if (empty($submissions)) {

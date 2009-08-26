@@ -72,6 +72,6 @@ function handle_uploaded_submission($entity) {
 	// TODO: multiple users
 	
 	// success
-	Template::add_message('submit','confirm', 'Submission received, it will be judged shortly.');
+	Template::add_message('submit-confirm','confirm', 'Submission received, it will be judged shortly.');
 	return $subm;
 }
