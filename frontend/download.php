@@ -13,35 +13,34 @@ function is_allowed_testcase($case, $pattern) {
 	return false;
 }
 
-function is_allowed_file($subm,$entity,$user,$filename) {
-	if (strpos($filename,'..') !== false) {
+function is_allowed_file($subm,$entity,$user,$dir,$filename) {
+	if (strpos($dir,'..') !== false) {
 		echo "DOTDOT";
 		return false; // security
 	}
 	if (!$user->is_admin && !$subm->is_made_by($user)) {
 		return false; // other user's submission
 	}
-	if ($filename == 'code/' . $subm->file_name) {
+	if ($dir == 'code') {
 		// the file send by the user
-		return $subm->file_path . '/' . $filename;
-	} else if ($filename == 'out/compiler.err') {
-		// compile error
-		if ($user->is_admin || $entity->attribute_bool('show compile errors')) {
-			return $subm->file_path . '/' . $filename;
+		return $subm->file_path . '/' . $subm->file_name;
+	} else if ($dir == 'out') {
+		$ext = pathinfo($filename, PATHINFO_EXTENSION);
+		$base = pathinfo($filename, PATHINFO_FILENAME);
+		if ($filename == 'compiler.err')          $ok = $entity->attribute_bool('show compile errors');
+		else if ($ext == 'err')                   $ok = is_allowed_testcase($base,$entity->attribute('show run errors'));
+		else if ($ext == 'out' || $ext == 'diff') $ok = is_allowed_testcase($base,$entity->attribute('show input/output'));
+		else                                      $ok = false;
+		if ($ok || $user->is_admin) {
+			return $subm->file_path . '/out/' . $filename;
 		}
-	} else if (preg_match("@^out/(([^/]*?)\.err)$@",$filename,$matches)) {
-		// runtime error
-		if ($user->is_admin || is_allowed_testcase($matches[2],$entity->attribute('show run errors'))) {
-			return $subm->file_path . '/' . $filename;
-		}
-	} else if (preg_match("@^out/(([^/]*?)\.(out|diff))$@",$filename,$matches)) {
-		// output/diff
-		if ($user->is_admin || is_allowed_testcase($matches[2],$entity->attribute('show input/output'))) {
-			return $subm->file_path . '/' . $filename;
-		}
-	} else if (preg_match("@^in/(([^/]*?)\.(in|out))$@",$filename,$matches)) {
-		// input/expected output
-		if ($user->is_admin || is_allowed_testcase($matches[2],$entity->attribute('show input/output'))) {
+	} else if ($dir == 'in') {
+		$ext  = pathinfo($filename, PATHINFO_EXTENSION);
+		$base = pathinfo($filename, PATHINFO_FILENAME);
+		if      ($ext == 'desc')                $ok = true;
+		else if ($ext == 'in' || $ext == 'out') $ok = is_allowed_testcase($base,$entity->attribute('show input/output'));
+		else                                    $ok = false;
+		if ($ok || $user->is_admin) {
 			return COURSE_DIR . $subm->entity_path . $matches[1];
 		}
 	}
@@ -52,14 +51,14 @@ function is_allowed_file($subm,$entity,$user,$filename) {
 if (!isset($_SERVER['PATH_INFO'])) die("no file specified");
 $path = $_SERVER['PATH_INFO'];
 if ($path{0} == '/') $path = substr($path,1);
-list($submissionid, $sub_file) = explode('/',$path,2); // only the first part
+list($submissionid, $sub_dir, $sub_file) = explode('/',$path);
 
 // Find submission
 $subm = Submission::by_id($submissionid);
 $user = Authentication::require_user();
 
 // Which file are we downloading?
-$filename = is_allowed_file($subm,$subm->entity(),$user,$sub_file);
+$filename = is_allowed_file($subm,$subm->entity(),$user, $sub_dir,$sub_file);
 if ($filename === false) {
 	die("You have no rights to view this file.");
 }
