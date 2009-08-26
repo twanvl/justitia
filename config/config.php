@@ -32,4 +32,6 @@ $attribute_defaults['end date']       = 'never';
 $attribute_defaults['timelimit']      = 1;
 $attribute_defaults['timelimit']      = 100000;
 $attribute_defaults['keep best']      = true;
-
+$attribute_defaults['show compile errors'] = true;
+$attribute_defaults['show run errors']     = 'all';
+$attribute_defaults['show input/output']   = 'none';

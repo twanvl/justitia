@@ -213,7 +213,7 @@ class Entity {
 	}
 	function attribute_bool($key) {
 		$attr = $this->attribute($key);
-		return intval($attr) > 0 || $attr == "true" || $attr == "yes";
+		return intval($attr) != 0 || $attr == "true" || $attr == "yes";
 	}
 	
 	// load the attributes from a file
