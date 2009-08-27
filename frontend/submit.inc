@@ -68,8 +68,9 @@ function handle_uploaded_submission($entity) {
 	// add to database
 	$subm = Submission::make_new($entity, $subm_dir, $file_name);
 	// assign users
-	$subm->add_user(Authentication::current_user());
-	// TODO: multiple users
+	foreach (UserGroup::current() as $user) {
+		$subm->add_user($user);
+	}
 	
 	// success
 	Template::add_message('submit-confirm','confirm', 'Submission received, it will be judged shortly.');

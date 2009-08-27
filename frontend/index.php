@@ -84,13 +84,36 @@ class Page extends Template {
 	}
 	
 	// ---------------------------------------------------------------------
-	// Submitable page
+	// Submitable entity page
 	// ---------------------------------------------------------------------
+	
+	function write_usergroup_view() {
+		$group = UserGroup::current();
+		$max_size = $this->entity->attribute('max group size');
+		echo '<ul class="user-group">';
+		$current_page = 'index.php' . $this->entity->path();
+		foreach ($group as $user) {
+			echo '<li>'.htmlspecialchars($user->name_and_login());
+			if ($user != Authentication::current_user()) {
+				echo ' <a href="user_group_remove.php?remove='.$user->userid.'&amp;redirect='.urlencode($current_page).'">[remove]</a>';
+			}
+			echo '</li>';
+		}
+		if (count($group) < $max_size) {
+			echo '<li><a href="user_group_add.php?redirect='.urlencode($current_page).'">[add]</a></li>';
+		}
+		echo '</ul>';
+	}
 	
 	function write_submit_form() {
 		$this->write_messages('submit');
 ?><form action="index.php<?php echo $this->entity->path(); ?>" method="post" enctype="multipart/form-data">
-  <label>Select file</label> <input type="file" name="file" id="file"><br>
+  <table>
+   <tr>
+    <td>Students</th><td><?php $this->write_usergroup_view(); ?></td>
+   </tr>
+  <?php $this->write_form_table_field('file', 'file', 'Select file'); ?>
+  </table>
   <input type="submit" name="submit" value="Submit" id="submit">
 </form>
 <script type="text/javascript">

@@ -8,7 +8,7 @@ require_once('./bootstrap.inc');
 
 // Already logged in?
 if (Authentication::current_user() !== false) {
-	Util::redirect( @$_REQEST['redirect']);
+	Util::redirect( @$_REQUEST['redirect']);
 }
 
 // Try to log in
@@ -17,7 +17,7 @@ if (isset($_REQUEST['login'],$_REQUEST['password'])) {
 		$user = User::by_login($_REQUEST['login']);
 		$user->check_password($_REQUEST['password']);
 		Authentication::set_current_user($user);
-		Util::redirect(@$_REQEST['redirect']);
+		Util::redirect(@$_REQUEST['redirect']);
 	} catch (Exception $e) {
 		Template::add_message('login','error', "Incorrect username or password.");
 	}
@@ -39,7 +39,7 @@ class Page extends Template {
   <?php $this->write_form_preserve('redirect'); ?>
   <table>
     <?php $this->write_form_table_field('login',   'login',    'Login',    @$_REQUEST['login']); ?>
-    <?php $this->write_form_table_field('password','password', 'Password', ''); ?>
+    <?php $this->write_form_table_field('password','password', 'Password'); ?>
   </table>
   <input type="submit" value="Log in">
 </form><?php

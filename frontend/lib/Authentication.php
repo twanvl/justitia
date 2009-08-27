@@ -41,7 +41,7 @@ class Authentication {
 		$_SESSION['login'] = $u->login;
 	}
 	
-	private static function session_start() {
+	static function session_start() {
 		static $started = false;
 		if ($started) return;
 		session_name("NewAthenaSession");

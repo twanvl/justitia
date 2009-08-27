@@ -176,10 +176,7 @@ h1 {
 }
 
 
-td {
-	padding-right:	.5em;
-}
-th {
+td, th {
 	padding-right:	.5em;
 	text-align:	left;
 	vertical-align:	top;
@@ -219,3 +216,13 @@ th {
 	background:	rgb(100,255,100);
 }
 
+.user-list {
+	margin-top:	1em;
+}
+.user-group {
+	list-style:	disk;
+	margin:		0;
+	padding:	0;
+	margin-left:	1em;
+	margin-bottom:	.5em;
+}

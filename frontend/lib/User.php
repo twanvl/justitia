@@ -58,6 +58,9 @@ class User {
 		if ($mid != '') $mid .= ' ';
 		return $this->firstname . ' ' . $mid . $this->lastname;
 	}
+	function name_and_login() {
+		return $this->name() . ' (' . $this->login . ')';
+	}
 	function sort_name() {
 		return $this->lastname.','.$this->firstname . ',' . $this->midname;
 	}
@@ -67,7 +70,7 @@ class User {
 		$result = "";
 		foreach($array as $user) {
 			if (strlen($result) > 0) $result .= ', ';
-			$result .= $user->name();
+			$result .= $user->name_and_login();
 		}
 		return $result;
 	}
@@ -78,7 +81,7 @@ class User {
 		$result = "";
 		foreach($array as $user) {
 			if (strlen($result) > 0) $result .= ', ';
-			$result .= htmlspecialchars($user->name());
+			$result .= htmlspecialchars($user->name_and_login());
 		}
 		return $result;
 	}
