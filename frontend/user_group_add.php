@@ -1,6 +1,6 @@
 <?php
 
-require_once('./bootstrap.inc');
+require_once('../lib/bootstrap.inc');
 
 // -----------------------------------------------------------------------------
 // Add group user and redirect

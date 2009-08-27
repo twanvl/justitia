@@ -1,6 +1,6 @@
 <?php
 
-require_once('./bootstrap.inc');
+require_once('../lib/bootstrap.inc');
 
 // -----------------------------------------------------------------------------
 // Allow a user do download submitted files
