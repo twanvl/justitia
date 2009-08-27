@@ -75,19 +75,13 @@ class Util {
 		exit();
 	}
 	
-	// Redirects the user to the login page
-	static function login() {
-		Util::redirect("login.php?redirect=" . urlencode(Util::current_url()));
-	}
-	
 	// ---------------------------------------------------------------------
 	// Base url, etc.
 	// ---------------------------------------------------------------------
 	
 	static function current_url() {
-		//$_SERVER["PATH_INFO"]
-		// TODO: strip base url?
-		return $_SERVER['REQUEST_URI'];
+		$script = pathinfo($_SERVER['REQUEST_URI'],PATHINFO_BASENAME);
+		return $script . @$_SERVER['PATH_INFO'];
 	}
 	
 	static function base_url() {

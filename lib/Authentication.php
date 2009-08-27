@@ -1,11 +1,17 @@
 <?php
 
+// -----------------------------------------------------------------------------
+// Authentication:
+//  * checking that a user is logged in, and who it is
+//  * checking whether it is an administrator
+// -----------------------------------------------------------------------------
+
 class Authentication {
 	// Require that a user is logged in
 	static function require_user() {
 		$user = Authentication::current_user();
 		if ($user === false) {
-			Util::login();
+			Authentication::show_login_page();
 		}
 		return $user;
 	}
@@ -57,7 +63,8 @@ class Authentication {
 		setcookie("NewAthenaSession", "", time()-3600, "/");
 	}
 	
-	// Get the current team used by the user
-	static function current_team() {
+	// Redirects the user to the login page
+	static function show_login_page() {
+		Util::redirect("login.php?redirect=" . urlencode(Util::current_url()));
 	}
 }
