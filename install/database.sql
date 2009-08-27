@@ -44,3 +44,12 @@ CREATE TABLE `user_submission`
 , PRIMARY KEY(`userid`,`submissionid`)
 ) DEFAULT CHARSET=utf8;
 
+
+/* -----------------------------------------------------------------------------
+ * Initial user
+ *  Username: admin
+ *  Password: password
+ * ----------------------------------------------------------------------------- */
+
+INSERT INTO `user` (login,firstname,midname,lastname,password,is_admin)
+            VALUES ('admin','','','','',1);
