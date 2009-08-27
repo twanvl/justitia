@@ -175,7 +175,7 @@ abstract class Template {
 ?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
   <head>
-    <title><?php echo $title; ?> - NewAthena</title>
+    <title><?php echo $title; ?> - Justitia</title>
     <link rel="stylesheet" type="text/css" href="<?php echo $base; ?>style/style.css">
     <link rel="stylesheet" type="text/css" href="<?php echo $base; ?>style/jquery.autocomplete.css">
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
@@ -191,7 +191,7 @@ abstract class Template {
   </head>
   <body>
     <div id="header">
-      <div id="appname">NewAthena</div>
+      <div id="appname">Justitia</div>
       <?php $this->write_user_header(); ?>
     </div>
     <div id="nav-wrap">

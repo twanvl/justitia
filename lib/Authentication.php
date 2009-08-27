@@ -50,7 +50,7 @@ class Authentication {
 	static function session_start() {
 		static $started = false;
 		if ($started) return;
-		session_name("NewAthenaSession");
+		session_name("Justitia");
 		session_start();
 		$started = true;
 	}
@@ -60,7 +60,7 @@ class Authentication {
 		Authentication::session_start();
 		session_unset();
 		session_destroy();
-		setcookie("NewAthenaSession", "", time()-3600, "/");
+		setcookie("Justitia", "", time()-3600, "/");
 	}
 	
 	// Redirects the user to the login page
