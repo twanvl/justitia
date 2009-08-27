@@ -107,6 +107,10 @@ h1 {
 	background:	rgb(245,245,100);
 }
 
+/* -----------------------------------------------------------------------------
+ * Blocks
+ * ----------------------------------------------------------------------------- */
+
 .block {
 	border:		2px solid rgb(210,210,210);
 	margin-top:	0em;
@@ -141,6 +145,7 @@ h1 {
 	height:		2px;
 }
 
+
 .block.failed		{ border-color:	rgb(255,100,100); }
 .block.failed .title,
 .block.failed hr	{ background:	rgb(255,100,100); }
@@ -149,31 +154,15 @@ h1 {
 .block.pending		{ border-color:	rgb(255,255,50); }
 .block.pending .title	{ background:	rgb(255,255,50); }
 
-.submissions {
-	list-style:	none;
-	margin:		0;
-	margin-left:	1em;
-	padding:	0;
-}
-.submissions li {
-	margin-bottom:	1em;
-}
-.submissions .ordinal {
-	float:		left;
-	font-size:	400%;
-	font-family:	sans-serif;
-	margin-right:	5px;
-}
-.submissions .failed .ordinal {
-	color:		rgb(192,0,0);
-}
-.submissions .passed .ordinal {
-	color:		rgb(50,192,0);
-}
-.submissions .pending .ordinal,
-.submissions .judging .ordinal {
-	color:		rgb(202,192,0);
-}
+.block.collapsable         .title:hover,
+.block.linky               .title:hover { background:	rgb(190,190,190); }
+.block.collapsable.failed  .title:hover,
+.block.linky.failed        .title:hover { background:	rgb(255,50,50); }
+.block.collapsable.passed  .title:hover,
+.block.linky.passed        .title:hover { background:	rgb(50,240,50); }
+.block.collapsable.pending .title:hover,
+.block.linky.pending       .title:hover { background:	rgb(255,255,10); }
+
 
 
 td, th {
