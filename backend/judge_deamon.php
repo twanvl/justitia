@@ -85,10 +85,10 @@ function prepare_reference_output($subm, $entity) {
 }
 
 function run_submission($program, $infile, $outfile, $errfile, $entity) {
-	return safe_system('compilers/run.sh', array($program, $infile, $outfile, $errfile));
+	return safe_system('runners/run.sh', array($program, $infile, $outfile, $errfile));
 }
 function run_checker($out1, $out2, $diff, $entity) {
-	return safe_system('compilers/diff.sh', array($out1, $out2, $diff));
+	return safe_system('checkers/diff.sh', array($out1, $out2, $diff));
 }
 
 function judge_submission($subm) {
