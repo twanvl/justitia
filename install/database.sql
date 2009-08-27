@@ -52,4 +52,4 @@ CREATE TABLE `user_submission`
  * ----------------------------------------------------------------------------- */
 
 INSERT INTO `user` (login,firstname,midname,lastname,password,is_admin)
-            VALUES ('admin','','','','',1);
+            VALUES ('admin','Change','','Immediately','d25c1159def4b96f986e26ef5ac91249d1575c7bwllH0Y}vR1',1);
