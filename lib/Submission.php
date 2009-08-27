@@ -178,7 +178,7 @@ class Submission {
 	// ---------------------------------------------------------------------
 	
 	function code_filename() {
-		return $this->file_path . '/' . $this->file_name;
+		return $this->file_path . '/code/' . $this->file_name;
 	}
 	function output_filename($filename) {
 		return $this->file_path . '/out/' . $filename;
