@@ -191,7 +191,7 @@ abstract class Template {
   </head>
   <body>
     <div id="header">
-      <div id="appname">Justitia</div>
+      <div id="appname">Justitia, <small>Programming Judge</small></div>
       <?php $this->write_user_header(); ?>
     </div>
     <div id="nav-wrap">
