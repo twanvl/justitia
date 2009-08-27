@@ -96,7 +96,7 @@ class Page extends Template {
 		
 		$this->write_messages('user');
 		$this->write_form_begin('admin_user.php','post');
-		$this->write_form_preserve('filter');
+		$this->write_form_preserve('user_filter');
 		$this->write_form_preserve('edit');
 		$this->write_form_hidden('filled',1);
 		$this->write_form_table_begin();
@@ -104,7 +104,7 @@ class Page extends Template {
 		$this->write_form_table_field('password','user_password', 'Password');
 		$this->write_form_table_field('password','user_password2','Confirm password');
 		$this->write_form_table_field('text',    'user_firstname','First name',   $data['firstname']);
-		$this->write_form_table_field('text',    'user_midname',  'Middle name',  $data['midname']);
+		$this->write_form_table_field('text',    'user_midname',  'Middle name',  $data['midname'], ' size="5"');
 		$this->write_form_table_field('text',    'user_lastname', 'Last name',    $data['lastname']);
 		$this->write_form_table_field('checkbox','user_is_admin', 'Administrator',$data['is_admin']);
 		$this->write_form_table_end();
@@ -114,13 +114,15 @@ class Page extends Template {
 	
 	function write_user_list() {
 		$this->write_block_begin('User list');
-		echo '<form action="admin_user.php">';
-		echo '<label>Filter: <input type="text" name="filter" value="'.htmlspecialchars(@$_REQUEST['filter']).'"></label>';
-		echo '<input type="submit" value="Show">';
-		echo '</form>';
 		
-		if (!isset($_REQUEST['filter'])) return;
-		$filter = '%' . @$_REQUEST['filter'] . '%';
+		$this->write_form_begin('admin_user.php','get');
+		echo '<label>Search for users: ';
+		$this->write_form_field('text','user_filter',@$_REQUEST['filter'],' size="35"');
+		echo '</label> ';
+		$this->write_form_end('Show');
+		
+		if (!isset($_REQUEST['user_filter'])) return;
+		$filter = '%' . @$_REQUEST['user_filter'] . '%';
 		
 		echo '<table class="user-list">'."\n";
 		echo "<thead><tr>";
@@ -136,7 +138,7 @@ class Page extends Template {
 			echo '<td>',htmlspecialchars($user->name()),'</td>';
 			echo '<td>',($user->is_admin?'yes':''),'</td>';
 			echo '<td><a href="admin_user.php?edit='.$user->userid
-			                               .'&amp;filter='.urlencode($_REQUEST['filter'])
+			                               .'&amp;user_filter='.urlencode($_REQUEST['user_filter'])
 			                               .'">edit</a></td>';
 			echo "</tr>\n";
 		}

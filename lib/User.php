@@ -107,7 +107,7 @@ class User {
 		static $query;
 		DB::prepare_query($query,
 			"SELECT * FROM `user`".
-			" WHERE `login` LIKE ? OR CONCAT(`firstname`,' ',`midname`,' ',`lastname`) LIKE ?".
+			" WHERE `login` LIKE ? OR CONCAT_WS(' ',`firstname`,`midname`,`lastname`) LIKE ?".
 			" ORDER BY `lastname`,`firstname`"
 		);
 		$query->execute(array($filter,$filter));

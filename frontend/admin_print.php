@@ -27,7 +27,7 @@ class Page extends Template {
 		echo "    [x] Two sided printing<br>";
 		
 		echo "<form>";
-		$this->write_form_table_field('password','password', 'Password'); ?>
+		$this->write_form_table_field('password','password', 'Password');
 		echo '<label><input type="radio" name="format" value="text"> Text output</label>';
 		echo '<label><input type="radio" name="format" value="text" checked> HTML output</label>';
 		echo '<label><input type="radio" name="format" value="text"> Latex rendered PDF output</label>';

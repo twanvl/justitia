@@ -70,17 +70,23 @@ abstract class Template {
 		echo "</table>";
 	}
 	
-	function write_form_table_field($type, $name, $label, $value = null) {
-		if ($type == 'checkbox') {
+	function write_form_field($type, $name, $value = null, $extra = null) {
+		if ($type == 'checkbox' || $type == 'radio') {
 			$valuespec = ($value ? ' checked="checked"' : '');
-			echo "<tr><td></td>\n";
-			echo "    <td><label><input type=\"$type\" id=\"$name\" name=\"$name\"$valuespec>\n";
-			echo "        $label</label>";
-			echo "   </td></tr>\n";
 		} else {
-			$valuespec = ' value="'. htmlspecialchars($value) . '"';
-			echo "<tr><td><label for=\"$name\">$label</label></td>\n";
-			echo "    <td><input type=\"$type\" id=\"$name\" name=\"$name\"$valuespec></td></tr>\n";
+			$valuespec = $value === null ? '' : ' value="'. htmlspecialchars($value) . '"';
+		}
+		echo "<input type=\"$type\" id=\"$name\" name=\"$name\"$valuespec$extra>";
+	}
+	function write_form_table_field($type, $name, $label, $value = null, $extra = null) {
+		if ($type == 'checkbox' || $type == 'radio') {
+			echo "<tr><td></td><td><label>";
+			$this->write_form_field($type, $name, $value, $extra);
+			echo " $label</label></td></tr>\n";
+		} else {
+			echo "<tr><td><label for=\"$name\">$label</label></td><td>\n";
+			$this->write_form_field($type, $name, $value, $extra);
+			echo "</td></tr>\n";
 		}
 	}
 	
@@ -171,7 +177,9 @@ abstract class Template {
   <head>
     <title><?php echo $title; ?> - NewAthena</title>
     <link rel="stylesheet" type="text/css" href="<?php echo $base; ?>style/style.css">
+    <link rel="stylesheet" type="text/css" href="<?php echo $base; ?>style/jquery.autocomplete.css">
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+    <script type="text/javascript" src="<?php echo $base; ?>style/jquery.autocomplete.js"></script>
     <script type="text/javascript" src="<?php echo $base; ?>style/script.js"></script>
     <?php
 	if ($this->auto_refresh) {

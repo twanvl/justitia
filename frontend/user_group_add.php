@@ -24,14 +24,16 @@ class Page extends Template {
 	
 	function write_user_list() {
 		$this->write_block_begin('User list');
-		echo '<form action="user_group_add.php">';
-		$this->write_form_preserve('redirect');
-		echo '<label>Filter: <input type="text" name="filter" value="'.htmlspecialchars(@$_REQUEST['filter']).'"></label>';
-		echo '<input type="submit" value="Show">';
-		echo '</form>';
 		
-		if (!isset($_REQUEST['filter'])) return;
-		$filter = '%' . @$_REQUEST['filter'] . '%';
+		$this->write_form_begin('user_group_add.php','get');
+		$this->write_form_preserve('redirect');
+		echo '<label>Search for users: ';
+		$this->write_form_field('text','user_filter',@$_REQUEST['user_filter']);
+		echo '</label>';
+		$this->write_form_end('Show');
+		
+		if (!isset($_REQUEST['user_filter'])) return;
+		$filter = '%' . @$_REQUEST['user_filter'] . '%';
 		
 		echo '<table class="user-list">'."\n";
 		$users = User::all($filter);
