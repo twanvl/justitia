@@ -44,6 +44,16 @@ CREATE TABLE `user_submission`
 , PRIMARY KEY(`userid`,`submissionid`)
 ) DEFAULT CHARSET=utf8;
 
+/*
+ * Submited/output files
+ */
+CREATE TABLE `files`
+( `submissionid` int(4) unsigned NOT NULL auto_increment COMMENT 'The submission to which this file belongs'
+, `file_name`    varchar(255)    NOT NULL                COMMENT 'Name of the file: either code/.. or out/..'
+, `data`         mediumblob                              COMMENT 'File contents'
+, PRIMARY KEY(`submissionid`,`file_name`)
+) DEFAULT CHARSET=utf8;
+
 
 /* -----------------------------------------------------------------------------
  * Initial user
