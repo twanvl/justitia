@@ -1,0 +1,31 @@
+
+For securely running untrusted submissions we run the 
+<ul>
+ <li>The judgedeamon runs under user 'priviliged'.
+     This user has access to the database and Justitia data files.
+ <li>The submission should run under user 'restricted'.
+     This user has no access to any files outside <tt>/tmp/</tt>.
+</ul>
+
+
+<h3>Approach 1: Special binary</h3>
+This is the approach taken by DOMJudge:
+<ul>
+ <li>There is a <tt>root</tt>-owned SUID binary that switches the user to 'restricted' and then executes a command.
+     <pre>sudo chmod ug+s the_binary</pre>
+</ul>
+Disadvantage: Requires a SUID-root binary, which might be a problem.
+
+
+<h3>Approach 2: SUID trick</h3>
+<ul>
+ <li>There is a 'restricted'-owned SUID binary that executes a command.
+     <pre>chmod ug+s the_binary</pre>
+ <li>This file is executable by 'priviliged'
+     <pre>setfacl -m priviliged:rx the_binary</pre>
+ <li>To prevent 'restricted' programs from messing with it, it is moved to a 'priviliged' owned directory:
+     <pre>
+mv the_binary privliged_owned
+chmod og-rwx privliged_owned</pre>
+</ul>
+Disadvantage: Might not be 100% safe.
