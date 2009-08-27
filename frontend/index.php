@@ -107,24 +107,15 @@ class Page extends Template {
 	
 	function write_submit_form() {
 		$this->write_messages('submit');
-?><form action="index.php<?php echo $this->entity->path(); ?>" method="post" enctype="multipart/form-data">
-  <table>
-   <tr>
-    <td>Students</th><td><?php $this->write_usergroup_view(); ?></td>
-   </tr>
-  <?php $this->write_form_table_field('file', 'file', 'Select file'); ?>
-  </table>
-  <input type="submit" name="submit" value="Submit" id="submit">
-</form>
-<script type="text/javascript">
-<!--
-  var file_control = document.getElementById('file');
-  file_control.onchange = function() {
-	var ok = file_control.value.match(/<?php echo ".*\\.(java|c)"; ?>/);
-	document.getElementById('submit').style.backgroundColor = ok ? 'white' : 'red';
-  }
-//-->
-</script><?php
+		
+		$this->write_form_begin('index.php'.$this->entity->path(), 'post', true);
+		$this->write_form_table_begin();
+		echo "<tr><td>Students</td><td>";
+		$this->write_usergroup_view();
+		echo "</td></tr>";
+		$this->write_form_table_field('file', 'file', 'Select file');
+		$this->write_form_table_end();
+		$this->write_form_end('Submit');
 	}
 	
 	function write_submitable_entity_info() {
@@ -283,7 +274,7 @@ class Page extends Template {
 		if (!$e->active()) {
 			$class .= 'inactive ';
 		}
-		$this->write_block_begin($e->title(), 'collapsed block '.$class, 'index.php' . $e->path());
+		$this->write_block_begin($e->title(), 'collapsed linky block '.$class, 'index.php' . $e->path());
 		$this->write_block_end();
 	}
 	function write_overview_page() {

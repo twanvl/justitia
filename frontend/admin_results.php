@@ -3,7 +3,7 @@
 require_once('../lib/bootstrap.inc');
 
 // -----------------------------------------------------------------------------
-// User administration
+// Results overview table
 // -----------------------------------------------------------------------------
 
 class Page extends Template {

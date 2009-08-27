@@ -33,17 +33,14 @@ class Page extends Template {
 	}
 	function write_body() {
 		$this->write_messages('login');
-
-?>
-  <form action="login.php" method="post">
-  <?php $this->write_form_preserve('redirect'); ?>
-  <table>
-    <?php $this->write_form_table_field('login',   'login',    'Login',    @$_REQUEST['login']); ?>
-    <?php $this->write_form_table_field('password','password', 'Password'); ?>
-  </table>
-  <input type="submit" value="Log in">
-</form><?php
-
+		
+		$this->write_form_begin("login.php","post");
+		$this->write_form_preserve('redirect');
+		$this->write_form_table_begin();
+		$this->write_form_table_field('login',   'login',    'Login',    @$_REQUEST['login']);
+		$this->write_form_table_field('password','password', 'Password');
+		$this->write_form_table_end();
+		$this->write_form_end("Log in");
 	}
 }
 

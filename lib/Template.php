@@ -43,6 +43,18 @@ abstract class Template {
 	// Form utilities
 	// ---------------------------------------------------------------------
 	
+	function write_form_begin($url, $method, $enctype = false) {
+		echo '<form action="'.$url.'" method="'.$method.'"';
+		if ($enctype) {
+			echo ' enctype="multipart/form-data"';
+		}
+		echo ">\n";
+	}
+	function write_form_end($submit) {
+		echo '<input type="submit" value="'.$submit.'">'."\n";
+		echo '</form>'."\n";
+	}
+	
 	function write_form_hidden($name,$value) {
 		echo '<input type="hidden" name="'.$name.'" value="'. htmlspecialchars($value) .'">';
 	}
@@ -50,6 +62,14 @@ abstract class Template {
 		if (!isset($_REQUEST[$what])) return;
 		$this->write_form_hidden($what,$_REQUEST[$what]);
 	}
+	
+	function write_form_table_begin() {
+		echo "<table>";
+	}
+	function write_form_table_end() {
+		echo "</table>";
+	}
+	
 	function write_form_table_field($type, $name, $label, $value = null) {
 		if ($type == 'checkbox') {
 			$valuespec = ($value ? ' checked="checked"' : '');

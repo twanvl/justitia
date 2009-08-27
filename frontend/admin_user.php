@@ -91,24 +91,24 @@ class Page extends Template {
 		if ($editing) {
 			$this->write_block_begin('Edit user: '. $user->login);
 		} else {
-			$this->write_block_begin('Add user');
+			$this->write_block_begin('Add user', 'collapsable block' . (@$_REQUEST['filled'] ? '' : ' collapsed'));
 		}
+		
 		$this->write_messages('user');
-		?><form action="admin_user.php" method="get">
-		  <?php $this->write_form_preserve('filter');
-		        $this->write_form_preserve('edit');
-		        $this->write_form_hidden('filled',1); ?>
-		  <table>
-		    <?php $this->write_form_table_field('text',    'user_login',    'Login',        $data['login']); ?>
-		    <?php $this->write_form_table_field('password','user_password', 'Password'); ?>
-		    <?php $this->write_form_table_field('password','user_password2','Confirm password'); ?>
-		    <?php $this->write_form_table_field('text',    'user_firstname','First name',   $data['firstname']); ?>
-		    <?php $this->write_form_table_field('text',    'user_midname',  'Middle name',  $data['midname']); ?>
-		    <?php $this->write_form_table_field('text',    'user_lastname', 'Last name',    $data['lastname']); ?>
-		    <?php $this->write_form_table_field('checkbox','user_is_admin', 'Administrator',$data['is_admin']); ?>
-		  </table>
-		  <input type="submit" value="<?php echo $editing ? 'Update user' : 'Add user'; ?>">
-		</form><?php
+		$this->write_form_begin('admin_user.php','post');
+		$this->write_form_preserve('filter');
+		$this->write_form_preserve('edit');
+		$this->write_form_hidden('filled',1);
+		$this->write_form_table_begin();
+		$this->write_form_table_field('text',    'user_login',    'Login',        $data['login']);
+		$this->write_form_table_field('password','user_password', 'Password');
+		$this->write_form_table_field('password','user_password2','Confirm password');
+		$this->write_form_table_field('text',    'user_firstname','First name',   $data['firstname']);
+		$this->write_form_table_field('text',    'user_midname',  'Middle name',  $data['midname']);
+		$this->write_form_table_field('text',    'user_lastname', 'Last name',    $data['lastname']);
+		$this->write_form_table_field('checkbox','user_is_admin', 'Administrator',$data['is_admin']);
+		$this->write_form_table_end();
+		$this->write_form_end($editing ? 'Update user' : 'Add user');
 		$this->write_block_end();
 	}
 	
