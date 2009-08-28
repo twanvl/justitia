@@ -6,22 +6,26 @@ require_once('../lib/bootstrap.inc');
 // Results overview table
 // -----------------------------------------------------------------------------
 
-class Page extends Template {
-	private $entity;
+class Page extends PageWithEntity {
 	
 	function __construct() {
 		Authentication::require_admin();
+		$this->is_admin_page = true;
 		// find active entity
-		$this->entity = Entity::get(@$_SERVER['PATH_INFO']);
+		parent::__construct();
 	}
 	
 	function title() {
-		return "Results for " . $this->entity->title();
+		return "Results for " . parent::title();
+	}
+	
+	function nav_script($entity) {
+		return 'admin_results.php';
 	}
 	
 	function write_body() {
 		function is_submitable($e) {
-			return $e->attribute_bool('submitable');
+			return $e->submitable();
 		}
 		$entities = array_filter($this->entity->descendants(),'is_submitable');
 		$this->write_get_submission_results($entities);
@@ -46,8 +50,19 @@ class Page extends Template {
 							'user'  => User::by_id($userid)
 						);
 					}
-					// keep the last one
-					$users[$userid]['subms'][$e] = $subm;
+					// keep the last/best one
+					$old_subm = @$users[$userid]['subms'][$e];
+					if ($old_subm) {
+						if ($entity->attribute_bool('keep best')) {
+							$use = $subm->status >= $old_subm->status;
+						} else {
+							$use = true;
+						}
+					} else {
+						$use = true;
+					}
+					// is this it?
+					if ($use) $users[$userid]['subms'][$e] = $subm;;
 				}
 				$num_submissions++;
 				if (Status::is_passed($subm->status)) $num_passed++;
@@ -86,7 +101,7 @@ class Page extends Template {
 			$user  = $userinfo['user'];
 			echo "<tr>";
 			// username
-			echo '<td><a href="admin_user.php?edit='.urlencode($user->login).'">' . htmlspecialchars($user->name_and_login()) . '</a></td>';
+			echo '<td><a href="admin_user.php?edit='.urlencode($user->userid).'">' . htmlspecialchars($user->name_and_login()) . '</a></td>';
 			// submissions
 			foreach($entities as $e => $entity) {
 				$subm = isset($subms[$e]) ? $subms[$e] : false;

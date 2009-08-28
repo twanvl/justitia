@@ -11,6 +11,7 @@ abstract class Template {
 	
 	protected $auto_refresh = 0;
 	protected $auto_refresh_to;
+	protected $is_admin_page = false;
 	
 	abstract function title();
 	abstract function write_body();
@@ -113,25 +114,45 @@ abstract class Template {
 	// Navigation
 	// ---------------------------------------------------------------------
 	
-	function get_nav() {
-		$user = Authentication::current_user();
-		if (!$user) return array();
-		$result = array();
-		$result []= array(
-			'title' => 'Courses',
-			'url'   => 'index.php'
+	function write_admin_nav() {
+		if (!Authentication::is_admin()) return;
+		echo '<div id="admin-nav">';
+		$admin_nav_item = array(
+			array(
+				'title'   => 'Normal view',
+				'url'     => 'index.php' . @$_SERVER['PATH_INFO'],
+				'current' => Util::current_script_is('index.php')
+			),
+			array(
+				'title'   => 'Users',
+				'url'     => 'admin_user.php' . @$_SERVER['PATH_INFO'],
+				'current' => Util::current_script_is('admin_user.php')
+			),
+			array(
+				'title'   => 'Results table',
+				'url'     => 'admin_results.php' . @$_SERVER['PATH_INFO'],
+				'current' => Util::current_script_is('admin_results.php')
+			),
+			array(
+				'title'   => 'Print submissions',
+				'url'     => 'admin_print.php' . @$_SERVER['PATH_INFO'],
+				'current' => Util::current_script_is('admin_print.php')
+			),
 		);
-		if ($user->is_admin) {
-			$result []= array(
-				'title' => 'Users',
-				'url'   => 'admin_user.php'
-			);
-			$result []= array(
-				'title' => 'Results',
-				'url'   => 'admin_results.php' . @$_SERVER['PATH_INFO']
-			);
+		$first = true;
+		foreach ($admin_nav_item as $i) {
+			if (!$first) echo ' | ';
+			$first = false;
+			echo "<a href=\"$i[url]\"".($i['current'] ? ' class="current"': '').">$i[title]</a>";
 		}
-		return array($result);
+		echo '</div>';
+	}
+	// ---------------------------------------------------------------------
+	// Navigation
+	// ---------------------------------------------------------------------
+	
+	function get_nav() {
+		return array();
 	}
 	
 	function write_nav_item($items) {
@@ -146,8 +167,10 @@ abstract class Template {
 		echo "</ul></li>";
 	}
 	function write_nav() {
+		$items = $this->get_nav();
+		if (count($items) == 0) return;
 		echo '<ul id="nav">';
-		foreach ($this->get_nav() as $item) {
+		foreach ($items as $item) {
 			$this->write_nav_item($item);
 		}
 		echo '</ul>';
@@ -189,11 +212,12 @@ abstract class Template {
     ?>
     <base href="<?php echo $base; ?>">
   </head>
-  <body>
+  <body<?php if ($this->is_admin_page) echo ' class="admin"'; ?>>
     <div id="header">
       <div id="appname">Justitia, <small>Programming Judge</small></div>
       <?php $this->write_user_header(); ?>
     </div>
+    <?php $this->write_admin_nav(); ?>
     <div id="nav-wrap">
       <?php $this->write_nav(); ?>
     </div>

@@ -15,14 +15,11 @@ function download_link($subm,$file,$text) {
 	return "<a href=\"download.php/$subm->submissionid/$file\">$text</a>";
 }
 
-class Page extends Template {
-	private $entity;
-	
+class Page extends PageWithEntity {
 	function __construct() {
 		// find active entity
+		parent::__construct();
 		try {
-			$user = Authentication::require_user();
-			$this->entity = Entity::get(@$_SERVER['PATH_INFO'], !$user->is_admin);
 			// submit?
 			$uploaded = handle_uploaded_submission($this->entity);
 			if ($uploaded || $this->entity->count_pending_submissions() > 0) {
@@ -34,53 +31,12 @@ class Page extends Template {
 		}
 	}
 	
-	function title() {
-		return $this->entity->title();
-	}
-	
 	function write_body() {
-		if ($this->entity->attribute_bool('submitable')) {
+		if ($this->entity->submitable()) {
 			$this->write_submitable_page();
 		} else {
 			$this->write_overview_page();
 		}
-	}
-	
-	// ---------------------------------------------------------------------
-	// Navigation
-	// ---------------------------------------------------------------------
-	
-	function get_nav_children($e) {
-		$result = array();
-		foreach ($e->children() as $e) {
-			if (!$e->visible()) continue;
-			
-			$class = '';
-			if ($e->is_ancestor_of($this->entity)) {
-				$class .= 'ancestor ';
-			}
-			if ($e->attribute_bool('submitable')) {
-				$subm = Authentication::current_user()->status_of_last_submission_to($e);
-				$class .= Status::to_css_class($subm) . ' ';
-			}
-			if (!$e->active()) {
-				$class .= 'inactive ';
-			}
-			
-			$result []= array(
-				'title' => $e->title(),
-				'url'   => 'index.php' . $e->path(),
-				'class' => $class
-			);
-		}
-		return $result;
-	}
-	function get_nav() {
-		$result = parent::get_nav();
-		foreach ($this->entity->ancestors() as $e) {
-			$result []= $this->get_nav_children($e);
-		}
-		return $result;
 	}
 	
 	// ---------------------------------------------------------------------
@@ -257,7 +213,7 @@ class Page extends Template {
 	function write_overview_item($e) {
 		if (!$e->visible()) return;
 		$class = '';
-		if ($e->attribute_bool('submitable')) {
+		if ($e->submitable()) {
 			$subm = Authentication::current_user()->status_of_last_submission_to($e);
 			$class .= Status::to_css_class($subm) . ' ';
 		}

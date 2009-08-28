@@ -37,12 +37,6 @@ body {
 #user {
 	float:		right;
 }
-#nav-wrap {
-	background:	rgb(210,230,255);
-	margin:		0;
-	padding:	.2em;
-	padding-left:	1em;
-}
 h1 {
 	margin-top:	.2em;
 	margin-bottom:	.2em;
@@ -52,6 +46,12 @@ h1 {
 	padding-top:	0;
 }
 
+#nav-wrap {
+	background:	rgb(210,230,255);
+	margin:		0;
+	padding:	.2em;
+	padding-left:	1em;
+}
 #nav {
 	list-style:	none;
 	margin:		5px 0;
@@ -60,6 +60,7 @@ h1 {
 	display:	table;
 	font-family:	sans-serif, arial;
 	font-size:	93%;
+	border-spacing:	5px 0;
 }
 #nav > li {
 	background:	white;
@@ -67,7 +68,12 @@ h1 {
 	display:	table-cell;
 	vertical-align:	top;
 	margin:		5px;
-	padding:	2px;
+	spadding:	2px;
+	
+	border:	1px solid;
+	border-color:	rgb(175,190,220) rgb(190,205,230) rgb(190,205,230) rgb(192,192,192);
+	border-top-left:	1px solid gray;
+	border:	2px solid rgb(176,196,240);
 }
 #nav ul {
 	min-width:		8em;
@@ -76,6 +82,9 @@ h1 {
 	margin:		0;
 	padding:	0;
 }
+#nav ul li {
+	margin:	1px;
+}
 #nav a {
 	min-width:		8em;
 	display:	block;
@@ -83,17 +92,21 @@ h1 {
 	padding-right:	5px;
 	color:		black;
 	text-decoration:none;
+	padding:	2px 8px 2px 4px;
 }
 
 #nav .ancestor {
 	font-weight:	bold;
+	padding-right:	13px;
 }
+
 #nav .inactive {
 	color:		rgb(128,128,128);
 }
 #nav .inactive.skipped {
 	background:	white;
 }
+/*
 #nav .skipped {
 	background:	rgb(200,192,192);
 }
@@ -103,8 +116,101 @@ h1 {
 #nav .passed {
 	background:	rgb(150,255,100);
 }
-#nav .pending, #nav .judging {
+#nav .pending {
 	background:	rgb(245,245,100);
+}
+*/
+
+#nav a {
+	border:		1px solid rgb(240,240,240);
+	padding:	1px;
+}
+#nav .skipped {
+	border-color:	rgb(210,190,190);
+	background:	rgb(223,223,223);
+	
+	background:	rgb(223,223,223);
+}
+#nav .failed {
+	border-color:	rgb(255,120,120);
+	background:	rgb(255,193,193);
+}
+#nav .passed {
+	border-color:	rgb(120,255,100);
+	background:	rgb(213,255,193);
+}
+#nav .pending {
+	border-color:	rgb(255,255,50);
+	background:	rgb(255,255,173);
+}
+
+#nav a:hover {
+	border-color:	rgb(220,220,220);
+	background:	rgb(248,248,248);
+	background:	rgb(245,245,245);
+}
+#nav .skipped:hover {
+	border-color:	rgb(150,150,150);
+	background:	rgb(211,211,211);
+}
+#nav .failed:hover {
+	border-color:	rgb(255,50,50);
+	background:	rgb(255,146,146);
+}
+#nav .passed:hover {
+	border-color:	rgb(60,255,50);
+	background:	rgb(181,255,146);
+}
+#nav .pending:hover {
+	border-color:	rgb(255,255,0);
+	background:	rgb(255,255,111);
+}
+
+/* -----------------------------------------------------------------------------
+ * Admin pages
+ * ----------------------------------------------------------------------------- */
+
+#admin-nav {
+	background:	black;rgb(110,140,255);
+	color:		rgb(128,128,128);
+	padding:	4px;
+	padding-top:	4px;
+	padding-left:	.6em;
+}
+#admin-nav a {
+	color:		white;
+	text-decoration:	none;
+	padding:	2px 5px;
+	margin-left:	.4em;
+	margin-right:	.4em;
+}
+#admin-nav a:hover {
+	background:	rgb(210,230,255);
+	color:		black;
+	-moz-border-radius: 5px;
+}
+#admin-nav a.current {
+	background:	rgb(210,230,255);
+	color:		black;
+	margin-bottom:	-2px;
+	padding-bottom:	3px;
+	padding-top:	3px;
+	position:	relative;
+	top:		1px;
+	-moz-border-radius: 5px 5px 0 0;
+}
+
+.admin #header {
+	background:	rgb(100,20,100);
+}
+.admin #nav-wrap,
+.admin #admin-nav a:hover,
+.admin #admin-nav a.current {
+	background:	rgb(230,210,255);
+}
+.admin #nav > li {
+	background:	white;
+	border-left:	5px solid rgb(220,200,250);
 }
 
 /* -----------------------------------------------------------------------------
@@ -149,8 +255,8 @@ h1 {
 .block.failed		{ border-color:	rgb(255,100,100); }
 .block.failed .title,
 .block.failed hr	{ background:	rgb(255,100,100); }
-.block.passed		{ border-color:	rgb(100,255,100); }
-.block.passed .title	{ background:	rgb(100,255,100); }
+.block.passed		{ border-color:	rgb(120,255,100); }
+.block.passed .title	{ background:	rgb(120,255,100); }
 .block.pending		{ border-color:	rgb(255,255,50); }
 .block.pending .title	{ background:	rgb(255,255,50); }
 
@@ -159,7 +265,7 @@ h1 {
 .block.collapsable.failed  .title:hover,
 .block.linky.failed        .title:hover { background:	rgb(255,50,50); }
 .block.collapsable.passed  .title:hover,
-.block.linky.passed        .title:hover { background:	rgb(50,240,50); }
+.block.linky.passed        .title:hover { background:	rgb(60,255,50); }
 .block.collapsable.pending .title:hover,
 .block.linky.pending       .title:hover { background:	rgb(255,255,10); }
 
@@ -189,7 +295,7 @@ td, th {
 	background:	rgb(255,50,50);
 }
 .results .passed {
-	background:	rgb(150,255,100);
+	background:	rgb(120,255,100);
 }
 .results .pending {
 	background:	rgb(245,245,100);
@@ -202,7 +308,7 @@ td, th {
 	background:	rgb(255,100,100);
 }
 .testcase-details .passed {
-	background:	rgb(100,255,100);
+	background:	rgb(120,255,100);
 }
 
 .user-list {
@@ -215,3 +321,7 @@ td, th {
 	margin-left:	1em;
 	margin-bottom:	.5em;
 }
+
+/* -----------------------------------------------------------------------------
+ * Colors
+ * ----------------------------------------------------------------------------- */

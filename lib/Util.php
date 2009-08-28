@@ -84,6 +84,10 @@ class Util {
 		return $script . @$_SERVER['PATH_INFO'];
 	}
 	
+	static function current_script_is($script) {
+		return strpos($_SERVER['SCRIPT_NAME'],$script) !== false;
+	}
+	
 	static function base_url() {
 		$dirname = pathinfo($_SERVER["SCRIPT_NAME"], PATHINFO_DIRNAME);
 		$server = $_SERVER["SERVER_NAME"];

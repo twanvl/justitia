@@ -33,7 +33,7 @@ function handle_uploaded_submission($entity) {
 	$file = $_FILES['file'];
 	
 	// is upload okay?
-	if (!$entity->attribute_bool('submitable')) {
+	if (!$entity->submitable()) {
 		Template::add_message('submit','error', "No submissions can be made here.");
 		return false;
 	}
