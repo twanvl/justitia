@@ -28,8 +28,20 @@ class Page extends PageWithEntity {
 		return "Print submissions for " . parent::title();
 	}
 	
+	function nav_script($entity) {
+		return 'admin_print.php';
+	}
+	
 	function write_body() {
-		$this->write_form();
+		if ($this->entity->submitable()) {
+			$this->write_form();
+		} else {
+			$this->write_non_submitable();
+		}
+	}
+	
+	function write_non_submitable() {
+		echo "<em>Files can not be submited here.</em>";
 	}
 	
 	function write_form() {
@@ -46,7 +58,7 @@ class Page extends PageWithEntity {
 		//$this->write_form_table_field('radio',   'format',         'HTML output', $format=='html', ' value="html"');
 		$this->write_form_table_field('checkbox','include_failed', 'Include failed submissions', $include_failed);
 		$this->write_form_table_end();
-		$this->write_form_end("Go");
+		$this->write_form_end("Generate printout");
 		
 		$this->write_block_end();
 		
