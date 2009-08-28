@@ -65,23 +65,32 @@ class User {
 		return $this->lastname.','.$this->firstname . ',' . $this->midname;
 	}
 	
-	static function names_text($array) {
-		if (empty($array)) return "no one";
+	static function sort_users($users) {
+		$sorted = array();
+		foreach($users as $user) {
+			$sorted[$user->sort_name()] = $user;
+		}
+		ksort($sorted);
+		return $sorted;
+	}
+	static function names_text($users) {
+		if (empty($users)) return "no one";
+		// convert
 		$result = "";
-		foreach($array as $user) {
+		foreach(User::sort_users($users) as $user) {
 			if (strlen($result) > 0) $result .= ', ';
 			$result .= $user->name_and_login();
 		}
 		return $result;
 	}
-	static function names_html($array) {
-		if (empty($array)) {
-			return "<em>no one</em>";
-		}
+	static function names_html($users) {
+		if (empty($users)) return "<em>no one</em>";
+		// convert
 		$result = "";
-		foreach($array as $user) {
+		foreach(User::sort_users($users) as $user) {
 			if (strlen($result) > 0) $result .= ', ';
-			$result .= htmlspecialchars($user->name_and_login());
+			$result .= htmlspecialchars($user->name());
+			$result .= " <small>(" . htmlspecialchars($user->login) . ")</small>";
 		}
 		return $result;
 	}

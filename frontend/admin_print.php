@@ -73,9 +73,21 @@ class Page extends PageWithEntity {
 	function write_print_body() {
 		// for each userid => subm
 		$subms = $this->entity->all_final_submissions();
-		$unique_subms = array_unique($subms,SORT_REGULAR);
+		// make unique
+		$unique_subms = array();
+		foreach($subms as $subm) {
+			$unique_subms[$subm->submissionid] = $subm;
+		}
+		// sort by users
+		$by_name = array();
+		foreach($unique_subms as $subm) {
+			$users = $subm->users();
+			$name_of_first_user = count($users > 0) ? $users[0]->sort_name() : '';
+			$by_name[$name_of_first_user] = $subm;
+		}
+		ksort($by_name);
 		// TODO: sort submissions by name
-		foreach ($unique_subms as $subm) {
+		foreach ($by_name as $subm) {
 			$this->write_print_submission($subm);
 		}
 	}

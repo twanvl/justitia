@@ -12,6 +12,7 @@ class Submission {
 	
 	// Record data
 	private $data;
+	private $users; // cache
 	
 	function __get($attr) {
 		return $this->data[$attr];
@@ -30,6 +31,7 @@ class Submission {
 	}
 	
 	function users() {
+		if (isset($this->users)) return $this->users;
 		static $query;
 		DB::prepare_query($query,
 			"SELECT * FROM `user_submission`".
@@ -37,7 +39,8 @@ class Submission {
 			" WHERE submissionid=?"
 		);
 		$query->execute(array($this->submissionid));
-		return User::fetch_all($query);
+		$this->users = User::fetch_all($query);
+		return $this->users;
 	}
 	
 	function userids() {
