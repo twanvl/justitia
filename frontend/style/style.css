@@ -287,12 +287,21 @@ h1 {
  * ----------------------------------------------------------------------------- */
 
 .results {
-	border:		1px solid rgb(50,50,50);
+	border:		1px solid rgb(128,128,128);
 	border-collapse:collapse;
+	margin-top:	.5em;
 }
 .results td, .results th {
-	border:		1px solid rgb(50,50,50);
+	border:		1px solid rgb(128,128,128);
 	padding:	2px;
+}
+.results a {
+	color:			black;
+	text-decoration:	none;
+	display:		block;
+}
+.results tr > :first-child {
+	border-right:	3px double rgb(128,128,128);
 }
 .results .skipped {
 	background:	rgb(255,50,50);
@@ -339,4 +348,72 @@ td, th {
 	border:		2px solid rgb(0,255,0);
 	padding:	.5em;
 	margin:		1em;
+}
+
+/* -----------------------------------------------------------------------------
+ * Printing
+ * ----------------------------------------------------------------------------- */
+
+/* this would be the simple solution
+.print pre {
+	word-wrap:		break-word;     IE 5.5-7 
+	white-space:		-moz-pre-wrap;  Firefox 1.0-2.0 
+	white-space:		pre-wrap;
+} */
+.print pre {
+	white-space:		pre;
+}
+
+.line {
+	display:		table;
+}
+.indent {
+	display:		table-cell;
+}
+.indent b { /* tab indicator */
+	margin-left:		-1px;
+	border-left:		1px dotted rgb(100,100,100);
+	position:		relative;
+	left:			4px;
+	font-weight:		normal;
+}
+.rest {
+	display:		inline-block;
+	white-space:		pre-wrap;
+	display:		table-cell;
+	text-indent:		-30px;
+	padding-left:		30px;
+}
+.print pre.simple {
+	white-space:		pre-wrap;
+}
+
+.print .submission + .submission {
+	page-break-before:	right;
+}
+.print .submission-head {
+	page-break-inside:	avoid ;
+	border:			3px double black;
+	padding:		5px;
+	margin:			0 -.2em;
+	margin-bottom:		1em;
+}
+.print .file-head {
+	page-break-inside:	avoid ;
+	border:			1px solid black;
+	padding:		5px;
+	margin:			0 -.1em;
+	margin-bottom:		1em;
+}
+@media print {
+	@page {
+		margin:		1cm;
+	}
+	body, #main {
+		margin:		0;
+		padding:	.2em;
+	}
+	#header, #admin-nav, #nav-wrap, h1, .block {
+		display:	none;
+	}
 }

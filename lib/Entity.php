@@ -178,17 +178,46 @@ class Entity {
 	// ---------------------------------------------------------------------
 	
 	// All submissions, oldest one FIRST
-	function all_submissions() {
-		if (!$this->submitable()) return;
+	function all_submissions($min_status = 0) {
+		if (!$this->submitable()) return array();
 		static $query;
 		DB::prepare_query($query,
 			"SELECT * FROM `submission`".
-			" WHERE `entity_path`=?".
+			" WHERE `entity_path` = ? AND `status` >= ?".
 			" ORDER BY `time` ASC"
 		);
-		$query->execute(array($this->path()));
+		$query->execute(array($this->path(), $min_status));
 		return Submission::fetch_all($query);
 	}
+	
+	// All last/best submissions for each user
+	//  returns an array (userid => submission)
+	function all_final_submissions($min_status = 0) {
+		return $this->all_final_submissions_from( $this->all_submissions($min_status) );
+	}
+	function all_final_submissions_from($subms) {
+		$result = array();
+		foreach ($subms as $subm) {
+			$userids = $subm->userids();
+			foreach($userids as $userid) {
+				if (isset($result[$userid])) {
+					// keep the last/best one
+					if ($this->attribute_bool('keep best')) {
+						$use = Status::base_status_group($subm->status)
+						        >= Status::base_status_group($result[$userid]->status);
+					} else {
+						$use = true;
+					}
+				} else {
+					$use = true;
+				}
+				// is this it?
+				if ($use) $result[$userid] = $subm;
+			}
+		}
+		return $result;
+	}
+	
 	// Are there pending submissions?
 	function count_pending_submissions() {
 		if (!$this->submitable()) return 0;

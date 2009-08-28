@@ -39,35 +39,22 @@ class Page extends PageWithEntity {
 		// find submissions
 		$users = array();
 		foreach($entities as $e => $entity) {
-			// make a mapping userid => subm
-			$subms = $entity->all_submissions();
-			foreach ($subms as $subm) {
-				$userids = $subm->userids();
-				foreach($userids as $userid) {
-					if (!isset($users[$userid])) {
-						$users[$userid] = array(
-							'subms' => array(),
-							'user'  => User::by_id($userid)
-						);
-					}
-					// keep the last/best one
-					$old_subm = @$users[$userid]['subms'][$e];
-					if ($old_subm) {
-						if ($entity->attribute_bool('keep best')) {
-							$use = $subm->status >= $old_subm->status;
-						} else {
-							$use = true;
-						}
-					} else {
-						$use = true;
-					}
-					// is this it?
-					if ($use) $users[$userid]['subms'][$e] = $subm;;
-				}
+			// *all* submissions
+			$all_subms = $entity->all_submissions();
+			foreach ($all_subms as $subm) {
 				$num_submissions++;
 				if (Status::is_passed($subm->status)) $num_passed++;
 				if (Status::is_failed($subm->status)) $num_failed++;
 			}
+			// for each userid => subm
+			$subms = $entity->all_final_submissions_from($all_subms);
+			foreach ($subms as $userid => $subm) {
+				if (!isset($users[$userid])) {
+					$users[$userid]['user'] = User::by_id($userid);
+				}
+				$users[$userid]['subms'][$e] = $subm;
+			}
+			
 		}
 		// sort users by name
 		$users_sorted = array();
@@ -90,7 +77,7 @@ class Page extends PageWithEntity {
 	function write_submission_results($entities,$users) {
 		echo "<table class=\"results\">\n";
 		// heading
-		echo "<tr><thead><th>User</th>";
+		echo "<thead><tr><th>User</th>";
 		foreach($entities as $entity) {
 			echo "<th>" . htmlspecialchars($entity->title()) . "</th>";
 		}
