@@ -21,9 +21,16 @@ function now() {
 
 date_default_timezone_set(TIMEZONE);
 
-function format_date($date) {
+function format_date($date, $is_deadline = false) {
 	if ($date >= 1e99) return "never";
-	return date('l, j F Y, H:i:s',$date);
+	$str = date('l, j F Y, H:i:s',$date);
+	if ($is_deadline) {
+		// deadline 24:00:00 can not be confused
+		if (substr($str,-8) == '00:00:00') {
+			$str = date('l, j F Y, ',$date -24*3600) . '24:00:00';
+		}
+	}
+	return $str;
 }
 
 // -----------------------------------------------------------------------------

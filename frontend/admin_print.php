@@ -65,7 +65,7 @@ class Page extends PageWithEntity {
 		
 		$this->write_block_begin("Tips");
 		echo "<ul>";
-		echo "<li>Disable all Headers and footers in the <tt>File</tt> &rarr; <tt>Page Setup</tt> dialog (in Firefox)</li>";
+		echo "<li>Disable all headers and footers in the <tt>File</tt> &rarr; <tt>Page Setup</tt> dialog (in Firefox)</li>";
 		echo "</ul>";
 		$this->write_block_end();
 	}
