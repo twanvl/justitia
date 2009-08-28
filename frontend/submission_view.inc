@@ -38,6 +38,13 @@ function write_submission($subm, $entity = null, $include_entity = false) {
 		}
 	}
 	echo "</td></tr>";
+	if (Authentication::is_admin()) {
+		if (!Status::is_pending($subm->status)) {
+			echo "<tr><td>Judged by</td><td>" . htmlspecialchars($subm->judge_host);
+			echo " (<a href=\"admin_rejudge_submission.php?rejudge=$subm->submissionid&amp;redirect=" . urlencode(Util::current_url()) . '">rejudge</a>)';
+			echo "</td></tr>";
+		}
+	}
 	echo "</table>";
 	//if ($type == Status::FAILED_COMPARE || $type == Status::FAILED_RUN) // only write testset if failed?
 	write_testset_details($subm, $entity);

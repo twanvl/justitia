@@ -170,6 +170,23 @@ class Submission {
 		
 	}
 	
+	static function rejudge_by_id($submissionid) {
+		// delete output files
+		static $query;
+		DB::prepare_query($query,
+			"DELETE FROM `file` WHERE submissionid=? AND `filename` LIKE 'out/%'"
+		);
+		$query->execute(array($submissionid));
+		DB::check_errors($query);
+		// set status to pending
+		static $query2;
+		DB::prepare_query($query2,
+			"UPDATE `submission` SET `judge_start`=0, `judge_host`=NULL, status=? WHERE submissionid=?"
+		);
+		$query2->execute(array(Status::PENDING,$submissionid));
+		DB::check_errors($query2);
+	}
+	
 	
 	// ---------------------------------------------------------------------
 	// Files in the database
