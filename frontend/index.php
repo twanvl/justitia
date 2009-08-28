@@ -143,9 +143,8 @@ class Page extends Template {
 		echo "</td>";
 		echo "</table>";
 		if ($type == Status::FAILED_COMPARE || $type == Status::FAILED_RUN) {
-			echo "<hr>";
-			$this->write_testset_details($subm);
-		}
+			
+		}$this->write_testset_details($subm);
 	}
 	
 	function write_submitable_page() {
@@ -219,14 +218,20 @@ class Page extends Template {
 				if ($subm->input_exists("$case.in")) {
 					$downloads .= download_link($subm,"in/$case.in", 'input') . ' | ';
 				}
-				if ($subm->input_exists("$case.out")) {
-					$downloads .= download_link($subm,"in/$case.out",'expected output') . ' | ';
-				}
-				if ($subm->output_exists("$case.out")) {
-					$downloads .= download_link($subm,"out/$case.out",'your output') . ' | ';
-				}
-				if ($subm->output_exists("$case.diff")) {
-					$downloads .= download_link($subm,"out/$case.diff",'difference') . ' | ';
+				if ($class == 'failed') {
+					if ($subm->input_exists("$case.out")) {
+						$downloads .= download_link($subm,"in/$case.out",'expected output') . ' | ';
+					}
+					if ($subm->output_exists("$case.out")) {
+						$downloads .= download_link($subm,"out/$case.out",'your output') . ' | ';
+					}
+					if ($subm->output_exists("$case.diff")) {
+						$downloads .= download_link($subm,"out/$case.diff",'difference') . ' | ';
+					}
+				} else {
+					if ($subm->input_exists("$case.out")) {
+						$downloads .= download_link($subm,"in/$case.out",'output') . ' | ';
+					}
 				}
 			}
 			if ($case_status == 'Runtime error' && $this->entity->show_runtime_errors_for($case)) {

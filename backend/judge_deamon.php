@@ -211,7 +211,9 @@ class Judgement {
 		$checker = $this->entity->attribute('checker');
 		$checker = "checkers/$checker.sh";
 		$result = SystemUtil::run_command($checker, array($case_my, $case_ref, $case_diff));
-		$this->put_tempfile("$case.diff");
+		if (!$result) {
+			$this->put_tempfile("$case.diff");
+		}
 		return $result;
 	}
 	

@@ -70,7 +70,7 @@ if (!function_exists('mime_content_type')) {
 	function mime_content_type($filename) {
 		$ext = pathinfo($filename, PATHINFO_EXTENSION);
 		$lang = Util::language_from_filename($filename);
-		if ($ext == 'in' || $ext == 'out' || $ext == 'err' || $lang['is_language']) {
+		if ($ext == 'in' || $ext == 'out' || $ext == 'diff' || $ext == 'err' || $lang['is_language']) {
 			return 'text/plain';
 		} else {
 			return 'application/octet-stream';
