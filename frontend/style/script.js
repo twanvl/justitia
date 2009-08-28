@@ -5,7 +5,13 @@
 
 $(document).ready(function(){
 	$(".collapsable .title").click(function(){
-		$(".content",this.parentNode).slideToggle(200);
+		$(".content",this.parentNode).slideToggle(200,function(){
+			if (this.style.display == 'none') {
+				$(this.parentNode).addClass("collapsed");
+			} else {
+				$(this.parentNode).removeClass("collapsed");
+			}
+		});
 	});
 });
 

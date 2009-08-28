@@ -34,7 +34,12 @@ abstract class PageWithEntity extends Template {
 			if (!$e->visible()) continue;
 			
 			$class = '';
-			if ($e->is_ancestor_of($this->entity)) {
+			if ($e == $this->entity) {
+				$class .= 'current ';
+				if (count($e->children()) > 0) {
+					$class .= 'ancestor ';
+				}
+			} else if ($e->is_ancestor_of($this->entity)) {
 				$class .= 'ancestor ';
 			}
 			if ($e->submitable()) {
