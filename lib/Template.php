@@ -229,4 +229,22 @@ abstract class Template {
 </html>
 <?php
 	}
+	
+	function write_print() {
+		$base  = htmlspecialchars(Util::base_url());
+		$title = htmlspecialchars($this->title());
+		header('Content-Type', 'text/html; charset=UTF-8');
+?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <title><?php echo $title; ?> - Justitia</title>
+    <link rel="stylesheet" type="text/css" href="<?php echo $base; ?>style/print.css">
+    <base href="<?php echo $base; ?>">
+  </head>
+  <body>
+    <?php $this->write_print_body(); ?>
+  </body>
+</html>
+<?php
+	}
 }

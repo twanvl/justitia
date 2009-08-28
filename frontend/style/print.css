@@ -1,0 +1,71 @@
+
+@page {
+	margin:		1cm;
+}
+
+body {
+	font-family:	sans-serif;
+	color:		black;
+	background:	white;
+}
+
+@media print {
+	body {
+		margin:		0;
+		padding:	0 .2em;
+	}
+}
+
+/* -----------------------------------------------------------------------------
+ * Headings
+ * ----------------------------------------------------------------------------- */
+
+.submission + .submission {
+	page-break-before:	right;
+}
+.submission-head {
+	page-break-inside:	avoid ;
+	border:			3px double black;
+	padding:		5px;
+	margin:			0 -.2em;
+	margin-bottom:		1em;
+}
+.file-head {
+	page-break-inside:	avoid ;
+	border:			1px solid black;
+	padding:		5px;
+	margin:			0 -.1em;
+	margin-bottom:		1em;
+}
+td {
+	padding-right:		5px;
+}
+
+/* -----------------------------------------------------------------------------
+ * Indentation, etc.
+ * ----------------------------------------------------------------------------- */
+
+pre {
+	white-space:		pre;
+}
+
+.line {
+	display:		table;
+}
+.indent {
+	display:		table-cell;
+}
+.indent b { /* tab indicator */
+	margin-left:		-1px;
+	border-left:		1px dotted rgb(100,100,100);
+	position:		relative;
+	left:			4px;
+	font-weight:		normal;
+}
+.rest {
+	display:		inline-block;
+	white-space:		pre-wrap;
+	display:		table-cell;
+	text-indent:		-30px;
+	padding-left:		30px;
+}
