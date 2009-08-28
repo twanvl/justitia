@@ -96,7 +96,7 @@ class Util {
 	}
 	
 	// ---------------------------------------------------------------------
-	// Files and directories
+	// Languages
 	// ---------------------------------------------------------------------
 	
 	// Is a file sourcecode?
@@ -124,17 +124,4 @@ class Util {
 		}
 	}
 	
-	// Create a new (temporary) directory
-	static function temporary_name($parent, $prefix = '') {
-		// TODO: should we make this path relative?
-		return tempnam($parent, $prefix);
-	}
-	static function create_new_directory($parent, $prefix = '') {
-		$tempfile = Util::temporary_name($parent, $prefix);
-		if (file_exists($tempfile)) {
-			unlink($tempfile);
-		}
-		mkdir($tempfile);
-		return $tempfile;
-	}
 }

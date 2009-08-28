@@ -6,11 +6,6 @@
 
 // Course data files
 define('COURSE_DIR',       '../courses');
-// Incomming submissions
-define('PENDING_DIR',      '../submissions/pending');
-// Judged submissions
-define('SUBMISSION_DIR',   '../submissions');
-define('TEMP_JUDGING_DIR', ''); // empty string for system wide temp dir
 
 // -----------------------------------------------------------------------------
 // Database
@@ -53,3 +48,6 @@ $attribute_defaults['memory limit']		= 100000;
 $attribute_defaults['show compile errors']	= true;
 $attribute_defaults['show run errors']		= 'all';
 $attribute_defaults['show input/output']	= 'none';
+$attribute_defaults['compiler']			= ''; // automatic
+$attribute_defaults['runner']			= 'run';
+$attribute_defaults['checker']			= 'diff';

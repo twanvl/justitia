@@ -91,10 +91,10 @@ h1 {
 #nav .inactive {
 	color:		rgb(128,128,128);
 }
-#nav .inactive.no-submission {
+#nav .inactive.skipped {
 	background:	white;
 }
-#nav .no-submission {
+#nav .skipped {
 	background:	rgb(200,192,192);
 }
 #nav .failed {
@@ -182,7 +182,7 @@ td, th {
 	border:		1px solid rgb(50,50,50);
 	padding:	2px;
 }
-.results .no-submission {
+.results .skipped {
 	background:	rgb(255,50,50);
 }
 .results .failed {

@@ -31,6 +31,7 @@ function handle_uploaded_submission($entity) {
 		return false;
 	}
 	$file = $_FILES['file'];
+	
 	// is upload okay?
 	if (!$entity->attribute_bool('submitable')) {
 		Template::add_message('submit','error', "No submissions can be made here.");
@@ -54,23 +55,21 @@ function handle_uploaded_submission($entity) {
 		}
 	}
 	
-	// move file into pending folder
-	$subm_dir = Util::create_new_directory(PENDING_DIR, 'submission');
-	mkdir($subm_dir . '/code');
-	$file_name = str_replace('/','',$file['name']);
-	if (!move_uploaded_file($file['tmp_name'], $subm_dir . '/code/' . $file_name)) {
-		Template::add_message('submit','error', "Can not move uploaded file");
-		rmdir($subm_dir . '/code');
-		rmdir($subm_dir);
-		return false;
-	}
-	
 	// add to database
-	$subm = Submission::make_new($entity, $subm_dir, $file_name);
+	$filename = str_replace('/','',$file['name']);
+	$subm = Submission::make_new($entity, $filename);
+	
+	// add data
+	$subm->put_file($subm->code_filename(),file_get_contents($file['tmp_name']));
+	unlink($file['tmp_name']);
+	
 	// assign users
 	foreach (UserGroup::current() as $user) {
 		$subm->add_user($user);
 	}
+	
+	// finalize
+	$subm->set_status(Status::PENDING);
 	
 	// success
 	Template::add_message('submit-confirm','confirm', 'Submission received, it will be judged shortly.');

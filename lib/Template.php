@@ -182,7 +182,7 @@ abstract class Template {
     <script type="text/javascript" src="<?php echo $base; ?>style/jquery.autocomplete.js"></script>
     <script type="text/javascript" src="<?php echo $base; ?>style/script.js"></script>
     <?php
-	if ($this->auto_refresh) {
+	if (false && $this->auto_refresh) {
 		$url = isset($this->auto_refresh_to) ? ";url=".htmlspecialchars($base . $this->auto_refresh_to) : "";
 		echo '<meta http-equiv="refresh" content="'.$this->auto_refresh.$url.'">';
 	}

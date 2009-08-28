@@ -132,7 +132,7 @@ class Page extends Template {
 		echo "<table>";
 		echo "<tr><td>Submitted on</td><td>" . format_date($subm->time) . "</td>";
 		echo "<tr><td>Submitted by</td><td>" . User::names_html($subm->users()) . "</td>";
-		echo '<tr><td>Files</td><td><a href="download.php/'.$subm->submissionid.'/code/'.urlencode($subm->file_name)
+		echo '<tr><td>Files</td><td><a href="download.php/'.$subm->submissionid.'/code/'.urlencode($subm->filename)
 		                           .'">Download submitted files</a></td>';
 		echo "<tr><td>Status</td><td>" . Status::to_text($subm);
 		if ($type == Status::FAILED_COMPILE) {
@@ -192,30 +192,15 @@ class Page extends Template {
 	// ---------------------------------------------------------------------
 	
 	function write_testset_details($subm) {
-		echo "<table class=\"testcase-details\">";
+		$cases = $subm->get_file('testcases');
+		if (!$cases) return;
+		$cases = unserialize($cases);
 		// testcase output
-		$testset = new TestSet($this->entity);
-		foreach ($testset->test_cases() as $case) {
+		echo "<table class=\"testcase-details\">";
+		foreach ($cases as $case => $status) {
 			// status, this is a bit of a hack, we should look at exit codes
-			$case_status = "unknown";
-			$diff_file = $subm->output_filename("$case.diff");
-			if (!file_exists($diff_file)) {
-				if (!file_exists($subm->output_filename("$case.out"))) {
-					$class = 'skipped';
-					$case_status = "Skipped";
-				} else {
-					$class = 'failed';
-					$case_status = "Runtime error";
-				}
-			} else if (filesize($diff_file) > 0) {
-				$class = 'failed';
-				$failed = true;
-				$runtime_error = false;
-				$case_status = "Wrong output";
-			} else {
-				$class = 'passed';
-				$case_status = "Passed";
-			}
+			$class = Status::to_css_class($status);
+			$case_status = Status::to_testcase_text($status);
 			
 			// description/hint
 			$desc = '';
@@ -231,21 +216,21 @@ class Page extends Template {
 			// input/output/error downloads
 			$downloads = '';
 			if ($class != 'skipped' && $this->entity->show_input_output_for($case)) {
-				if (file_exists($subm->input_filename("$case.in"))) {
+				if ($subm->input_exists("$case.in")) {
 					$downloads .= download_link($subm,"in/$case.in", 'input') . ' | ';
 				}
-				if (file_exists($subm->input_filename("$case.out"))) {
+				if ($subm->input_exists("$case.out")) {
 					$downloads .= download_link($subm,"in/$case.out",'expected output') . ' | ';
 				}
-				if (file_exists($subm->output_filename("$case.out"))) {
+				if ($subm->output_exists("$case.out")) {
 					$downloads .= download_link($subm,"out/$case.out",'your output') . ' | ';
 				}
-				if (file_exists($subm->output_filename("$case.diff"))) {
+				if ($subm->output_exists("$case.diff")) {
 					$downloads .= download_link($subm,"out/$case.diff",'difference') . ' | ';
 				}
 			}
 			if ($case_status == 'Runtime error' && $this->entity->show_runtime_errors_for($case)) {
-				if (file_exists($subm->output_filename("$case.err"))) {
+				if ($subm->output_exists("$case.err")) {
 					$downloads .= download_link($subm,"out/$case.err",'error message') . ' | ';
 				}
 			}

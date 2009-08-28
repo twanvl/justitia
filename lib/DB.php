@@ -26,6 +26,12 @@ class DB {
 		}
 	}
 	
-	// Close a cursor, and check for errors
+	// Check for errors
+	static function check_errors($query) {
+		$status = $query->errorInfo();
+		if ($status[0] != 0) {
+			die($status[2]);
+		}
+	}
 	// TODO
 }

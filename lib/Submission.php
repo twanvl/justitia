@@ -111,20 +111,22 @@ class Submission {
 	// ---------------------------------------------------------------------
 	
 	// Add a new submission to the database, and return it
-	static function make_new($entity,$file_path,$file_name) {
+	static function make_new($entity,$filename) {
+		// store submission
 		static $query;
 		DB::prepare_query($query,
 			"INSERT INTO `submission`".
-			       " (`time`,`entity_path`,`file_path`,`file_name`,`judge_host`,`judge_start`,`status`)".
-			" VALUES (:time, :entity_path, :file_path, :file_name,  NULL,        0,            :status)"
+			       " (`time`,`entity_path`,`filename`,`judge_host`,`judge_start`,`status`)".
+			" VALUES (:time, :entity_path, :filename,  NULL,        0,            :status)"
 		);
 		$data = array();
 		$data['time']         = time();
 		$data['entity_path']  = $entity->path();
-		$data['file_path']    = $file_path;
-		$data['file_name']    = $file_name;
-		$data['status']       = Status::PENDING;
-		$query->execute($data);
+		$data['filename']     = $filename;
+		$data['status']       = 0; // update after putting file
+		if (!$query->execute($data)) {
+			DB::check_errors($query);
+		}
 		$data['judge_host']   = NULL;
 		$data['judge_start']  = 0;
 		$data['submissionid'] = DB::get()->lastInsertId();
@@ -144,33 +146,53 @@ class Submission {
 	// Alter the status of the submission
 	// This also moves the associated files
 	function set_status($new_status) {
-		// what will the new filename be?
-		// this can be as fancy as we like
-		if      (Status::is_passed($new_status)) $statusdir = "passed";
-		else if (Status::is_failed($new_status)) $statusdir = "failed";
-		else {
-			throw new Exception("Can't set status to: ".$new_status);
-		}
-		$new_path_base = SUBMISSION_DIR . $this->entity_path . $statusdir;
-		$new_path = $new_path_base . '/' . $this->submissionid;
-		// move
-		@mkdir($new_path_base,0777,true);
-		rename($this->file_path, $new_path);
 		// update db
 		static $query;
 		DB::prepare_query($query,
-			"UPDATE `submission` SET `file_path` = :file_path, `status` = :status".
+			"UPDATE `submission` SET `status` = :status".
 			" WHERE `submissionid` = :submissionid");
 		$query->execute(array(
-			'file_path'    => $new_path,
 			'status'       => $new_status,
 			'submissionid' => $this->submissionid
 		));
 		$query->closeCursor();
 		// update object
-		$this->status    = $new_status;
-		$this->file_path = $new_path;
+		$this->status = $new_status;
 		
+	}
+	
+	
+	// ---------------------------------------------------------------------
+	// Files in the database
+	// ---------------------------------------------------------------------
+	
+	function put_file($filename,$data) {
+		DB::prepare_query($query,
+			// this is a mysql-ism
+			"REPLACE INTO `file` (`submissionid`,`filename`,`data`)".
+			            " VALUES (:submissionid, :filename, :data)");
+		$query->execute(array(
+			'submissionid' => $this->submissionid,
+			'filename'     => $filename,
+			'data'         => $data,
+		));
+		DB::check_errors($query);
+	}
+	
+	function get_file($filename) {
+		DB::prepare_query($query,
+			"SELECT `data` FROM `file` WHERE `submissionid`=? AND `filename`=?");
+		$query->execute(array($this->submissionid,$filename));
+		DB::check_errors($query);
+		return $query->fetchColumn();
+	}
+	
+	function file_exists($filename) {
+		DB::prepare_query($query,
+			"SELECT COUNT(*) FROM `file` WHERE `submissionid`=? AND `filename`=?");
+		$query->execute(array($this->submissionid,$filename));
+		DB::check_errors($query);
+		return $query->fetchColumn();
 	}
 	
 	// ---------------------------------------------------------------------
@@ -178,13 +200,20 @@ class Submission {
 	// ---------------------------------------------------------------------
 	
 	function code_filename() {
-		return $this->file_path . '/code/' . $this->file_name;
+		return 'code/' . $this->filename;
 	}
 	function output_filename($filename) {
-		return $this->file_path . '/out/' . $filename;
+		return 'out/' . $filename;
 	}
 	function input_filename($filename) {
 		return COURSE_DIR . $this->entity_path . $filename;
+	}
+	
+	function output_exists($filename) {
+		return $this->file_exists($this->output_filename($filename));
+	}
+	function input_exists($filename) {
+		return file_exists($this->input_filename($filename));
 	}
 	
 	// ---------------------------------------------------------------------

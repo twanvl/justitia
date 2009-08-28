@@ -23,7 +23,7 @@ function is_allowed_file($subm,$entity,$user,$dir,$filename) {
 	}
 	if ($dir == 'code') {
 		// the file send by the user
-		return $subm->code_filename();
+		return array(true,$subm->code_filename());
 	} else if ($dir == 'out') {
 		$ext = pathinfo($filename, PATHINFO_EXTENSION);
 		$base = pathinfo($filename, PATHINFO_FILENAME);
@@ -32,7 +32,7 @@ function is_allowed_file($subm,$entity,$user,$dir,$filename) {
 		else if ($ext == 'out' || $ext == 'diff') $ok = $entity->show_input_output_for($base);
 		else                                      $ok = false;
 		if ($ok) {
-			return $subm->output_filename($filename);
+			return array(true,$subm->output_filename($filename));
 		}
 	} else if ($dir == 'in') {
 		$ext  = pathinfo($filename, PATHINFO_EXTENSION);
@@ -41,7 +41,7 @@ function is_allowed_file($subm,$entity,$user,$dir,$filename) {
 		else if ($ext == 'in' || $ext == 'out') $ok = $entity->show_input_output_for($base);
 		else                                    $ok = false;
 		if ($ok) {
-			return $subm->input_filename($filename);
+			return array(false,$subm->input_filename($filename));
 		}
 	}
 	return false; // unknown file
@@ -58,24 +58,41 @@ $subm = Submission::by_id($submissionid);
 $user = Authentication::require_user();
 
 // Which file are we downloading?
-$filename = is_allowed_file($subm,$subm->entity(),$user, $sub_dir,$sub_file);
-if ($filename === false) {
+$fileinfo = is_allowed_file($subm,$subm->entity(),$user, $sub_dir,$sub_file);
+if ($fileinfo === false) {
 	die("You have no rights to view this file.");
+} else {
+	list($in_db,$filename) = $fileinfo;
 }
-
-// Open file and pass it through
-if (!file_exists($filename)) {
-	//die("file not found: $submissionid/$sub_file");
-	die("file not found: $filename");
-}
-$fp = fopen($filename, "rb");
 
 if (!function_exists('mime_content_type')) {
 	// windows doesn't have this
-	function mime_content_type() {
-		return 'application octet-stream';
+	function mime_content_type($filename) {
+		$ext = pathinfo($filename, PATHINFO_EXTENSION);
+		$lang = Util::language_from_filename($filename);
+		if ($ext == 'in' || $ext == 'out' || $ext == 'err' || $lang['is_language']) {
+			return 'text/plain';
+		} else {
+			return 'application/octet-stream';
+		}
 	}
 }
+header("Content-Type: " . mime_content_type($sub_file));
 
-header("Content-Type: " . mime_content_type($filename));
-fpassthru($fp);
+if ($in_db) {
+	// get the file from the database
+	$file = $subm->get_file($filename);
+	if ($file === false) {
+		die("file not found: $sub_dir/$sub_file");
+	}
+	echo $file;
+	
+} else {
+	// Open file and pass it through
+	if (!file_exists($filename)) {
+		die("file not found: $sub_dir/$sub_file");
+	}
+	$fp = fopen($filename, "rb");
+
+	fpassthru($fp);
+}

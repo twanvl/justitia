@@ -8,6 +8,7 @@ class Status {
 	// higher status is better
 	const NOT_DONE        = 0;        // no submission attempt has been made
 	const FAILED          = 10000000;
+	const FAILED_INTERNAL = 10000000; // internal error
 	const FAILED_LANGUAGE = 11000000;
 	const FAILED_COMPILE  = 12000000;
 	const FAILED_RUN      = 13000000; // + #of test cases attempted
@@ -49,12 +50,21 @@ class Status {
 			case Status::JUDGING:          return "Judging";
 			case Status::PASSED_DEFAULT:   return "Passed (without checking)";
 			case Status::PASSED_COMPARE:   return "Passed";
-			case Status::FAILED:           return "Failed";
+			case Status::FAILED_INTERNAL:  return "Failed: internal error, contact an administrator";
 			case Status::FAILED_LANGUAGE:  return "Failed: unknown language";
 			case Status::FAILED_COMPILE:   return "Failed: compile error";
 			case Status::FAILED_RUN:       return "Failed: runtime error";
 			case Status::FAILED_COMPARE:   return "Failed: wrong answer";
 			default:                       return "Unknown status";
+		}
+	}
+	static function to_testcase_text($status) {
+		switch (Status::base_status($status)) {
+			case Status::NOT_DONE:         return "Skipped";
+			case Status::PASSED_COMPARE:   return "Passed";
+			case Status::FAILED_RUN:       return "Runtime error";
+			case Status::FAILED_COMPARE:   return "Wrong answer";
+			default:                       return "Unknown";
 		}
 	}
 	static function to_short_text($status) {
@@ -71,7 +81,7 @@ class Status {
 	static function to_css_class($status) {
 		$status = Status::to_status($status);
 		switch (Status::base_status_group($status)) {
-			case Status::NOT_DONE:         return "no-submission";
+			case Status::NOT_DONE:         return "skipped";
 			case Status::PENDING:          return "pending";
 			case Status::JUDGING:          return "judging";
 			case Status::PASSED:           return "passed";

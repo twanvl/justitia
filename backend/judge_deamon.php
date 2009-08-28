@@ -38,134 +38,190 @@ if (VERBOSE) {
 	echo "+=============================================================================+\n";
 }
 
-function is_windows() {
-	return strpos(php_uname('s'),'indows') !== false;
-}
+// -----------------------------------------------------------------------------
+// Making judgements
+// -----------------------------------------------------------------------------
 
 class Judgement {
 	private $entity;
 	private $subm;
-	
-	
+	private $tempdir;
+	// language of submission
+	private $language;
+	// temporary files
+	private $source_file;
+	private $exe_file;
 	
 	function __construct($subm) {
-	}
-}
-
-// Run a shell command in a safe way
-function safe_system($cmd,$args,$limits=array()) {
-	// TODO make this actually safe!!!
-	// build command line
-	// windows fix
-	if (is_windows()) {
-		$cmd = str_replace('/',"\\",$cmd);
-	}
-	$command = escapeshellcmd($cmd);
-	foreach($args as $arg) {
-		$command .= ' ' . escapeshellarg($arg);
-	}
-	if (!file_exists($cmd)) {
-		throw new Exception("Command not found: $cmd");
-	}
-	// execute
-	system($command, $retval);
-	return $retval == 0;
-}
-function set_submission_status($subm, $status) {
-	$subm->set_status($status);
-	//die("one is enough");
-}
-function compile_submission($infile, $outfile, $errfile, $language, $entity) {
-	// compiler to use
-	$compiler = "compilers/" . $language['name'] . '.sh';
-	return safe_system($compiler, array($infile, $outfile, $errfile));
-}
-function prepare_reference_output($subm, $entity) {
-	// TODO
-}
-
-function run_submission($program, $infile, $outfile, $errfile, $entity) {
-	return safe_system('runners/run.sh', array($program, $infile, $outfile, $errfile));
-}
-function run_checker($out1, $out2, $diff, $entity) {
-	return safe_system('checkers/diff.sh', array($out1, $out2, $diff));
-}
-
-function judge_submission($subm) {
-	$entity = $subm->entity();
-	
-	// do we need to compile at all?
-	if (!$entity->attribute_bool('compile')) {
-		return Status::PASSED_DEFAULT;
+		$this->subm = $subm;
+		$this->entity = $subm->entity();
 	}
 	
-	// what type of file do we have?
-	$language = Util::language_info( $entity->attribute('language') );
-	if ($language['name'] == 'any') {
-		$language = Util::language_from_filename($subm->file_name);
-	}
-	if ($language['name'] == 'unknown') {
-		// unknown language -> failure
-		return Status::FAILED_LANGUAGE;
-	}
-	
-	// move to temp directory
-	//$tempdir = Util::create_new_directory(TEMP_JUDGING_DIR,'judge');
-	$tempdir = $subm->file_path . '/out';
-	@mkdir($tempdir);
-	chmod($tempdir,0755);
-	$source_file = $tempdir .'/'. $subm->file_name;
-	copy($subm->file_path . '/code/' . $subm->file_name, $source_file);
-	
-	// 1. extract archive
-	$is_archive = false;
-	if (isset($language['archive_extract'])) {
-		if ($entity->attribute_bool('allow archives')) {
-			// TODO: Check this during submit
-			return Status::FAILED_LANGUAGE;
+	function __destruct() {
+		if (isset($this->tempdir)) {
+			$this->tempdir->__destruct();
+			unset($this->tempdir);
 		}
-		throw new Exception("TODO: archives");
-		safe_system($language['archive_extract'], $source_file);
-		// look for the actual source file
 	}
 	
-	// 1. compile
-	$exe_file = $source_file.'.exe';
-	if (!compile_submission($source_file, $exe_file, $tempdir .'/compiler.err', $language, $entity)) {
-		return Status::FAILED_COMPILE;
+	// Judge the submission, and update the database
+	function judge() {
+		$status = $this->do_judge();
+		$this->subm->set_status($status);
+		$this->__destruct();
 	}
 	
-	// 2. prepare testset
-	$testset = new Testset($entity);
-	
-	// 3. run testset
-	foreach($testset->test_cases() as $case) {
-		echo "  case: " . $case, "\n";
-		$case_input       = COURSE_DIR . $subm->entity_path . $case . '.in';
-		$case_ref_output  = COURSE_DIR . $subm->entity_path . $case . '.out';
-		$case_my_output   = $tempdir .'/'. $case . '.out';
-		$case_my_error    = $tempdir .'/'. $case . '.err';
-		$case_diff_output = $tempdir .'/'. $case . '.diff';
-		// run program
-		if (!run_submission($exe_file, $case_input, $case_my_output, $case_my_error, $entity)) {
-			return Status::FAILED_RUN;
-		}
-		if (!file_exists($case_my_output)) {
-			file_put_contents($case_my_error, "No output file created");
-			return Status::FAILED_RUN;
-		}
-		// compare input/output
-		if (!run_checker($case_my_output, $case_ref_output, $case_diff_output, $entity)) {
-			return Status::FAILED_COMPARE;
+	// Judge the submission, return status
+	private function do_judge() {
+		// do we need to compile at all?
+		if (!$this->entity->attribute_bool('compile')) {
+			return Status::PASSED_DEFAULT;
 		}
 		
+		if (!$this->determine_language()) {
+			return Status::FAILED_LANGUAGE;
+		}
+		if (!$this->create_tempdir()) {
+			throw new Exception("Failed to create tempdir");
+			return Status::FAILED_INTERNAL;
+		}
+		if (!$this->download_source()) {
+			throw new Exception("Failed to find submission source");
+			return Status::FAILED_INTERNAL;
+		}
+		if (!$this->extract_archive()) {
+			return Status::FAILED_LANGUAGE;
+		}
+		if (!$this->compile()) {
+			return Status::FAILED_COMPILE;
+		}
+		
+		// prepare testset
+		$testset = new Testset($this->entity);
+		// TODO
+		
+		// run testset
+		$test_results = array();
+		$status = Status::PASSED_COMPARE;
+		
+		foreach($testset->test_cases() as $case) {
+			echo "  case: " . $case . "\n";
+			if ($status != Status::PASSED_COMPARE) {
+				$test_results[$case] = Status::NOT_DONE;
+			} else if (!$this->run_case($case)) {
+				$status = Status::FAILED_RUN;
+				$test_results[$case] = Status::FAILED_RUN;
+			} else if (!$this->check_case($case)) {
+				$status = Status::FAILED_COMPARE;
+				$test_results[$case] = Status::FAILED_COMPARE;
+			} else {
+				$test_results[$case] = Status::PASSED_COMPARE;
+			}
+		}
+		
+		// write status to file
+		$this->subm->put_file('testcases',serialize($test_results));
+		
+		return $status;
 	}
-	return Status::PASSED_COMPARE;
-}
-
-function judge_submission_and_update($subm) {
-	$status = judge_submission($subm);
-	set_submission_status($subm, $status);
+	
+	private function determine_language() {
+		// what type of file do we have?
+		// determine from specification
+		$this->language = Util::language_info( $this->entity->attribute('language') );
+		// determine from extension
+		if ($this->language['name'] == 'any') {
+			$this->language = Util::language_from_filename($this->subm->filename);
+		}
+		// unknown language -> failure
+		return $this->language['name'] != 'unknown';
+	}
+	
+	private function download_source() {
+		$this->source_file = $this->tempdir->file($this->subm->filename);
+		$contents = $this->subm->get_file($this->subm->code_filename());
+		if ($contents === false) return false;
+		file_put_contents($this->source_file, $contents);
+		return true;
+	}
+	
+	private function create_tempdir() {
+		// create temporary directory
+		$this->tempdir = new Tempdir('','judge');
+		if (!file_exists($this->tempdir->dir)) return false;
+		chmod($this->tempdir->dir,0755);
+		return true;
+	}
+	
+	private function extract_archive() {
+		// extract archive?
+		$is_archive = false;
+		if (isset($this->language['archive_extract'])) {
+			if ($this->entity->attribute_bool('allow archives')) {
+				// TODO: Check this during submit
+				return false;
+			}
+			throw new Exception("TODO: archives");
+			SystemUtil::run_command($this->language['archive_extract'], $this->source_file);
+			// look for the actual source file
+		}
+		return true;
+	}
+	
+	private function compile() {
+		// compiler script to use
+		$compiler = $this->entity->attribute('compiler');
+		if ($compiler == '') $compiler = $this->language['name'];
+		$compiler = "compilers/$compiler.sh";
+		// compile
+		$this->exe_file = $this->source_file . '.exe';
+		$compile_err_file = $this->tempdir->file('compiler.err');
+		$result =SystemUtil::safe_command($compiler, array($this->source_file, $this->exe_file, $compile_err_file));
+		if (!$result) {
+			$this->put_tempfile('compiler.err');
+		}
+		return $result;
+	}
+	
+	private function run_case($case) {
+		// copy case input
+		$case_input  = $this->tempdir->file("$case.in");
+		$case_output = $this->tempdir->file("$case.out");
+		$case_error  = $this->tempdir->file("$case.err");
+		copy($this->entity->data_path() . "$case.in", $case_input);
+		// runner
+		$runner = $this->entity->attribute('runner');
+		$runner = "runners/$runner.sh";
+		// run program, store results
+		$result = SystemUtil::safe_command($runner, array($this->exe_file, $case_input, $case_output, $case_error));
+		if (!file_exists($case_output)) {
+			file_put_contents($case_output, "No output file created");
+			$result = false;
+		}
+		$this->put_tempfile("$case.out");
+		$this->put_tempfile("$case.err");
+		return $result;
+	}
+	
+	private function check_case($case) {
+		$case_ref  = $this->entity->data_path() . "$case.out";
+		$case_my   = $this->tempdir->file("$case.out");
+		$case_diff = $this->tempdir->file("$case.diff");
+		// run checker
+		$checker = $this->entity->attribute('checker');
+		$checker = "checkers/$checker.sh";
+		$result = SystemUtil::run_command($checker, array($case_my, $case_ref, $case_diff));
+		$this->put_tempfile("$case.diff");
+		return $result;
+	}
+	
+	private function put_tempfile($file) {
+		$this->subm->put_file(
+			$this->subm->output_filename($file),
+			file_get_contents($this->tempdir->file($file))
+		);
+	}
+	
 }
 
 
@@ -198,7 +254,8 @@ while (true) {
 	}
 	// Let's judge it
 	try {
-		judge_submission_and_update($subm);
+		$judgement = new Judgement($subm);
+		$judgement->judge();
 	} catch (Exception $e) {
 		// TODO: shout louder
 		echo "Error during judging!\n", $e;
