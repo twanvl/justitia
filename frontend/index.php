@@ -76,7 +76,24 @@ class Page extends PageWithEntity {
 		echo "<tr><td>Can submit</td><td>" . format_bool($this->entity->active()) . "</td>";
 		echo "<tr><td>Deadline</td><td>"   . format_date($this->entity->active_range()->end) . "</td>";
 		echo "<tr><td>Language</td><td>"   . ($this->entity->attribute('language')) . "</td>";
-		echo "<tr><td>Archives allowed</td><td>" . format_bool($this->entity->attribute_bool('allow archives')) . "</td>";
+		//echo "<tr><td>Archives allowed</td><td>" . format_bool($this->entity->attribute_bool('allow archives')) . "</td>";
+		echo "<tr><td>Judging</td><td>";
+		if ($this->entity->attribute_bool('compile')) {
+			if (true) {
+				// TODO: determine whether there is a testset
+				echo "Your submission will be compiled and tested. ";
+			} else {
+				echo "Your submission will be compiled but not tested. ";
+			}
+			if ($this->entity->attribute_bool('keep best')) {
+				echo "The best solution counts.";
+			} else {
+				echo "The last solution counts.";
+			}
+		} else {
+			echo "All submissions are accepted.";
+		}
+		echo "</td>";
 		echo "</table>";
 	}
 	
