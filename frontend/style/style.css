@@ -176,7 +176,6 @@ h1 {
 }
 
 .admin #header {
-	background:	rgb(100,20,100);
 	background:	rgb(100,40,140);
 }
 .admin #nav-wrap,
@@ -326,6 +325,13 @@ td, th {
 	vertical-align:	top;
 }
 
+a:link {
+	color:		rgb(0,20,180);
+}
+a:visited {
+	color:		rgb(100,0,140);
+}
+
 .user-list {
 	margin-top:	1em;
 }
@@ -335,6 +341,14 @@ td, th {
 	padding:	0;
 	margin-left:	1em;
 	margin-bottom:	.5em;
+}
+.user-group a {
+	text-decoration:	none;
+	color:		rgb(0,20,180);
+}
+.user-group a:hover {
+	background:	rgb(0,20,180);
+	color:		white;
 }
 
 .error-message {
@@ -348,72 +362,4 @@ td, th {
 	border:		2px solid rgb(0,255,0);
 	padding:	.5em;
 	margin:		1em;
-}
-
-/* -----------------------------------------------------------------------------
- * Printing
- * ----------------------------------------------------------------------------- */
-
-/* this would be the simple solution
-.print pre {
-	word-wrap:		break-word;     IE 5.5-7 
-	white-space:		-moz-pre-wrap;  Firefox 1.0-2.0 
-	white-space:		pre-wrap;
-} */
-.print pre {
-	white-space:		pre;
-}
-
-.line {
-	display:		table;
-}
-.indent {
-	display:		table-cell;
-}
-.indent b { /* tab indicator */
-	margin-left:		-1px;
-	border-left:		1px dotted rgb(100,100,100);
-	position:		relative;
-	left:			4px;
-	font-weight:		normal;
-}
-.rest {
-	display:		inline-block;
-	white-space:		pre-wrap;
-	display:		table-cell;
-	text-indent:		-30px;
-	padding-left:		30px;
-}
-.print pre.simple {
-	white-space:		pre-wrap;
-}
-
-.print .submission + .submission {
-	page-break-before:	right;
-}
-.print .submission-head {
-	page-break-inside:	avoid ;
-	border:			3px double black;
-	padding:		5px;
-	margin:			0 -.2em;
-	margin-bottom:		1em;
-}
-.print .file-head {
-	page-break-inside:	avoid ;
-	border:			1px solid black;
-	padding:		5px;
-	margin:			0 -.1em;
-	margin-bottom:		1em;
-}
-@media print {
-	@page {
-		margin:		1cm;
-	}
-	body, #main {
-		margin:		0;
-		padding:	.2em;
-	}
-	#header, #admin-nav, #nav-wrap, h1, .block {
-		display:	none;
-	}
 }

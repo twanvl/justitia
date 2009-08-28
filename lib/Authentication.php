@@ -29,8 +29,8 @@ class Authentication {
 		if (isset($current_user)) return $current_user;
 		
 		Authentication::session_start();
-		if (isset($_SESSION['login'])) {
-			$current_user = User::by_login($_SESSION['login']);
+		if (isset($_SESSION['userid'])) {
+			$current_user = User::by_id($_SESSION['userid']);
 		} else {
 			$current_user = false;
 		}
@@ -44,7 +44,7 @@ class Authentication {
 	// Set the currently loged in user
 	static function set_current_user($u) {
 		Authentication::session_start();
-		$_SESSION['login'] = $u->login;
+		$_SESSION['userid'] = $u->userid;
 	}
 	
 	static function session_start() {

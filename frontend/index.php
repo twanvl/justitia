@@ -111,8 +111,8 @@ class Page extends PageWithEntity {
 		$this->write_block_end();
 		
 		// submission form
+		$last_submission = Authentication::current_user()->last_submission_to($this->entity);
 		if ($this->entity->active()) {
-			$last_submission = Authentication::current_user()->last_submission_to($this->entity);
 			$passed = Status::to_status($last_submission) >= Status::PENDING;
 			$this->write_block_begin('Submit', 'collapsable block' . ($passed ? ' collapsed' : ''));
 			$this->write_submit_form();
@@ -128,10 +128,14 @@ class Page extends PageWithEntity {
 		} else {
 			$i = count($submissions);
 			foreach($submissions as $subm) {
+				// is this an interesting submission?
+				$is_interesting = $this->entity->is_more_interesting_submission($subm,$last_submission);
+				if ($is_interesting) $last_submission = $subm;
+				// write
 				$this->write_block_begin(
 					'Submission '. $i,
 					'collapsable block submission '
-					 . ($subm->submissionid == $last_submission->submissionid ? '' : 'collapsed ')
+					 . ($is_interesting ? '' : 'collapsed ')
 					 . Status::to_css_class($subm)
 				);
 				$this->write_submission($subm);

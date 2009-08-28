@@ -177,6 +177,19 @@ class Entity {
 	// Submissions
 	// ---------------------------------------------------------------------
 	
+	// Is submission A more (or equally) interesting than B?
+	function is_more_interesting_submission($subm_a, $subm_b) {
+		if ($subm_b === false || $subm_b === null) return true;
+		// keep the last/best one
+		if ($this->attribute_bool('keep best')) {
+			$status_a = Status::base_status_group($subm_a->status);
+			$status_b = Status::base_status_group($subm_b->status);
+			if ($status_a > $status_b) return true;
+			if ($status_a < $status_b) return false;
+		}
+		return $subm_a->time >= $subm_b->time;
+	}
+	
 	// All submissions, oldest one FIRST
 	function all_submissions($min_status = 0) {
 		if (!$this->submitable()) return array();
@@ -200,17 +213,7 @@ class Entity {
 		foreach ($subms as $subm) {
 			$userids = $subm->userids();
 			foreach($userids as $userid) {
-				if (isset($result[$userid])) {
-					// keep the last/best one
-					if ($this->attribute_bool('keep best')) {
-						$use = Status::base_status_group($subm->status)
-						        >= Status::base_status_group($result[$userid]->status);
-					} else {
-						$use = true;
-					}
-				} else {
-					$use = true;
-				}
+				$use = $this->is_more_interesting_submission($subm, @$result[$userid]);
 				// is this it?
 				if ($use) $result[$userid] = $subm;
 			}
