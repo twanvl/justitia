@@ -2,6 +2,7 @@
 
 require_once('../lib/bootstrap.inc');
 require_once('./submit.inc');
+require_once('./submission_view.inc');
 
 // -----------------------------------------------------------------------------
 // Main 'entity' page
@@ -9,10 +10,6 @@ require_once('./submit.inc');
 
 function format_bool($b) {
 	return $b ? "yes" : "no";
-}
-
-function download_link($subm,$file,$text) {
-	return "<a href=\"download.php/$subm->submissionid/$file\">$text</a>";
 }
 
 class Page extends PageWithEntity {
@@ -82,26 +79,6 @@ class Page extends PageWithEntity {
 		echo "<tr><td>Archives allowed</td><td>" . format_bool($this->entity->attribute_bool('allow archives')) . "</td>";
 		echo "</table>";
 	}
-
-	function write_submission($subm) {
-		$type = Status::base_status($subm->status);
-		echo "<table>";
-		echo "<tr><td>Submitted on</td><td>" . format_date($subm->time) . "</td>";
-		echo "<tr><td>Submitted by</td><td>" . User::names_html($subm->users()) . "</td>";
-		echo '<tr><td>Files</td><td><a href="download.php/'.$subm->submissionid.'/code/'.urlencode($subm->filename)
-		                           .'">Download submitted files</a></td>';
-		echo "<tr><td>Status</td><td>" . Status::to_text($subm);
-		if ($type == Status::FAILED_COMPILE) {
-			if ($this->entity->show_compile_errors()) {
-				echo ' ('.download_link($subm,'out/compiler.err','view error message').')';
-			}
-		}
-		echo "</td>";
-		echo "</table>";
-		if ($type == Status::FAILED_COMPARE || $type == Status::FAILED_RUN) {
-			
-		}$this->write_testset_details($subm);
-	}
 	
 	function write_submitable_page() {
 		$submissions = Authentication::current_user()->submissions_to($this->entity);
@@ -138,76 +115,12 @@ class Page extends PageWithEntity {
 					 . ($is_interesting ? '' : 'collapsed ')
 					 . Status::to_css_class($subm)
 				);
-				$this->write_submission($subm);
+				write_submission($subm,$this->entity);
 				$this->write_block_end();
 				$i--;
 			}
 		}
 		
-	}
-	
-	// ---------------------------------------------------------------------
-	// Failure details
-	// ---------------------------------------------------------------------
-	
-	function write_testset_details($subm) {
-		$cases = $subm->get_file('testcases');
-		if (!$cases) return;
-		$cases = unserialize($cases);
-		// testcase output
-		echo "<table class=\"testcase-details\">";
-		foreach ($cases as $case => $status) {
-			// status, this is a bit of a hack, we should look at exit codes
-			$class = Status::to_css_class($status);
-			$case_status = Status::to_testcase_text($status);
-			
-			// description/hint
-			$desc = '';
-			if ($class == 'failed') {
-				$desc_file = $subm->input_filename("$case.desc");
-				if (file_exists($desc_file)) {
-					$desc = "Hint: " . file_get_contents($desc_file);
-				} else {
-					// TODO: description from attributes?
-				}
-			}
-			
-			// input/output/error downloads
-			$downloads = '';
-			if ($class != 'skipped' && $this->entity->show_input_output_for($case)) {
-				if ($subm->input_exists("$case.in")) {
-					$downloads .= download_link($subm,"in/$case.in", 'input') . ' | ';
-				}
-				if ($class == 'failed') {
-					if ($subm->input_exists("$case.out")) {
-						$downloads .= download_link($subm,"in/$case.out",'expected output') . ' | ';
-					}
-					if ($subm->output_exists("$case.out")) {
-						$downloads .= download_link($subm,"out/$case.out",'your output') . ' | ';
-					}
-					if ($subm->output_exists("$case.diff")) {
-						$downloads .= download_link($subm,"out/$case.diff",'difference') . ' | ';
-					}
-				} else {
-					if ($subm->input_exists("$case.out")) {
-						$downloads .= download_link($subm,"in/$case.out",'output') . ' | ';
-					}
-				}
-			}
-			if ($case_status == 'Runtime error' && $this->entity->show_runtime_errors_for($case)) {
-				if ($subm->output_exists("$case.err")) {
-					$downloads .= download_link($subm,"out/$case.err",'error message') . ' | ';
-				}
-			}
-			$downloads = substr($downloads,0,-3);
-			
-			// write it
-			$rows  = 1 + (strlen($desc) > 0 ? 1 : 0) + (strlen($downloads) > 0 ? 1 : 0);
-			echo "<tr class=\"$class\"><td rowspan=\"$rows\">Test case " . htmlspecialchars($case) . "</td><td><span>$case_status</span></td></tr>";
-			if (strlen($desc) > 0)      echo "<tr><td>$desc</td></tr>";
-			if (strlen($downloads) > 0) echo "<tr><td>$downloads</td></tr>";
-		}
-		echo "</table>";
 	}
 	
 	// ---------------------------------------------------------------------

@@ -18,6 +18,7 @@ function get_request_bool(&$data, $prefix, $name) {
 class Page extends Template {
 	function __construct() {
 		Authentication::require_admin();
+		$this->is_admin_page = true;
 	}
 	
 	function title() {

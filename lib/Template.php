@@ -129,6 +129,11 @@ abstract class Template {
 				'current' => Util::current_script_is('admin_user.php')
 			),
 			array(
+				'title'   => 'Latest submissions',
+				'url'     => 'admin_submissions.php' . @$_SERVER['PATH_INFO'],
+				'current' => Util::current_script_is('admin_submissions.php')
+			),
+			array(
 				'title'   => 'Results table',
 				'url'     => 'admin_results.php' . @$_SERVER['PATH_INFO'],
 				'current' => Util::current_script_is('admin_results.php')

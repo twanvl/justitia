@@ -54,7 +54,7 @@ class Page extends Template {
 	}
 	
 	function write_body() {
-		echo '<a href="'.htmlspecialchars($_REQUEST['redirect']).'">&lt;- cancel and go back</a>';
+		echo '<a href="'.htmlspecialchars($_REQUEST['redirect']).'">&larr; cancel and go back</a>';
 		$this->write_user_list();
 	}
 	

@@ -82,6 +82,15 @@ class Submission {
 		return new Submission(array('status' => STATUS_NOT_DONE));
 	}*/
 	
+	static function latest($start,$num) {
+		DB::prepare_query($query,
+			"SELECT * FROM `submission` ORDER BY `time` DESC LIMIT " . (int)$start .",". (int)$num
+		);
+		$query->execute(array());
+		DB::check_errors($query);
+		return Submission::fetch_all($query);
+	}
+	
 	function __construct($data) {
 		$this->data = $data;
 	}
