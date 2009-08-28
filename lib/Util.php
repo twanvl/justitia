@@ -80,7 +80,7 @@ class Util {
 	// ---------------------------------------------------------------------
 	
 	static function current_url() {
-		$script = pathinfo($_SERVER['REQUEST_URI'],PATHINFO_BASENAME);
+		$script = pathinfo($_SERVER['SCRIPT_NAME'],PATHINFO_BASENAME);
 		return $script . @$_SERVER['PATH_INFO'];
 	}
 	
