@@ -74,7 +74,11 @@ class Page extends PageWithEntity {
 	function write_submitable_entity_info() {
 		echo "<table>";
 		echo "<tr><td>Can submit</td><td>" . format_bool($this->entity->active()) . "</td>";
-		echo "<tr><td>Deadline</td><td>"   . format_date($this->entity->active_range()->end) . "</td>";
+		$active_range = $this->entity->active_range();
+		if ($active_range->start > now()) {
+			echo "<tr><td>Starts</td><td>" . format_date($active_range->start) . "</td>";
+		}
+		echo "<tr><td>Deadline</td><td>"   . format_date($active_range->end, true) . "</td>";
 		echo "<tr><td>Language</td><td>"   . ($this->entity->attribute('language')) . "</td>";
 		//echo "<tr><td>Archives allowed</td><td>" . format_bool($this->entity->attribute_bool('allow archives')) . "</td>";
 		echo "<tr><td>Judging</td><td>";
