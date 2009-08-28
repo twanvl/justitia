@@ -19,7 +19,7 @@ class Page extends PageWithEntity {
 	}
 	
 	function title() {
-		return "View submissions " . $this->subm->submissionid;
+		return "View submission #" . $this->subm->submissionid;
 	}
 	
 	function write_body() {
