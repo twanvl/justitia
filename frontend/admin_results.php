@@ -93,7 +93,11 @@ class Page extends PageWithEntity {
 			foreach($entities as $e => $entity) {
 				$subm = isset($subms[$e]) ? $subms[$e] : false;
 				$status = Status::to_status($subm);
-				echo '<td class="'.Status::to_css_class($status).'">'.Status::to_short_text($status).'</td>';
+				echo '<td class="'.Status::to_css_class($status).'">';
+				if ($subm !== false) echo '<a href="admin_view_submission.php?submissionid='.$subm->submissionid.'">';
+				echo Status::to_short_text($status);
+				if ($subm !== false) echo '</a>';
+				echo '</td>';
 			}
 			echo "</tr>\n";
 		}

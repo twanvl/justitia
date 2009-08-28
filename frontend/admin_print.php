@@ -56,7 +56,7 @@ class Page extends PageWithEntity {
 		$this->write_form_table_field('text',    'user_filter',    'Only for users', @$_REQUEST['user_filter']);
 		//$this->write_form_table_field('radio',   'format',         'Text output', $format=='text', ' value="text"');
 		//$this->write_form_table_field('radio',   'format',         'HTML output', $format=='html', ' value="html"');
-		$this->write_form_table_field('checkbox','include_failed', 'Include failed submissions', $include_failed);
+		$this->write_form_table_field('checkbox','include_failed', 'Include failed and pending submissions', $include_failed);
 		$this->write_form_table_end();
 		$this->write_form_end("Generate printout");
 		
