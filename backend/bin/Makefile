@@ -3,7 +3,7 @@ TARGETS = runguard
 
 build: $(TARGETS)
 
-runguard: %.c ../../config/config.h
+runguard: runguard.c ../../config/config.h
 	gcc -O2 $< -o $@
 	strip $@
 
