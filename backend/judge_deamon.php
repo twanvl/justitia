@@ -202,6 +202,7 @@ class Judgement {
 			$case_input  = $this->tempdir->file("$case.in");
 			$case_output = $this->tempdir->file("$case.out");
 			$case_error  = $this->tempdir->file("$case.err");
+			$case_limit_error = $this->tempdir->file("$case.limit-err");
 			copy($this->entity->data_path() . "$case.in", $case_input);
 			// run program, store results
 			$limits = array(
@@ -209,11 +210,15 @@ class Judgement {
 				'memory limit' => intval($this->entity->attribute('memory limit')),
 				'filesize limit' => intval($this->entity->attribute('filesize limit')),
 			);
-			$result = SystemUtil::safe_command($runner, array($this->exe_file, $case_input, $case_output, $case_error), $limits);
+			$result = SystemUtil::safe_command($runner, array($this->exe_file, $case_input, $case_output, $case_error), $limits, $case_limit_error);
 			if (!file_exists($case_output)) {
-				file_put_contents($case_output, "No output file created");
+				file_put_contents($case_output, "<<NO OUTPUT FILE CREATED>>");
 				$result = false;
 				echo "     No output file created\n";
+			}
+			if (!$result && file_exists($case_limit_error) && filsize($case_limit_error) > 0) {
+				// use limit error message as error output
+				copy($case_limit_error, $case_error);
 			}
 			$this->put_tempfile("$case.out");
 			$this->put_tempfile("$case.err");
@@ -251,8 +256,7 @@ class Judgement {
 		);
 	}
 	private function put_tempfile($file) {
-		$filename = $this->tempdir->file($file);
-		$contents = file_get_contents($filename);
+		$contents = file_get_contents($this->tempdir->file($file));
 		$this->put_tempfile_contents($file, $contents);
 	}
 	
