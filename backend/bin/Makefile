@@ -11,7 +11,7 @@ install: build install-setuid
 
 $(SUIDTARGETS): %: %.build
 
-runguard.build: %.build: %.c $(TOPDIR)/etc/config.h
+runguard.build: %.build: %.c ../../config/config.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 	$(STRIP) $@
 
