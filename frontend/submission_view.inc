@@ -39,7 +39,7 @@ function write_submission($subm, $entity = null, $include_entity = false) {
 	}
 	echo "</td></tr>";
 	if (Authentication::is_admin()) {
-		if (!Status::is_pending($subm->status)) {
+		if ($subm->status() != Status::PENDING) {
 			echo "<tr><td>Judged by</td><td>" . htmlspecialchars($subm->judge_host);
 			echo " (<a href=\"admin_rejudge_submission.php?rejudge=$subm->submissionid\">rejudge</a>)";
 			echo "</td></tr>";
