@@ -13,6 +13,6 @@ if (isset($_REQUEST['rejudge'])) {
 	if (isset($_REQUEST['redirect'])) {
 		Util::redirect($_REQUEST['redirect']);
 	} else {
-		echo "1";
+		Util::redirect("admin_view_submission.php?submissionid=" . $_REQUEST['rejudge']);
 	}
 }
