@@ -176,7 +176,10 @@ class Judgement {
 		// compile
 		$this->exe_file = $this->source_file . '.exe';
 		$compile_err_file = $this->tempdir->file('compiler.err');
-		$result =SystemUtil::safe_command($compiler, array($this->source_file, $this->exe_file, $compile_err_file));
+		$limits = array(
+			'time limit' => intval($this->entity->attribute('compile time limit'))
+		);
+		$result =SystemUtil::safe_command($compiler, array($this->source_file, $this->exe_file, $compile_err_file), $limits);
 		if (!$result) {
 			$this->put_tempfile('compiler.err');
 		}
@@ -201,7 +204,12 @@ class Judgement {
 			$case_error  = $this->tempdir->file("$case.err");
 			copy($this->entity->data_path() . "$case.in", $case_input);
 			// run program, store results
-			$result = SystemUtil::safe_command($runner, array($this->exe_file, $case_input, $case_output, $case_error));
+			$limits = array(
+				'time limit'   => intval($this->entity->attribute('time limit')),
+				'memory limit' => intval($this->entity->attribute('memory limit')),
+				'filesize limit' => intval($this->entity->attribute('filesize limit')),
+			);
+			$result = SystemUtil::safe_command($runner, array($this->exe_file, $case_input, $case_output, $case_error), $limits);
 			if (!file_exists($case_output)) {
 				file_put_contents($case_output, "No output file created");
 				$result = false;
@@ -230,10 +238,11 @@ class Judgement {
 	
 	
 	private function put_tempfile_contents($file, $contents) {
-		$max_file_size = intval($this->entity->attribute('output limit'));
-		if (strlen($contents) > $max_file_size) {
+		$max_file_size = intval($this->entity->attribute('filesize limit'));
+		$content_size  = strlen($contents);
+		if ($content_size > $max_file_size) {
 			// don't allow files to be too large
-			echo "Putting file of size: ",filesize($filename),"  while max = ",intval($this->entity->attribute('output limit')),"\n";
+			echo "Putting file of size: ",$content_size,"  while max = ",$max_file_size,"\n";
 			$contents = substr($contents,0,$max_file_size) . "\n<<FILE TOO LARGE>>";
 		}
 		$this->subm->put_file(
