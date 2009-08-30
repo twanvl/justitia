@@ -49,7 +49,7 @@ class SystemUtil {
 	// System commands
 	// ---------------------------------------------------------------------
 	
-	function build_command($cmd,$args) {
+	function build_command($cmd,$args, $error_out = NULL) {
 		// windows fix
 		if (SystemUtil::is_windows()) {
 			$cmd = str_replace('/',"\\",$cmd);
@@ -63,13 +63,16 @@ class SystemUtil {
 		foreach($args as $arg) {
 			$command .= ' ' . escapeshellarg($arg);
 		}
+		if ($error_out) {
+			$command .= " &>$error_out";
+		}
 		return $command;
 	}
 	
 	// Run a shell command more conveniently
-	function run_command($cmd,$args) {
+	function run_command($cmd,$args, $error_out = NULL) {
 		// execute
-		system(SystemUtil::build_command($cmd,$args), $retval);
+		system(SystemUtil::build_command($cmd,$args,$error_out), $retval);
 		return $retval == 0;
 	}
 	
@@ -148,7 +151,13 @@ class SystemUtil {
 	}
 	
 	// Run a shell command in a safe way
-	function safe_command($cmd,$args, $limits) {
+	function safe_command($cmd,$args, $limits, $error_out = NULL) {
+		// not on windows
+		if (SystemUtil::is_windows()) {
+			echo "Security Warning: Runguard doesn't work on windows!\n";
+			return SystemUtil::run_command($cmd,$args, $error_out);
+		}
+		// build command
 		$actual_cmd  = RUNGUARD_PATH;
 		$actual_args = array();
 		// time limit
@@ -159,6 +168,7 @@ class SystemUtil {
 		if (isset($limits['filesize limit'])) $actual_args []= "--filesize=" . $limits['filesize limit'];
 		// no coredumps
 		$actual_args []= "--no-core";
+		// error output
 		// user
 		if (RUNGUARD_USER !== false) $actual_args []= "--user=" . RUNGUARD_USER;
 		// run
