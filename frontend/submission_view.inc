@@ -82,7 +82,9 @@ function write_testset_details($subm, $entity) {
 			if ($subm->input_exists("$case.in")) {
 				$downloads .= download_link($subm,"in/$case.in", 'input') . ' | ';
 			}
-			if ($class == 'failed') {
+			if ($case_status == 'Runtime error') {
+				// don't show output at all for runtime errors
+			} else if ($class == 'failed') {
 				if ($subm->input_exists("$case.out")) {
 					$downloads .= download_link($subm,"in/$case.out",'expected output') . ' | ';
 				}
