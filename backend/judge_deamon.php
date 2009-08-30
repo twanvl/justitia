@@ -184,24 +184,33 @@ class Judgement {
 	}
 	
 	private function run_case($case) {
-		// copy case input
-		$case_input  = $this->tempdir->file("$case.in");
-		$case_output = $this->tempdir->file("$case.out");
-		$case_error  = $this->tempdir->file("$case.err");
-		copy($this->entity->data_path() . "$case.in", $case_input);
 		// runner
 		$runner = $this->entity->attribute('runner');
 		$runner = "runners/$runner.sh";
-		// run program, store results
-		$result = SystemUtil::safe_command($runner, array($this->exe_file, $case_input, $case_output, $case_error));
-		if (!file_exists($case_output)) {
-			file_put_contents($case_output, "No output file created");
-			$result = false;
-			echo "     No output file created\n";
+		if (false) {
+			// use pipes
+			$stdin = file_get_contents($this->entity->data_path() . "$case.in");
+			list($result,$stdout,$stderr) = SystemUtil::run_command_io($runner, array($this->exe_file), $stdin);
+			$this->put_tempfile_contents("$case.out",$stderr);
+			$this->put_tempfile_contents("$case.err",$stdout);
+			return $result;
+		} else {
+			// copy case input
+			$case_input  = $this->tempdir->file("$case.in");
+			$case_output = $this->tempdir->file("$case.out");
+			$case_error  = $this->tempdir->file("$case.err");
+			copy($this->entity->data_path() . "$case.in", $case_input);
+			// run program, store results
+			$result = SystemUtil::safe_command($runner, array($this->exe_file, $case_input, $case_output, $case_error));
+			if (!file_exists($case_output)) {
+				file_put_contents($case_output, "No output file created");
+				$result = false;
+				echo "     No output file created\n";
+			}
+			$this->put_tempfile("$case.out");
+			$this->put_tempfile("$case.err");
+			return $result;
 		}
-		$this->put_tempfile("$case.out");
-		$this->put_tempfile("$case.err");
-		return $result;
 	}
 	
 	private function check_case($case) {
@@ -219,11 +228,10 @@ class Judgement {
 		return $result;
 	}
 	
-	private function put_tempfile($file) {
-		$filename = $this->tempdir->file($file);
-		$contents = file_get_contents($filename);
+	
+	private function put_tempfile_contents($file, $contents) {
 		$max_file_size = intval($this->entity->attribute('output limit'));
-		if (filesize($filename) > $max_file_size) {
+		if (strlen($contents) > $max_file_size) {
 			// don't allow files to be too large
 			echo "Putting file of size: ",filesize($filename),"  while max = ",intval($this->entity->attribute('output limit')),"\n";
 			$contents = substr($contents,0,$max_file_size) . "\n<<FILE TOO LARGE>>";
@@ -232,6 +240,11 @@ class Judgement {
 			$this->subm->output_filename($file),
 			$contents
 		);
+	}
+	private function put_tempfile($file) {
+		$filename = $this->tempdir->file($file);
+		$contents = file_get_contents($filename);
+		$this->put_tempfile_contents($file, $contents);
 	}
 	
 }

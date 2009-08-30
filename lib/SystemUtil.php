@@ -79,48 +79,72 @@ class SystemUtil {
 		$descriptorspec = array(
 			0 => array("pipe", "r"), // stdin
 			1 => array("pipe", "w"), // stdout
-			2 => array("file", "w")  // stderr
+			2 => array("pipe", "w")  // stderr
 		);
 		// start
 		$process = proc_open($command, $descriptorspec, $pipes, $workingdir, $env);
 		if (!is_resource($process)) {
 			return array(false,"","Failed to run command $cmd");
 		}
+		// nonblocking
+		foreach ($pipes as $p) stream_set_blocking($p,0);
 		// handle io
 		$stdout = '';
 		$stderr = '';
 		while (true) {
-			$to_write = array($pipes[0]);
-			$to_read  = array($pipes[1], $pipes[2]);
+			// status
+			// poll
+			$to_write = array(); $to_read = array();
+			if ($pipes[0]) $to_write []= $pipes[0];
+			if ($pipes[1]) $to_read  []= $pipes[1];
+			if ($pipes[2]) $to_read  []= $pipes[2];
 			$to_error = NULL;
-			// wait for at most 0.2 seconds
-			$num_changed_streams = stream_select($to_read,$to_write,$to_error,0,200000);
+			// wait for at most 0.1 seconds
+			$num_changed_streams = stream_select($to_read,$to_write,$to_error,0,100000);
+			echo "----\n";
+			var_dump($num_changed_streams);
+			var_dump($to_read);
+			var_dump($to_write);
 			if ($num_changed_streams === false) {
 				// TODO: handle error
+				echo "error";
+			} else if ($num_changed_streams == 0) {
+				$status = proc_get_status($process);
+				if (!$status['running']) break;
 			} else {
 				// write stdin
 				if (in_array($pipes[0],$to_write)) SystemUtil::write_stream($pipes[0],$stdin);
 				// read stdout
-				if (in_array($pipes[1],$to_write)) SystemUtil::read_stream($pipes[1],$stdout);
+				if (in_array($pipes[1],$to_read))  SystemUtil::read_stream($pipes[1],$stdout);
 				// read stderr
-				if (in_array($pipes[2],$to_write)) SystemUtil::read_stream($pipes[2],$stderr);
+				if (in_array($pipes[2],$to_read))  SystemUtil::read_stream($pipes[2],$stderr);
 			}
 		}
 		// done
-		fclose($pipes[1]);
+		if ($pipes[0]) fclose($pipes[0]);
+		if ($pipes[1]) fclose($pipes[1]);
+		if ($pipes[2]) fclose($pipes[2]);
 		$return_value = proc_close($process);
 		return array($return_value,$stdout,$stderr);
 
 	}
 	
-	private function write_stream($fp, &$str) {
-		if ($str == '') return;
+	private function write_stream(&$fp, &$str) {
+		if (!$fp) return;
+		if ($str == '') {
+			fclose($fp);
+			$fp = false;
+			return;
+		}
 		$written = fwrite($fp,substr($str,0,8192));
 		$str = substr($str, $written);
+		echo "WRITTEN: $written\n";
 	}
 	private function read_stream($fp, &$str) {
+		if (!$fp) return;
 		$read = fread($fp,8192);
 		$str .= $read;
+		echo "READ: $read len:" . strlen($read), "\n";
 	}
 	
 	// Run a shell command in a safe way
