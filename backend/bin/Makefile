@@ -1,13 +1,11 @@
 
-CXXFLAGS=-O2
-
 TARGETS = runguard
 
 build: $(TARGETS)
 
 runguard.build: %.build: %.c ../../config/config.h
-	$(CXX) $(CXXFLAGS) $< -o $@
-	$(STRIP) $@
+	g++ -O2 $< -o $@
+	strip $@
 
 clean:
 	-rm -f $(TARGETS)
