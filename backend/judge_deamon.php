@@ -216,7 +216,7 @@ class Judgement {
 				$result = false;
 				echo "     No output file created\n";
 			}
-			if (!$result && file_exists($case_limit_error) && filsize($case_limit_error) > 0) {
+			if (!$result && file_exists($case_limit_error) && filesize($case_limit_error) > 0) {
 				// use limit error message as error output
 				copy($case_limit_error, $case_error);
 			}

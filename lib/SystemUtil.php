@@ -174,7 +174,7 @@ class SystemUtil {
 		// run
 		$actual_args []= $cmd;
 		$actual_args = array_merge($actual_args,$args);
-		return SystemUtil::run_command($actual_cmd,$actual_args);
+		return SystemUtil::run_command($actual_cmd,$actual_args, $error_out);
 	}
 	
 }
