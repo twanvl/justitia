@@ -148,9 +148,23 @@ class SystemUtil {
 	}
 	
 	// Run a shell command in a safe way
-	function safe_command($cmd,$args,$limits=array()) {
-		// TODO make this actually safe!!!
-		return SystemUtil::run_command($cmd,$args);
+	function safe_command($cmd,$args, $limits) {
+		$actual_cmd  = RUNGUARD_PATH;
+		$actual_args = array();
+		// time limit
+		$actual_args []= "--time=" . (isset($limits['time limit']) ? $limits['time limit'] : 60);
+		// memory limit
+		if (isset($limits['memory limit'])) $actual_args []= "--memsize=" . $limits['memory limit'];
+		// filesize limit
+		if (isset($limits['filesize limit'])) $actual_args []= "--filesize=" . $limits['filesize limit'];
+		// no coredumps
+		$actual_args []= "--no-core";
+		// user
+		$actual_args []= "--user=" . RUNGUARD_USER;
+		// run
+		$actual_args []= $cmd;
+		$actual_args = array_merge($actual_args,$args);
+		return SystemUtil::run_command($actual_cmd,$actual_args);
 	}
 	
 }
