@@ -7,6 +7,10 @@
 // Course data files
 define('COURSE_DIR',       '../courses');
 
+// Program to safely run submissions
+define('RUNGUARD_PATH',    'bin/runguard');
+define('RUNGUARD_USER',    'corrector');
+
 // -----------------------------------------------------------------------------
 // Database
 // -----------------------------------------------------------------------------
@@ -43,10 +47,10 @@ $attribute_defaults['start date']		= 'always';
 $attribute_defaults['end date']			= 'never';
 $attribute_defaults['max group size']		= 1e100;
 $attribute_defaults['keep best']		= true;
+$attribute_defaults['compile time limit']	= 30;
 $attribute_defaults['time limit']		= 1;
 $attribute_defaults['memory limit']		= 100000;
-//$attribute_defaults['output limit']		= 2*1000*1000; // mysql doesn't allow larger files
-$attribute_defaults['output limit']		= 0.5*1000*1000; // 0.5 MB
+$attribute_defaults['output size limit']	= 0.5*1000*1000; // 0.5 MB
 $attribute_defaults['show compile errors']	= true;
 $attribute_defaults['show run errors']		= 'all';
 $attribute_defaults['show input/output']	= 'none';
