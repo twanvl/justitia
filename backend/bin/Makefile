@@ -3,8 +3,8 @@ TARGETS = runguard
 
 build: $(TARGETS)
 
-runguard.build: %.build: %.c ../../config/config.h
-	g++ -O2 $< -o $@
+runguard: %.c ../../config/config.h
+	gcc -O2 $< -o $@
 	strip $@
 
 clean:
