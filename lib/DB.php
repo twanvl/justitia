@@ -30,7 +30,8 @@ class DB {
 	static function check_errors($query) {
 		$status = $query->errorInfo();
 		if ($status[0] != 0) {
-			die($status[2]);
+			//die($status[2]);
+			throw new Exception($status[2]);
 		}
 	}
 	// TODO

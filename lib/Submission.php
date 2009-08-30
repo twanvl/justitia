@@ -177,7 +177,7 @@ class Submission {
 		// delete output files
 		static $query;
 		DB::prepare_query($query,
-			"DELETE FROM `file` WHERE submissionid=? AND `filename` LIKE 'out/%' OR `filename`='testcases'"
+			"DELETE FROM `file` WHERE submissionid=? AND (`filename` LIKE 'out/%' OR `filename`='testcases')"
 		);
 		$query->execute(array($submissionid));
 		DB::check_errors($query);

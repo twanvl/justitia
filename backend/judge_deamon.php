@@ -197,6 +197,7 @@ class Judgement {
 		if (!file_exists($case_output)) {
 			file_put_contents($case_output, "No output file created");
 			$result = false;
+			echo "     No output file created\n";
 		}
 		$this->put_tempfile("$case.out");
 		$this->put_tempfile("$case.err");
@@ -213,14 +214,23 @@ class Judgement {
 		$result = SystemUtil::run_command($checker, array($case_my, $case_ref, $case_diff));
 		if (!$result) {
 			$this->put_tempfile("$case.diff");
+			echo "     Output does not match\n";
 		}
 		return $result;
 	}
 	
 	private function put_tempfile($file) {
+		$filename = $this->tempdir->file($file);
+		$contents = file_get_contents($filename);
+		$max_file_size = intval($this->entity->attribute('output limit'));
+		if (filesize($filename) > $max_file_size) {
+			// don't allow files to be too large
+			echo "Putting file of size: ",filesize($filename),"  while max = ",intval($this->entity->attribute('output limit')),"\n";
+			$contents = substr($contents,0,$max_file_size) . "\n<<FILE TOO LARGE>>";
+		}
 		$this->subm->put_file(
 			$this->subm->output_filename($file),
-			file_get_contents($this->tempdir->file($file))
+			$contents
 		);
 	}
 	
