@@ -160,7 +160,7 @@ class SystemUtil {
 		// no coredumps
 		$actual_args []= "--no-core";
 		// user
-		$actual_args []= "--user=" . RUNGUARD_USER;
+		if (RUNGUARD_USER > 0) $actual_args []= "--user=" . RUNGUARD_USER;
 		// run
 		$actual_args []= $cmd;
 		$actual_args = array_merge($actual_args,$args);
