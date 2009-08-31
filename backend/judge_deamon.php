@@ -156,6 +156,9 @@ class Judgement {
 	private function make_file_readable($file) {
 		chmod($file,0644);
 	}
+	private function make_file_executable($file) {
+		chmod($file,0755);
+	}
 	private function make_file_writable($file) {
 		touch($file);
 		chmod($file,0666);
@@ -193,6 +196,8 @@ class Judgement {
 		$result =SystemUtil::safe_command($compiler, array($this->source_file, $this->exe_file, $compile_err_file), $limits);
 		if (!$result) {
 			$this->put_tempfile('compiler.err');
+		} else {
+			$this->make_file_executable($this->exe_file);
 		}
 		return $result;
 	}
