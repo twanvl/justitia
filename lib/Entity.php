@@ -114,16 +114,13 @@ class Entity {
 	}
 	
 	function show_compile_errors() {
-		return Authentication::is_admin()
-		    || $this->attribute_bool('show compile errors');
+		return $this->attribute_bool('show compile errors');
 	}
 	function show_runtime_errors_for($case) {
-		return Authentication::is_admin()
-		    || Entity::is_allowed_testcase($case,$this->attribute('show run errors'));
+		return Entity::is_allowed_testcase($case,$this->attribute('show run errors'));
 	}
 	function show_input_output_for($case) {
-		return Authentication::is_admin()
-		    || Entity::is_allowed_testcase($case,$this->attribute('show input/output'));
+		return Entity::is_allowed_testcase($case,$this->attribute('show input/output'));
 	}
 	private static function is_allowed_testcase($case, $pattern) {
 		if ($pattern == 'all')  return true;

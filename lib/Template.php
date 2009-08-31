@@ -91,6 +91,10 @@ abstract class Template {
 		}
 	}
 	
+	function write_form_table_data($label, $value, $extra = null) {
+		echo "<tr><td>$label</td><td>".htmlspecialchars($value)."</td></tr>\n";
+	}
+	
 	// ---------------------------------------------------------------------
 	// Blocks
 	// ---------------------------------------------------------------------
@@ -190,7 +194,8 @@ abstract class Template {
 		if (!$user) return;
 		echo '<div id="user">';
 		echo $user->name();
-		echo ' (<a href="logout.php">log out</a>)';
+		echo ' (<a href="user_settings.php?redirect='.htmlspecialchars(Util::current_url()).'">settings</a>';
+		echo ' | <a href="logout.php">log out</a>)';
 		echo "</div>";
 	}
 	
