@@ -7,8 +7,14 @@ require_once('../lib/bootstrap.inc');
 // -----------------------------------------------------------------------------
 
 // link to download a file
-function download_link($subm,$file,$text) {
-	return "<a href=\"download.php/$subm->submissionid/$file\">$text</a>";
+function download_link($subm,$file,$text, $cond,$before,$after) {
+	if ($cond || Authentication::is_admin()) {
+		return $before
+		     . "<a href=\"download.php/$subm->submissionid/$file\">$text"
+		     . ($cond ? '' : ' <small>(hidden)</small>')
+		     . "</a>"
+		     . $after;
+	}
 }
 
 // ---------------------------------------------------------------------
@@ -33,9 +39,7 @@ function write_submission($subm, $entity = null, $include_entity = false) {
 		                        .'">Download submitted files</a></td></tr>';
 	echo "<tr><td>Status</td><td>" . Status::to_text($subm);
 	if ($type == Status::FAILED_COMPILE) {
-		if ($entity->show_compile_errors() || Authentication::is_admin()) {
-			echo ' ('.download_link($subm,'out/compiler.err','view error message').')';
-		}
+		echo download_link($subm,'out/compiler.err','view error message',  $entity->show_compile_errors(),  ' (',')');
 	}
 	echo "</td></tr>";
 	if (Authentication::is_admin()) {
@@ -78,31 +82,31 @@ function write_testset_details($subm, $entity) {
 		
 		// input/output/error downloads
 		$downloads = '';
-		if ($class != 'skipped' && ($entity->show_input_output_for($case) || Authentication::is_admin())) {
+		if ($class != 'skipped') {
 			if ($subm->input_exists("$case.in")) {
-				$downloads .= download_link($subm,"in/$case.in", 'input') . ' | ';
+				$downloads .= download_link($subm,"in/$case.in", 'input',  $entity->show_input_output_for($case), '',' | ');
 			}
 			if ($case_status == 'Runtime error') {
 				// don't show output at all for runtime errors
 			} else if ($class == 'failed') {
 				if ($subm->input_exists("$case.out")) {
-					$downloads .= download_link($subm,"in/$case.out",'expected output') . ' | ';
+					$downloads .= download_link($subm,"in/$case.out",'expected output',  $entity->show_input_output_for($case), '',' | ');
 				}
 				if ($subm->output_exists("$case.out")) {
-					$downloads .= download_link($subm,"out/$case.out",'your output') . ' | ';
+					$downloads .= download_link($subm,"out/$case.out",'your output',  $entity->show_input_output_for($case), '',' | ');
 				}
 				if ($subm->output_exists("$case.diff")) {
-					$downloads .= download_link($subm,"out/$case.diff",'difference') . ' | ';
+					$downloads .= download_link($subm,"out/$case.diff",'difference',  $entity->show_input_output_for($case), '',' | ');
 				}
 			} else {
 				if ($subm->input_exists("$case.out")) {
-					$downloads .= download_link($subm,"in/$case.out",'output') . ' | ';
+					$downloads .= download_link($subm,"in/$case.out",'output',  $entity->show_input_output_for($case), '',' | ');
 				}
 			}
 		}
-		if ($case_status == 'Runtime error' && ($entity->show_runtime_errors_for($case) || Authentication::is_admin())) {
+		if ($case_status == 'Runtime error') {
 			if ($subm->output_exists("$case.err")) {
-				$downloads .= download_link($subm,"out/$case.err",'error message') . ' | ';
+				$downloads .= download_link($subm,"out/$case.err",'error message',  $entity->show_runtime_errors_for($case), '',' | ');
 			}
 		}
 		$downloads = substr($downloads,0,-3);

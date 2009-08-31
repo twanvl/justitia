@@ -27,9 +27,9 @@ function is_allowed_file($subm,$entity,$user,$dir,$filename) {
 	} else if ($dir == 'out') {
 		$ext = pathinfo($filename, PATHINFO_EXTENSION);
 		$base = pathinfo($filename, PATHINFO_FILENAME);
-		if ($filename == 'compiler.err')          $ok = $entity->show_compile_errors();
-		else if ($ext == 'err')                   $ok = $entity->show_runtime_errors_for($base);
-		else if ($ext == 'out' || $ext == 'diff') $ok = $entity->show_input_output_for($base);
+		if ($filename == 'compiler.err')          $ok = $entity->show_compile_errors()          || Authentication::is_admin();
+		else if ($ext == 'err')                   $ok = $entity->show_runtime_errors_for($base) || Authentication::is_admin();
+		else if ($ext == 'out' || $ext == 'diff') $ok = $entity->show_input_output_for($base)   || Authentication::is_admin();
 		else                                      $ok = false;
 		if ($ok) {
 			return array(true,$subm->output_filename($filename));
@@ -38,7 +38,7 @@ function is_allowed_file($subm,$entity,$user,$dir,$filename) {
 		$ext  = pathinfo($filename, PATHINFO_EXTENSION);
 		$base = pathinfo($filename, PATHINFO_FILENAME);
 		if      ($ext == 'desc')                $ok = true;
-		else if ($ext == 'in' || $ext == 'out') $ok = $entity->show_input_output_for($base);
+		else if ($ext == 'in' || $ext == 'out') $ok = $entity->show_input_output_for($base) || Authentication::is_admin();
 		else                                    $ok = false;
 		if ($ok) {
 			return array(false,$subm->input_filename($filename));
