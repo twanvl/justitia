@@ -339,22 +339,25 @@ class Judgement extends JudgementBase {
 	private function do_judge() {
 		$status = $this->prepare_and_compile();
 		if ($status != 0) return $status;
+		$status = $this->prepare_testset();
+		if ($status != 0) return $status;
 		$status = $this->run_testcases();
 		return $status;
 	}
 	
-	private function run_testcases() {
+	private function prepare_testset() {
 		// prepare testset
-		$testset = $this->entity->testcases();
 		if (!$this->entity->testcase_reference_output_exists()) {
 			// generate testcase output
 			$ref_output_generator = new GenerateReferenceOutput($this->entity);
 			if (!$ref_output_generator->build_testset_outputs()) {
 				throw new Exception("Failed to build reference implementation.");
-				$status = Status::FAILED_INTERNAL;
+				return Status::FAILED_INTERNAL;
 			}
 		}
-		
+	}
+	
+	private function run_testcases() {
 		// run testset
 		$test_results = array();
 		$status = Status::PASSED_COMPARE;
