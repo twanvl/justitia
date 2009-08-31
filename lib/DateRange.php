@@ -49,7 +49,7 @@ class DateRange {
 	
 	function __construct($start_str, $end_str) {
 		$this->start = parse_date($start_str);
-		$this->end   = parse_date($end_str);
+		$this->end   = parse_date($end_str, $this->start);
 	}
 	
 	// Does this range contain the given time?
