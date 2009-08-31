@@ -8,7 +8,12 @@ function parse_date($date_str, $rel=NULL) {
 	if (is_int($date_str))     return $date_str; // was already a timestamp
 	if ($date_str == 'always') return 0;
 	if ($date_str == 'never')  return 1e100;
-	else                       return strtotime($date_str, $rel);
+	$date = strtotime($date_str, $rel);
+	if ($date === false) {
+		Log::error("Parse error in date '$date'");
+	} else {
+		return $date;
+	}
 }
 
 function now() {
