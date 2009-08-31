@@ -10,7 +10,7 @@ function parse_date($date_str, $rel=NULL) {
 	if ($date_str == 'never')  return 1e100;
 	$date = strtotime($date_str, $rel);
 	if ($date === false) {
-		Log::error("Parse error in date '$date'");
+		Log::error("Parse error in date '$date_str'");
 	} else {
 		return $date;
 	}
