@@ -64,7 +64,11 @@ class SystemUtil {
 			$command .= ' ' . escapeshellarg($arg);
 		}
 		if ($error_out) {
-			$command .= " &>$error_out";
+			if (SystemUtil::is_windows()) {
+				$command .= " >$error_out";
+			} else {
+				$command .= " &>$error_out";
+			}
 		}
 		return $command;
 	}

@@ -82,12 +82,11 @@ class Page extends PageWithEntity {
 		echo "<tr><td>Language</td><td>"   . ($this->entity->attribute('language')) . "</td>";
 		//echo "<tr><td>Archives allowed</td><td>" . format_bool($this->entity->attribute_bool('allow archives')) . "</td>";
 		echo "<tr><td>Judging</td><td>";
-		if ($this->entity->attribute_bool('compile')) {
-			if (true) {
-				// TODO: determine whether there is a testset
+		if ($this->entity->compile()) {
+			if ($this->entity->has_testcases()) {
 				echo "Your submission will be compiled and tested. ";
 			} else {
-				echo "Your submission will be compiled but not tested. ";
+				echo "Your submission will be compiled. ";
 			}
 			if ($this->entity->attribute_bool('keep best')) {
 				echo "The best solution counts.";

@@ -235,7 +235,11 @@ class Submission {
 		return 'out/' . $filename;
 	}
 	function input_filename($filename) {
-		return COURSE_DIR . $this->entity_path . $filename;
+		// Same as Entity::testcase_input / testcase_output
+		$path = COURSE_DIR . $this->entity_path . $filename;
+		if (file_exists($path)) return $path;
+		$path = COURSE_DIR . $this->entity_path . ".generated/" . $filename;
+		return $path;
 	}
 	
 	function output_exists($filename) {

@@ -40,22 +40,37 @@ if (VERBOSE) {
 }
 
 // -----------------------------------------------------------------------------
-// Making judgements
+// Judgement base : compiling & running submissions and reference implementations
 // -----------------------------------------------------------------------------
 
-class Judgement {
-	private $entity;
-	private $subm;
-	private $tempdir;
-	// language of submission
+function make_file_readable($file) {
+	chmod($file,0644);
+}
+function make_file_executable($file) {
+	chmod($file,0755);
+}
+function make_file_writable($file) {
+	touch($file);
+	chmod($file,0666);
+}
+
+abstract class JudgementBase {
+	protected $entity;
+	// language of the submission
 	private $language;
+	// directory for temp files
+	private $tempdir;
 	// temporary files
 	private $source_file;
 	private $exe_file;
 	
-	function __construct($subm) {
-		$this->subm = $subm;
-		$this->entity = $subm->entity();
+	protected abstract function get_source_filename();
+	protected abstract function get_source_file_contents();
+	protected abstract function put_output_file_contents($file,$contents);
+	
+	
+	function __construct($entity) {
+		$this->entity = $entity;
 	}
 	
 	function __destruct() {
@@ -65,17 +80,11 @@ class Judgement {
 		}
 	}
 	
-	// Judge the submission, and update the database
-	function judge() {
-		$status = $this->do_judge();
-		$this->subm->set_status($status);
-		$this->__destruct();
-	}
-	
-	// Judge the submission, return status
-	private function do_judge() {
+	// Prepare the submission for judging: compile it
+	// returns 0 if success
+	protected function prepare_and_compile() {
 		// do we need to compile at all?
-		if (!$this->entity->attribute_bool('compile')) {
+		if (!$this->entity->compile()) {
 			return Status::PASSED_DEFAULT;
 		}
 		
@@ -96,16 +105,228 @@ class Judgement {
 		if (!$this->compile()) {
 			return Status::FAILED_COMPILE;
 		}
-		
-		// prepare testset
-		$testset = new Testset($this->entity);
+		return 0;
+	}
+	
+	// What language is the source code in? store in $this->language
+	protected function determine_language() {
+		// what type of file do we have?
+		// determine from specification
+		$this->language = Util::language_info( $this->entity->attribute('language') );
+		// determine from extension
+		if ($this->language['name'] == 'any') {
+			$this->language = Util::language_from_filename($this->get_source_filename());
+		}
+		// unknown language -> failure
+		return $this->language['name'] != 'unknown';
+	}
+	
+	protected function create_tempdir() {
+		// create temporary directory
+		$this->tempdir = new Tempdir('','judge');
+		if (!file_exists($this->tempdir->dir)) return false;
+		chmod($this->tempdir->dir,0755);
+		return true;
+	}
+	
+	// Store source in tempdir
+	protected function download_source() {
+		$this->source_file = $this->tempdir->file($this->get_source_filename());
+		$contents = $this->get_source_file_contents();
+		if ($contents === false) return false;
+		file_put_contents($this->source_file, $contents);
+		return true;
+	}
+	
+	protected function extract_archive() {
+		// extract archive?
+		$is_archive = false;
+		if (isset($this->language['archive_extract'])) {
+			if ($this->entity->attribute_bool('allow archives')) {
+				// TODO: Check this during submit
+				return false;
+			}
+			throw new Exception("TODO: archives");
+			SystemUtil::run_command($this->language['archive_extract'], $this->source_file);
+			// look for the actual source file
+		}
+		return true;
+	}
+	
+	// Compile $source_file to $exe_file
+	protected function compile() {
+		// compiler script to use
+		$compiler = $this->entity->compiler();
+		if ($compiler == '') $compiler = $this->language['name'];
+		$compiler = "compilers/$compiler.sh";
+		// compile
+		$this->exe_file = $this->source_file . '.exe';
+		$compile_err_file = $this->tempdir->file('compiler.err');
+		make_file_readable($this->source_file);
+		make_file_writable($this->exe_file);
+		make_file_writable($compile_err_file);
+		$limits = $this->entity->compile_limits();
+		$result =SystemUtil::safe_command($compiler, array($this->source_file, $this->exe_file, $compile_err_file), $limits);
+		if (!$result) {
+			$this->put_tempfile('compiler.err');
+		} else {
+			make_file_executable($this->exe_file);
+		}
+		return $result;
+	}
+	
+	// Run with input from $this->
+	protected function run_case($case) {
+		// runner
+		$runner = $this->entity->runner();
+		$runner = "runners/$runner.sh";
+		// copy case input, prepare output files
+		$case_input  = $this->tempdir->file("$case.in");
+		$case_output = $this->tempdir->file("$case.out");
+		$case_error  = $this->tempdir->file("$case.err");
+		$case_limit_error = $this->tempdir->file("$case.limit-err");
+		copy($this->entity->testcase_input($case), $case_input);
+		make_file_readable($case_input);
+		make_file_writable($case_output);
+		make_file_writable($case_error);
+		make_file_writable($case_limit_error);
+		// run program
+		$limits = $this->entity->run_limits();
+		$result = SystemUtil::safe_command($runner, array($this->exe_file, $case_input, $case_output, $case_error), $limits, $case_limit_error);
+		if (!file_exists($case_output)) {
+			file_put_contents($case_output, "<<NO OUTPUT FILE CREATED>>");
+			$result = false;
+			echo "     No output file created\n";
+		}
+		if (!$result && file_exists($case_limit_error) && filesize($case_limit_error) > 0) {
+			// use limit error message as error output
+			copy($case_limit_error, $case_error);
+		}
+		// store results
+		$this->put_tempfile("$case.out");
+		$this->put_tempfile("$case.err");
+		return $result;
+	}
+	
+	// Compare the output of a testcase agains the reference output
+	protected function check_case($case) {
+		// checker
+		$checker = $this->entity->checker();
+		$checker = "checkers/$checker.sh";
+		// the files
+		$case_ref  = $this->entity->testcase_reference_output($case);
+		$case_my   = $this->tempdir->file("$case.out");
+		$case_diff = $this->tempdir->file("$case.diff");
+		make_file_writable($case_diff);
+		if (!file_exists($case_ref)) {
+			throw new Exception("Reference implementation does not exists:\n$case_ref");
+		}
+		// run checker
+		$result = SystemUtil::run_command($checker, array($case_my, $case_ref, $case_diff));
+		if (!$result) {
+			$this->put_tempfile("$case.diff");
+			echo "     Output does not match\n";
+		}
+		return $result;
+	}
+	
+	// Store a file, but check output size first
+	protected function put_output_file_contents_checked($file, $contents) {
+		$max_file_size = intval($this->entity->filesize_limit());
+		$content_size  = strlen($contents);
+		if ($content_size > $max_file_size) {
+			// don't allow files to be too large
+			echo "Putting file of size: ",$content_size,"  while max = ",$max_file_size,"\n";
+			$contents = substr($contents,0,$max_file_size) . "\n<<FILE TOO LARGE>>";
+		}
+		$this->put_output_file_contents($file,$contents);
+	}
+	// Store a file from the tempdir
+	protected function put_tempfile($file) {
+		$contents = file_get_contents($this->tempdir->file($file));
+		$this->put_output_file_contents_checked($file, $contents);
+	}
+	
+}
+
+// -----------------------------------------------------------------------------
+// Compiling reference implementation
+// -----------------------------------------------------------------------------
+
+class GenerateReferenceOutput extends JudgementBase {
+	private $sourcefile_path;
+	
+	function __construct($entity) {
+		parent::__construct($entity);
+		@mkdir($this->entity->data_path() . ".generated");
+		// find source file
+	}
+	
+	// Build the testset outputs based on a reference implementation
+	// store outputs in <entitydir>/.output
+	function build_testset_outputs() {
 		// TODO
+		throw new Exception("TODO");
+	}
+	
+	// interface for JudgementBase
+	
+	protected function get_source_filename() {
+		return $this->sourcefile_path;
+	}
+	
+	protected function get_source_file_contents() {
+		return file_get_contents($this->sourcefile_path);
+	}
+	
+	protected function put_output_file_contents($file, $contents) {
+		file_put_contents($this->entity->date_path() . ".generated/" . $file, $contents);
+	}
+	
+};
+
+// -----------------------------------------------------------------------------
+// Making judgements
+// -----------------------------------------------------------------------------
+
+class Judgement extends JudgementBase {
+	private $subm;
+	
+	function __construct($subm) {
+		$this->subm = $subm;
+		parent::__construct($subm->entity());
+	}
+	
+	// Judge the submission, and update the database
+	function judge() {
+		$status = $this->do_judge();
+		$this->subm->set_status($status);
+		$this->__destruct();
+	}
+	
+	// Judge the submission, return status
+	private function do_judge() {
+		$status = $this->prepare_and_compile();
+		if ($status != 0) return $status;
+		$status = $this->run_testcases();
+		return $status;
+	}
+	
+	private function run_testcases() {
+		// prepare testset
+		$testset = $this->entity->testcases();
+		if (!$this->entity->testcase_reference_output_exists()) {
+			// generate testcase output
+			echo "Note: Testcase reference output does not exist, generating it now.\n";
+			$ref_output_generator = new GenerateReferenceOutput($this->entity);
+			$ref_output_generator->build_testset_outputs();
+		}
 		
 		// run testset
 		$test_results = array();
 		$status = Status::PASSED_COMPARE;
 		
-		foreach($testset->test_cases() as $case) {
+		foreach($this->entity->testcases() as $case) {
 			echo "  case: " . $case . "\n";
 			if ($status != Status::PASSED_COMPARE) {
 				$test_results[$case] = Status::NOT_DONE;
@@ -126,160 +347,18 @@ class Judgement {
 		return $status;
 	}
 	
-	private function determine_language() {
-		// what type of file do we have?
-		// determine from specification
-		$this->language = Util::language_info( $this->entity->attribute('language') );
-		// determine from extension
-		if ($this->language['name'] == 'any') {
-			$this->language = Util::language_from_filename($this->subm->filename);
-		}
-		// unknown language -> failure
-		return $this->language['name'] != 'unknown';
+	// interface for JudgementBase
+	
+	protected function get_source_filename() {
+		return $this->subm->filename;
 	}
 	
-	private function download_source() {
-		$this->source_file = $this->tempdir->file($this->subm->filename);
-		$contents = $this->subm->get_file($this->subm->code_filename());
-		if ($contents === false) return false;
-		file_put_contents($this->source_file, $contents);
-		return true;
+	protected function get_source_file_contents() {
+		return $this->subm->get_file($this->subm->code_filename());
 	}
 	
-	private function create_tempdir() {
-		// create temporary directory
-		$this->tempdir = new Tempdir('','judge');
-		if (!file_exists($this->tempdir->dir)) return false;
-		chmod($this->tempdir->dir,0755);
-		return true;
-	}
-	
-	private function make_file_readable($file) {
-		chmod($file,0644);
-	}
-	private function make_file_executable($file) {
-		chmod($file,0755);
-	}
-	private function make_file_writable($file) {
-		touch($file);
-		chmod($file,0666);
-	}
-	
-	private function extract_archive() {
-		// extract archive?
-		$is_archive = false;
-		if (isset($this->language['archive_extract'])) {
-			if ($this->entity->attribute_bool('allow archives')) {
-				// TODO: Check this during submit
-				return false;
-			}
-			throw new Exception("TODO: archives");
-			SystemUtil::run_command($this->language['archive_extract'], $this->source_file);
-			// look for the actual source file
-		}
-		return true;
-	}
-	
-	private function compile() {
-		// compiler script to use
-		$compiler = $this->entity->attribute('compiler');
-		if ($compiler == '') $compiler = $this->language['name'];
-		$compiler = "compilers/$compiler.sh";
-		// compile
-		$this->exe_file = $this->source_file . '.exe';
-		$compile_err_file = $this->tempdir->file('compiler.err');
-		$this->make_file_readable($this->source_file);
-		$this->make_file_writable($this->exe_file);
-		$this->make_file_writable($compile_err_file);
-		$limits = array(
-			'time limit' => intval($this->entity->attribute('compile time limit'))
-		);
-		$result =SystemUtil::safe_command($compiler, array($this->source_file, $this->exe_file, $compile_err_file), $limits);
-		if (!$result) {
-			$this->put_tempfile('compiler.err');
-		} else {
-			$this->make_file_executable($this->exe_file);
-		}
-		return $result;
-	}
-	
-	private function run_case($case) {
-		// runner
-		$runner = $this->entity->attribute('runner');
-		$runner = "runners/$runner.sh";
-		if (false) {
-			// use pipes
-			$stdin = file_get_contents($this->entity->data_path() . "$case.in");
-			list($result,$stdout,$stderr) = SystemUtil::run_command_io($runner, array($this->exe_file), $stdin);
-			$this->put_tempfile_contents("$case.out",$stderr);
-			$this->put_tempfile_contents("$case.err",$stdout);
-			return $result;
-		} else {
-			// copy case input
-			$case_input  = $this->tempdir->file("$case.in");
-			$case_output = $this->tempdir->file("$case.out");
-			$case_error  = $this->tempdir->file("$case.err");
-			$case_limit_error = $this->tempdir->file("$case.limit-err");
-			copy($this->entity->data_path() . "$case.in", $case_input);
-			$this->make_file_readable($case_input);
-			$this->make_file_writable($case_output);
-			$this->make_file_writable($case_error);
-			$this->make_file_writable($case_limit_error);
-			// run program, store results
-			$limits = array(
-				'time limit'   => intval($this->entity->attribute('time limit')),
-				'memory limit' => intval($this->entity->attribute('memory limit')),
-				'filesize limit' => intval($this->entity->attribute('filesize limit')),
-			);
-			$result = SystemUtil::safe_command($runner, array($this->exe_file, $case_input, $case_output, $case_error), $limits, $case_limit_error);
-			if (!file_exists($case_output)) {
-				file_put_contents($case_output, "<<NO OUTPUT FILE CREATED>>");
-				$result = false;
-				echo "     No output file created\n";
-			}
-			if (!$result && file_exists($case_limit_error) && filesize($case_limit_error) > 0) {
-				// use limit error message as error output
-				copy($case_limit_error, $case_error);
-			}
-			$this->put_tempfile("$case.out");
-			$this->put_tempfile("$case.err");
-			return $result;
-		}
-	}
-	
-	private function check_case($case) {
-		$case_ref  = $this->entity->data_path() . "$case.out";
-		$case_my   = $this->tempdir->file("$case.out");
-		$case_diff = $this->tempdir->file("$case.diff");
-		$this->make_file_writable($case_diff);
-		// run checker
-		$checker = $this->entity->attribute('checker');
-		$checker = "checkers/$checker.sh";
-		$result = SystemUtil::run_command($checker, array($case_my, $case_ref, $case_diff));
-		if (!$result) {
-			$this->put_tempfile("$case.diff");
-			echo "     Output does not match\n";
-		}
-		return $result;
-	}
-	
-	
-	private function put_tempfile_contents($file, $contents) {
-		$max_file_size = intval($this->entity->attribute('filesize limit'));
-		$content_size  = strlen($contents);
-		if ($content_size > $max_file_size) {
-			// don't allow files to be too large
-			echo "Putting file of size: ",$content_size,"  while max = ",$max_file_size,"\n";
-			$contents = substr($contents,0,$max_file_size) . "\n<<FILE TOO LARGE>>";
-		}
-		$this->subm->put_file(
-			$this->subm->output_filename($file),
-			$contents
-		);
-	}
-	private function put_tempfile($file) {
-		$contents = file_get_contents($this->tempdir->file($file));
-		$this->put_tempfile_contents($file, $contents);
+	protected function put_output_file_contents($file, $contents) {
+		$this->subm->put_file($this->subm->output_filename($file),$contents);
 	}
 	
 }

@@ -13,6 +13,7 @@ class Entity {
 	private $_path;       // full path (relative to data directory), ends in '/'
 	private $_attributes; // key=>value pairs specified in "dir.conf" or NULL if not initialized
 	private $_children;   // children array or NULL if not initialized
+	private $_testcases; // array of testcases, initialized when $_children is
 	
 	// ---------------------------------------------------------------------
 	// Construction: singleton based
@@ -113,6 +114,35 @@ class Entity {
 		return $this->attribute("title");
 	}
 	
+	function compile() {
+		return $this->attribute_bool('compile');
+	}
+	function compiler() {
+		return $this->attribute_bool('compiler');
+	}
+	function runner() {
+		return $this->attribute_bool('runner');
+	}
+	function checker() {
+		return $this->attribute_bool('checker');
+	}
+	
+	function compile_limits() {
+		return array(
+			'time limit' => intval($this->attribute('compile time limit'))
+		);
+	}
+	function run_limits() {
+		return array(
+			'time limit'     => intval($this->attribute('time limit')),
+			'memory limit'   => intval($this->attribute('memory limit')),
+			'filesize limit' => intval($this->attribute('filesize limit')),
+		);
+	}
+	function filesize_limit() {
+		return intval($this->attribute('filesize limit'));
+	}
+	
 	function show_compile_errors() {
 		return $this->attribute_bool('show compile errors');
 	}
@@ -161,13 +191,52 @@ class Entity {
 	private function load_children() {
 		if (isset($this->_children)) return;
 		$this->_children = array();
+		$this->_testcases = array();
 		foreach (new DirectoryIterator($this->data_path()) as $child) {
-			// skip hidden files and non-directories
 			$filename = $child->getFilename();
-			if ($child->isDot() || !$child->isDir() || $filename[0] == '.') continue;
-			$this->_children[$filename] = new Entity($this, $filename);
+			if ($child->isDot() ||  $filename[0] == '.') {
+				// skip hidden files and ..
+			} else if ($child->isDir()) {
+				// subdirectory = child entity
+				$this->_children[$filename] = new Entity($this, $filename);
+			} else if (substr($filename,-3) == '.in') {
+				// ".in" file = testcase
+				$this->_testcases []= substr($filename,0,-3);
+			}
 		}
+		sort($this->_testcases);
 		ksort($this->_children);
+	}
+	
+	// ---------------------------------------------------------------------
+	// Testcases
+	// ---------------------------------------------------------------------
+	
+	function has_testcases() {
+		return count($this->testcases()) > 0;
+	}
+	
+	function testcases() {
+		$this->load_children();
+		return $this->_testcases;
+	}
+	
+	function testcase_input($case) {
+		return $this->data_path() . "$case.in";
+	}
+	function testcase_reference_output($case) {
+		$path = $this->data_path() . "$case.out";
+		if (file_exists($path)) return $path;
+		$path = $this->data_path() . ".generated/$case.out";
+		return $path;
+	}
+	function testcase_reference_output_exists() {
+		foreach($this->testcases() as $case) {
+			if (!file_exists($this->testcase_reference_output($case))) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	// ---------------------------------------------------------------------
