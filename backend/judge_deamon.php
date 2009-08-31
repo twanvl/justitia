@@ -153,6 +153,14 @@ class Judgement {
 		return true;
 	}
 	
+	private function make_file_readable($file) {
+		chmod($file,0644);
+	}
+	private function make_file_writable($file) {
+		touch($file);
+		chmod($file,0666);
+	}
+	
 	private function extract_archive() {
 		// extract archive?
 		$is_archive = false;
@@ -176,6 +184,9 @@ class Judgement {
 		// compile
 		$this->exe_file = $this->source_file . '.exe';
 		$compile_err_file = $this->tempdir->file('compiler.err');
+		$this->make_file_readable($this->source_file);
+		$this->make_file_writable($this->exe_file);
+		$this->make_file_writable($compile_err_file);
 		$limits = array(
 			'time limit' => intval($this->entity->attribute('compile time limit'))
 		);
@@ -204,6 +215,10 @@ class Judgement {
 			$case_error  = $this->tempdir->file("$case.err");
 			$case_limit_error = $this->tempdir->file("$case.limit-err");
 			copy($this->entity->data_path() . "$case.in", $case_input);
+			$this->make_file_readable($case_input);
+			$this->make_file_writable($case_output);
+			$this->make_file_writable($case_error);
+			$this->make_file_writable($case_limit_error);
 			// run program, store results
 			$limits = array(
 				'time limit'   => intval($this->entity->attribute('time limit')),
@@ -230,6 +245,7 @@ class Judgement {
 		$case_ref  = $this->entity->data_path() . "$case.out";
 		$case_my   = $this->tempdir->file("$case.out");
 		$case_diff = $this->tempdir->file("$case.diff");
+		$this->make_file_writable($case_diff);
 		// run checker
 		$checker = $this->entity->attribute('checker');
 		$checker = "checkers/$checker.sh";
