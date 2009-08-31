@@ -118,13 +118,13 @@ class Entity {
 		return $this->attribute_bool('compile');
 	}
 	function compiler() {
-		return $this->attribute_bool('compiler');
+		return $this->attribute('compiler');
 	}
 	function runner() {
-		return $this->attribute_bool('runner');
+		return $this->attribute('runner');
 	}
 	function checker() {
-		return $this->attribute_bool('checker');
+		return $this->attribute('checker');
 	}
 	
 	function compile_limits() {
@@ -237,6 +237,35 @@ class Entity {
 			}
 		}
 		return true;
+	}
+	
+	function reference_implementation($warn = true) {
+		// from attribute
+		$impl = $this->attribute("reference implementation");
+		if ($impl != '') return $impl;
+		// from compilable files
+		$code_files = array();
+		foreach (new DirectoryIterator($this->data_path()) as $child) {
+			$filename = $child->getFilename();
+			if ($filename{0} == '.') continue;
+			// for convenience, pick the first program source file as the reference impl, if none is set
+			if (Util::is_code($filename)) {
+				$code_files []= $filename;
+			}
+		}
+		// found any?
+		if (count($code_files) == 1) {
+			return $code_files[0];
+		} else {
+			if ($warn) {
+				if (count($code_files) == 0) {
+					echo "No reference implementation found.\n";
+				} else {
+					echo "Multiple source files found, not sure which one to use.\n";
+				}
+			}
+			return false;
+		}
 	}
 	
 	// ---------------------------------------------------------------------
