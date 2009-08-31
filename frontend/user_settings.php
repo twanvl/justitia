@@ -21,7 +21,7 @@ class Page extends Template {
 	}
 	
 	function title() {
-		return "User settings for " . $this->user->login;
+		return "Settings for " . $this->user->login;
 	}
 	
 	
@@ -55,6 +55,7 @@ class Page extends Template {
 			}
 		}
 		
+		$this->write_block_begin('Change password');
 		$this->write_messages('user');
 		$this->write_form_begin('user_settings.php','post');
 		$this->write_form_preserve('redirect');
@@ -69,6 +70,7 @@ class Page extends Template {
 		$this->write_form_table_field('password','user_password2',    'Confirm password');
 		$this->write_form_table_end();
 		$this->write_form_end('Update');
+		$this->write_block_end();
 	}
 	
 	function write_body() {
