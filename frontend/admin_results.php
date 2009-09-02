@@ -66,7 +66,6 @@ class Page extends PageWithEntity {
 	}
 	
 	function write_body() {
-		echo "<pre>";
 		function is_submitable($e) {
 			return $e->submitable();
 		}
