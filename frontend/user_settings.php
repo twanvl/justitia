@@ -65,6 +65,8 @@ class Page extends Template {
 		$this->write_form_table_data('First name',   $data['firstname']);
 		$this->write_form_table_data('Middle name',  $data['midname']);
 		$this->write_form_table_data('Last name',    $data['lastname']);
+		$this->write_form_table_data('Email',        $data['email']);
+		$this->write_form_table_data('Class',        $data['class']);
 		$this->write_form_table_field('password','user_old_password', 'Old password');
 		$this->write_form_table_field('password','user_password',     'Password');
 		$this->write_form_table_field('password','user_password2',    'Confirm password');
