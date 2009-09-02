@@ -43,7 +43,7 @@ class Page extends PageWithEntity {
 			$this->write_form_preserve('submissionid');
 			$this->write_form_hidden('delete',1);
 			$this->write_form_hidden('confirm',sha1('confirmed'.$this->subm->submissionid));
-			$this->write_form_end("Delete submissions");
+			$this->write_form_end("Delete submission");
 			$this->write_block_end();
 		}
 		$this->write_the_submission();
