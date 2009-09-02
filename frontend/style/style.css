@@ -293,7 +293,7 @@ h1 {
 }
 .results td, .results th {
 	border:		1px solid rgb(128,128,128);
-	padding:	2px 4px;
+	padding:	2px 3px;
 }
 #main .results a {
 	color:			black;
