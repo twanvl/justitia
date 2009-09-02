@@ -46,11 +46,13 @@ function write_submission($subm, $entity = null, $include_entity = false) {
 		if ($subm->status() != Status::PENDING) {
 			echo "<tr><td>Judged by</td><td>" . htmlspecialchars($subm->judge_host);
 			echo "</td></tr>";
-			echo "<tr><td>Actions</td><td>";
-			echo "<a href=\"admin_view_submission.php?rejudge=1&amp;submissionid=$subm->submissionid\">rejudge</a> | ";
-			echo "<a href=\"admin_view_submission.php?delete=1&amp;submissionid=$subm->submissionid\">delete</a>";
-			echo "</td></tr>";
 		}
+		echo "<tr><td>Actions</td><td>";
+		if ($subm->status() != Status::PENDING) {
+			echo "<a href=\"admin_view_submission.php?rejudge=1&amp;submissionid=$subm->submissionid\">rejudge</a> | ";
+		}
+		echo "<a href=\"admin_view_submission.php?delete=1&amp;submissionid=$subm->submissionid\">delete</a>";
+		echo "</td></tr>";
 	}
 	echo "</table>";
 	//if ($type == Status::FAILED_COMPARE || $type == Status::FAILED_RUN) // only write testset if failed?

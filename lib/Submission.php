@@ -34,7 +34,7 @@ class Submission {
 		if (isset($this->users)) return $this->users;
 		static $query;
 		DB::prepare_query($query,
-			"SELECT userid,login,firstname,midname,lastname FROM `user_submission`".
+			"SELECT user.userid as userid,login,firstname,midname,lastname FROM `user_submission`".
 			" LEFT JOIN `user` ON `user_submission`.`userid` = `user`.`userid`".
 			" WHERE submissionid=?"
 		);
@@ -100,6 +100,7 @@ class Submission {
 	
 	static function fetch_one($query, $info='', $throw = true) {
 		$data = $query->fetch(PDO::FETCH_ASSOC);
+		DB::check_errors($query);
 		$query->closeCursor();
 		if ($data === false) {
 			if ($throw) throw new Exception("Submission not found: $info");
@@ -114,6 +115,7 @@ class Submission {
 		foreach($query as $subm) {
 			$result []= new Submission($subm);
 		}
+		DB::check_errors($query);
 		$query->closeCursor();
 		return $result;
 	}

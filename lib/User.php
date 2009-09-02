@@ -180,6 +180,7 @@ class User {
 		
 	static function fetch_one($query, $info='', $throw=true) {
 		$data = $query->fetch(PDO::FETCH_ASSOC);
+		DB::check_errors($query);
 		$query->closeCursor();
 		if ($data === false) {
 			if ($throw) throw new Exception("User not found: $info");
@@ -188,6 +189,7 @@ class User {
 		return new User($data);
 	}
 	static function fetch_all($query) {
+		DB::check_errors($query);
 		// fetch submissions
 		$result = array();
 		$query->setFetchMode(PDO::FETCH_ASSOC);
