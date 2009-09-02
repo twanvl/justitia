@@ -174,6 +174,7 @@ class Entity {
 		return isset($this->_children[$name]) ? $this->_children[$name] : NULL;
 	}
 	
+	// this, children, children of children, etc.
 	function descendants() {
 		$out = array();
 		$this->get_descendants($out);

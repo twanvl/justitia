@@ -302,11 +302,26 @@ h1 {
 #main .results a:hover {
 	text-decoration:	underline;
 }
-.results tr > :first-child {
+.results tr > td:first-child,
+.results .user {
 	border-right:	3px double rgb(128,128,128);
 }
+.results tbody > tr:first-child {
+	border-top:	3px double rgb(128,128,128);
+}
+.results th {
+	text-align:	center;
+}
+.results .user {
+	text-align:	left;
+	vertical-align:	bottom;
+}
+.results .submitable-parent {
+	border-top:	hidden;
+}
+
 .results .skipped {
-	background:	rgb(255,50,50);
+	background:	rgb(255,80,80);
 }
 .results .failed {
 	background:	rgb(255,50,50);

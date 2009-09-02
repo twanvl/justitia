@@ -6,6 +6,48 @@ require_once('../lib/bootstrap.inc');
 // Results overview table
 // -----------------------------------------------------------------------------
 
+function layered_descendants($entity) {
+	// returns array(array())
+	$layers = new LayerTree();
+	$layers->add_leaf('User');
+	layered_descendants_rec($entity, $layers);
+	return $layers;
+}
+function layered_descendants_rec($entity, &$layers) {
+	$layers->parent_begin($entity);
+	if ($entity->submitable()) {
+		$layers->add_leaf($entity);
+	}
+	foreach ($entity->children() as $child) {
+		layered_descendants_rec($child, $layers);
+	}
+	$layers->parent_end($entity);
+}
+
+function print_layers_header($layers) {
+	foreach ($layers->get() as $i=>$layer) {
+		echo "<tr>";
+		foreach ($layer as $it) {
+			if (!is_object($it)) continue;
+			
+			if ($it->value == 'User') {
+				$extra = ' class="user"';
+				$value = 'User';
+			} else if ($it->type == LayerItem::LEAF) {
+				$extra = ' class="submitable-parent"';
+				$value = '';
+			} else {
+				$extra = '';
+				$value = "<a href=\"admin_results.php" . htmlspecialchars($it->value->path()) ."\">"
+				       . htmlspecialchars($it->value->title()) . "</a>";
+			}
+			echo "<th colspan=\"$it->colspan\" rowspan=\"$it->rowspan\"$extra>$value</th>";
+		}
+		echo "</tr>";
+	}
+}
+
+
 class Page extends PageWithEntity {
 	
 	function __construct() {
@@ -24,12 +66,14 @@ class Page extends PageWithEntity {
 	}
 	
 	function write_body() {
+		echo "<pre>";
 		function is_submitable($e) {
 			return $e->submitable();
 		}
 		$entities = array_filter($this->entity->descendants(),'is_submitable');
 		$this->write_get_submission_results($entities);
 	}
+	
 	
 	function write_get_submission_results($entities) {
 		// statistics
@@ -77,11 +121,18 @@ class Page extends PageWithEntity {
 	function write_submission_results($entities,$users) {
 		echo "<table class=\"results\">\n";
 		// heading
-		echo "<thead><tr><th>User</th>";
+		echo "<thead>";
+		/*
+		echo "<tr><th>User</th>";
 		foreach($entities as $entity) {
-			echo "<th>" . htmlspecialchars($entity->title()) . "</th>";
+			echo "<th><a href=\"admin_results.php" . htmlspecialchars($entity->path()) ."\">"
+			   . htmlspecialchars($entity->title()) . "</a></th>";
 		}
-		echo "</tr></thead><tbody>\n";
+		echo "</tr>\n";
+		*/
+		$entity_layers = layered_descendants($this->entity);
+		print_layers_header($entity_layers);
+		echo "</thead><tbody>\n";
 		// user results
 		foreach ($users as $userinfo) {
 			$subms = $userinfo['subms'];
