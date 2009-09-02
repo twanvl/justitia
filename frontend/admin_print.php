@@ -57,6 +57,9 @@ class Page extends PageWithEntity {
 		//$this->write_form_table_field('radio',   'format',         'Text output', $format=='text', ' value="text"');
 		//$this->write_form_table_field('radio',   'format',         'HTML output', $format=='html', ' value="html"');
 		$this->write_form_table_field('checkbox','include_failed', 'Include failed and pending submissions', $include_failed);
+		$this->write_form_table_field('radio',   'tabsize',         'Replace by 4 spaces', true,  ' value="4"', 'Tabs');
+		$this->write_form_table_field('radio',   'tabsize',         'Replace by 8 spaces', false, ' value="8"');
+		$this->write_form_table_field('radio',   'tabsize',         'Keep as tabs',        false, ' value="0"');
 		$this->write_form_table_end();
 		$this->write_form_end("Generate printout");
 		
@@ -70,7 +73,19 @@ class Page extends PageWithEntity {
 		$this->write_block_end();
 	}
 	
+	private $tab_replacement = '    ';
+	
 	function write_print_body() {
+		// number of spaces in a tab
+		if (isset($_REQUEST['tabsize'])) {
+			$tabsize = intval($_REQUEST['tabsize']);
+			if ($tabsize == 0) {
+				$this->tab_replacement = "\t";
+			} else {
+				$this->tab_replacement = '';
+				for ($i = 0 ; $i < $tabsize ; ++$i) $this->tab_replacement .= ' ';
+			}
+		}
 		// for each userid => subm
 		$subms = $this->entity->all_final_submissions();
 		// make unique
@@ -125,25 +140,29 @@ class Page extends PageWithEntity {
 		echo '<pre>';
 		$lines = explode("\n",$contents);
 		foreach($lines as $line) {
-			list($indent,$rest) = Page::take_indent($line);
-			echo '<div class="line">';
-			echo '<span class="indent">'.$indent.'</span>';
-			echo '<span class="rest">'.htmlspecialchars($rest)."\n".'</span>';
-			echo "</div>";
+			if ($this->tab_replacement == "\t") {
+				echo htmlspecialchars($line) . "\n";
+			} else {
+				list($indent,$rest) = $this->take_indent($line);
+				echo '<div class="line">';
+				echo '<span class="indent">'.$indent.'</span>';
+				echo '<span class="rest">'.htmlspecialchars($rest)."\n".'</span>';
+				echo "</div>";
+			}
 		}
 		echo '</pre>';
 		
 		//$content_html = htmlspecialchars($contents);
 		//echo "<pre class='simple'>$content_html</pre>";
 	}
-	static function take_indent($line) {
+	function take_indent($line) {
 		$len = strlen($line);
 		$indent = '';
 		for ($i = 0 ; $i < $len ; ++$i) {
 			if ($line{$i} == ' ') {
 				$indent .= ' ';
 			} else if ($line{$i} == "\t") {
-				$indent .= '<b>    </b>';
+				$indent .= "<b>$this->tab_replacement</b>";
 			} else {
 				break;
 			}

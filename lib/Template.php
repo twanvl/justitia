@@ -84,9 +84,9 @@ abstract class Template {
 		}
 		echo "<input type=\"$type\" id=\"$name\" name=\"$name\"$valuespec$extra>";
 	}
-	function write_form_table_field($type, $name, $label, $value = null, $extra = null) {
+	function write_form_table_field($type, $name, $label, $value = null, $extra = null, $pre_label = '') {
 		if ($type == 'checkbox' || $type == 'radio') {
-			echo "<tr><td></td><td><label>";
+			echo "<tr><td>$pre_label</td><td><label>";
 			$this->write_form_field($type, $name, $value, $extra);
 			echo " $label</label></td></tr>\n";
 		} else {
