@@ -114,8 +114,9 @@ class User {
 	
 	static function all($filter = "%") {
 		static $query;
+		// TODO: which fields to select?
 		DB::prepare_query($query,
-			"SELECT * FROM `user`".
+			"SELECT userid,login,firstname,midname,lastname,email,is_admin FROM `user`".
 			" WHERE `login` LIKE ?".
 			"    OR CONCAT_WS(' ',`firstname`,`midname`,`lastname`) LIKE ?".
 			"    OR CONCAT_WS(' ',`firstname`,`lastname`,`midname`) LIKE ?".
@@ -133,8 +134,8 @@ class User {
 		$data['is_admin'] = $data['is_admin']?1:0;
 		static $query;
 		DB::prepare_query($query,
-			"INSERT INTO `user` (`login`,`password`,`firstname`,`midname`,`lastname`,`is_admin`)".
-			            "VALUES (:login, :password, :firstname, :midname, :lastname, :is_admin)");
+			"INSERT INTO `user` (`login`,`password`,`firstname`,`midname`,`lastname`,`email`,`class`,`notes`,`is_admin`)".
+			            "VALUES (:login, :password, :firstname, :midname, :lastname, :email, :class, :notes, :is_admin)");
 		$query->execute($data);
 		if ($query->rowCount() != 1) {
 			throw new Exception("Create user failed");
@@ -157,7 +158,7 @@ class User {
 		$data['is_admin'] = $data['is_admin']?1:0;
 		static $query;
 		DB::prepare_query($query,
-			"UPDATE `user` SET `login` = :login, `password` = :password, `firstname` = :firstname, `midname` = :midname, `lastname` = :lastname, `is_admin` = :is_admin".
+			"UPDATE `user` SET `login` = :login, `password` = :password, `firstname` = :firstname, `midname` = :midname, `lastname` = :lastname, `email` = :email, `class` = :class, `notes` = :notes, `is_admin` = :is_admin".
 			" WHERE `userid` = :userid");
 		$query->execute($data);
 		$query->closeCursor();

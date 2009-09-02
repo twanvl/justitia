@@ -37,6 +37,9 @@ class Page extends Template {
 				'firstname' => '',
 				'midname'   => '',
 				'lastname'  => '',
+				'email'     => '',
+				'class'     => '',
+				'notes'     => '',
 				'is_admin'  => false,
 			);
 		}
@@ -49,6 +52,9 @@ class Page extends Template {
 			get_request_data($data,'user_','firstname');
 			get_request_data($data,'user_','midname');
 			get_request_data($data,'user_','lastname');
+			get_request_data($data,'user_','email');
+			get_request_data($data,'user_','class');
+			get_request_data($data,'user_','notes');
 			get_request_bool($data,'user_','is_admin');
 			
 			// validate
@@ -104,10 +110,13 @@ class Page extends Template {
 		$this->write_form_table_field('text',    'user_login',    'Login',        $data['login']);
 		$this->write_form_table_field('password','user_password', 'Password');
 		$this->write_form_table_field('password','user_password2','Confirm password');
+		$this->write_form_table_field('checkbox','user_is_admin', 'Administrator',$data['is_admin']);
 		$this->write_form_table_field('text',    'user_firstname','First name',   $data['firstname']);
 		$this->write_form_table_field('text',    'user_midname',  'Middle name',  $data['midname'], ' size="5"');
 		$this->write_form_table_field('text',    'user_lastname', 'Last name',    $data['lastname']);
-		$this->write_form_table_field('checkbox','user_is_admin', 'Administrator',$data['is_admin']);
+		$this->write_form_table_field('text',    'user_email',    'Email address',$data['email']);
+		$this->write_form_table_field('text',    'user_class',    'Class',        $data['class']);
+		$this->write_form_table_field('textarea','user_notes',    'Notes',        $data['notes'], ' cols="60" rows="4"');
 		$this->write_form_table_end();
 		$this->write_form_end($editing ? 'Update user' : 'Add user');
 		$this->write_block_end();
@@ -129,6 +138,7 @@ class Page extends Template {
 		echo "<thead><tr>";
 		echo "<th>Login</th>";
 		echo "<th>Name</th>";
+		echo "<th>Email</th>";
 		echo "<th>Admin?</th>";
 		echo "</tr></thead><tbody>\n";
 		
@@ -137,6 +147,11 @@ class Page extends Template {
 			echo '<tr>';
 			echo '<td>',htmlspecialchars($user->login),'</td>';
 			echo '<td>',htmlspecialchars($user->name()),'</td>';
+			if ($user->email) {
+				echo '<td><a href="mailto:',htmlspecialchars($user->email),'">',htmlspecialchars($user->email),'</a></td>';
+			} else {
+				echo '<td></td>';
+			}
 			echo '<td>',($user->is_admin?'yes':''),'</td>';
 			echo '<td><a href="admin_user.php?edit='.$user->userid
 			                               .'&amp;user_filter='.urlencode($_REQUEST['user_filter'])

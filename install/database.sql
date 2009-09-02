@@ -14,6 +14,9 @@ CREATE TABLE `user`
 , `lastname`  varchar(255)    NOT NULL                COMMENT 'Last name'
 , `password`  varchar(255)    NOT NULL                COMMENT 'SHA1 hash of the salted password'
 , `is_admin`  boolean         NOT NULL                COMMENT 'Is this an administrator?'
+, `class`     varchar(255)    NOT NULL                COMMENT 'Study direction / class'
+, `email`     varchar(255)    NOT NULL                COMMENT 'Email address'
+, `notes`     mediumtext      NOT NULL                COMMENT 'Comments and/or notes'
 , PRIMARY KEY(`userid`)
 , INDEX      (`login`)
 ) DEFAULT CHARSET=utf8;

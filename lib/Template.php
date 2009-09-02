@@ -72,7 +72,12 @@ abstract class Template {
 	}
 	
 	function write_form_field($type, $name, $value = null, $extra = null) {
-		if ($type == 'checkbox' || $type == 'radio') {
+		if ($type == 'textarea') {
+			echo "<textarea id=\"$name\" name=\"$name\"$extra>";
+			echo htmlspecialchars($value);
+			echo "</textarea>";
+			return;
+		} else if ($type == 'checkbox' || $type == 'radio') {
 			$valuespec = ($value ? ' checked="checked"' : '');
 		} else {
 			$valuespec = $value === null ? '' : ' value="'. htmlspecialchars($value) . '"';
