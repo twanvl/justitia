@@ -204,7 +204,6 @@ abstract class Template {
 		echo "</div>";
 	}
 	
-	
 	function write() {
 		$base  = htmlspecialchars(Util::base_url());
 		$title = htmlspecialchars($this->title());
@@ -263,3 +262,14 @@ abstract class Template {
 <?php
 	}
 }
+
+// -----------------------------------------------------------------------------
+// Fancy templates need fancy error messages
+// -----------------------------------------------------------------------------
+
+function fancy_exception_handler($e) {
+	//ErrorPage::die_fancy(htmlspecialchars($e->getMessage()) . "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>");
+	ErrorPage::die_fancy(htmlspecialchars($e->getMessage()));
+}
+
+set_exception_handler('fancy_exception_handler');

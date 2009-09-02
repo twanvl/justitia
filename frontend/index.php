@@ -89,7 +89,8 @@ class Page extends PageWithEntity {
 				echo "Your submission will be compiled. ";
 			}
 			if ($this->entity->attribute_bool('keep best')) {
-				echo "The best solution counts.";
+				// Arnold says: "This is confusing, don't show"
+				//echo "The best solution counts.";
 			} else {
 				echo "The last solution counts.";
 			}

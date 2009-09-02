@@ -107,7 +107,7 @@ class User {
 	}
 	static function by_login($login, $throw=true) {
 		static $query;
-		DB::prepare_query($query, "SELECT * FROM `user` WHERE `login`=?");
+		DB::prepare_query($query, "SELECT userid,login,password FROM `user` WHERE `login`=?");
 		$query->execute(array($login));
 		return User::fetch_one($query, $login, $throw);
 	}

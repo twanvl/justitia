@@ -173,21 +173,43 @@ class Submission {
 		
 	}
 	
+	function rejudge() {
+		self::rejudge_by_id($this->submissionid);
+		$this->judge_start = 0;
+		$this->judge_host  = NULL;
+		$this->status      = Status::PENDING;
+	}
 	static function rejudge_by_id($submissionid) {
 		// delete output files
-		static $query;
-		DB::prepare_query($query,
+		$query = DB::prepare(
 			"DELETE FROM `file` WHERE submissionid=? AND (`filename` LIKE 'out/%' OR `filename`='testcases')"
 		);
 		$query->execute(array($submissionid));
 		DB::check_errors($query);
 		// set status to pending
-		static $query2;
-		DB::prepare_query($query2,
+		$query = DB::prepare(
 			"UPDATE `submission` SET `judge_start`=0, `judge_host`=NULL, status=? WHERE submissionid=?"
 		);
-		$query2->execute(array(Status::PENDING,$submissionid));
-		DB::check_errors($query2);
+		$query->execute(array(Status::PENDING,$submissionid));
+		DB::check_errors($query);
+	}
+	
+	function delete() {
+		self::delete_by_id($this->submissionid);
+	}
+	static function delete_by_id($submissionid) {
+		// delete files
+		$query = DB::prepare("DELETE FROM `file` WHERE submissionid=?");
+		$query->execute(array($submissionid));
+		DB::check_errors($query);
+		// delete user_submission
+		$query = DB::prepare("DELETE FROM `user_submission` WHERE submissionid=?");
+		$query->execute(array($submissionid));
+		DB::check_errors($query);
+		// delete submission itself
+		$query = DB::prepare("DELETE FROM `submission` WHERE submissionid=?");
+		$query->execute(array($submissionid));
+		DB::check_errors($query);
 	}
 	
 	
