@@ -35,14 +35,26 @@ function handle_uploaded_submission($entity) {
 	// is upload okay?
 	if (!$entity->submitable()) {
 		Template::add_message('submit','error', "No submissions can be made here.");
+		@unlink($file['tmp_name']);
 		return false;
 	}
 	if (!$entity->active()) {
 		Template::add_message('submit','error', "The deadline has passed for this assignment.");
+		@unlink($file['tmp_name']);
 		return false;
 	}
 	if ($file['error'] != UPLOAD_ERR_OK) {
 		Template::add_message('submit','error', file_upload_error_message($file['error']));
+		@unlink($file['tmp_name']);
+		return false;
+	}
+	
+	// is the group ok?
+	$group = UserGroup::current();
+	$max_size = intval($entity->attribute('max group size'));
+	if (count($group) > $max_size) {
+		Template::add_message('submit','error', "There are too many students in this group, please remove someone.");
+		@unlink($file['tmp_name']);
 		return false;
 	}
 	
@@ -64,7 +76,7 @@ function handle_uploaded_submission($entity) {
 	unlink($file['tmp_name']);
 	
 	// assign users
-	foreach (UserGroup::current() as $user) {
+	foreach ($group as $user) {
 		$subm->add_user($user);
 	}
 	

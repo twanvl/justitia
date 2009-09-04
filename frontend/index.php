@@ -42,7 +42,7 @@ class Page extends PageWithEntity {
 	
 	function write_usergroup_view() {
 		$group = UserGroup::current();
-		$max_size = $this->entity->attribute('max group size');
+		$max_size = intval($this->entity->attribute('max group size'));
 		echo '<ul class="user-group">';
 		$current_page = 'index.php' . $this->entity->path();
 		foreach ($group as $user) {
@@ -57,7 +57,8 @@ class Page extends PageWithEntity {
 		}
 		echo '</ul>';
 		if (count($group) > $max_size) {
-			echo "<div class=\"user-group-error\">Only groups of $max_size students are allowed, remove some.</div>";
+			$size_msg = $max_size == 1 ? "a single student" : "$max_size students";
+			echo "<div class=\"user-group-error\">Only groups of $size_msg are allowed, remove someone from the list.</div>";
 		}
 	}
 	
@@ -126,7 +127,8 @@ class Page extends PageWithEntity {
 		// submission form
 		$last_submission = Authentication::current_user()->last_submission_to($this->entity);
 		if ($this->entity->active()) {
-			$passed = Status::to_status($last_submission) >= Status::PENDING;
+			$passed = Status::to_status($last_submission) >= Status::PENDING // file passed
+			       && !isset($_FILES['file']); // no new submission
 			$this->write_block_begin('Submit', 'collapsable block' . ($passed ? ' collapsed' : ''));
 			$this->write_submit_form();
 			$this->write_block_end();
