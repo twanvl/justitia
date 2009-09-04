@@ -47,10 +47,12 @@ td {
 
 pre {
 	white-space:		pre;
+	width:			100%;
 }
 
 .line {
 	display:		table;
+	width:			100%;
 }
 .indent {
 	display:		table-cell;
