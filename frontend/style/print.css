@@ -56,6 +56,8 @@ pre {
 }
 .indent {
 	display:		table-cell;
+	white-space:		pre;
+	width:			0;
 }
 .indent b { /* tab indicator */
 	margin-left:		-1px;

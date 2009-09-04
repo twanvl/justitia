@@ -98,7 +98,7 @@ class Page extends PageWithEntity {
 		foreach($unique_subms as $subm) {
 			$users = $subm->users();
 			$name_of_first_user = count($users > 0) ? $users[0]->sort_name() : '';
-			$by_name[$name_of_first_user] = $subm;
+			$by_name[$name_of_first_user . $subm->submissionid] = $subm;
 		}
 		ksort($by_name);
 		// TODO: sort submissions by name
