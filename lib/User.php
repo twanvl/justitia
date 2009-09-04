@@ -61,14 +61,14 @@ class User {
 	function name_and_login() {
 		return $this->name() . ' (' . $this->login . ')';
 	}
-	function sort_name() {
+	function name_for_sort() {
 		return $this->lastname.','.$this->firstname . ',' . $this->midname;
 	}
 	
 	static function sort_users($users) {
 		$sorted = array();
 		foreach($users as $user) {
-			$sorted[$user->sort_name()] = $user;
+			$sorted[$user->name_for_sort()] = $user;
 		}
 		ksort($sorted);
 		return $sorted;
@@ -91,6 +91,14 @@ class User {
 			if (strlen($result) > 0) $result .= ', ';
 			$result .= htmlspecialchars($user->name());
 			$result .= " <small>(" . htmlspecialchars($user->login) . ")</small>";
+		}
+		return $result;
+	}
+	static function names_for_sort($users) {
+		// convert
+		$result = "";
+		foreach(User::sort_users($users) as $user) {
+			$result .= $user->name_for_sort() . '|';
 		}
 		return $result;
 	}

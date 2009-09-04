@@ -102,7 +102,7 @@ class Page extends PageWithEntity {
 		// sort users by name
 		$users_sorted = array();
 		foreach($users as $user) {
-			$users_sorted[$user['user']->sort_name()] = $user;
+			$users_sorted[$user['user']->name_for_sort()] = $user;
 		}
 		ksort($users_sorted);
 		// write statistics
