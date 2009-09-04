@@ -23,6 +23,8 @@ class Page extends PageWithEntity {
 		// rejudge?
 		if (isset($_REQUEST['rejudge'])) {
 			$this->subm->rejudge();
+			// redirect to this page, so a refresh doesn't rejudge again
+			Util::redirect('admin_view_submission.php?submissionid=' . $_REQUEST['submissionid']);
 		}
 		// delete?
 		if (isset($_REQUEST['delete'],$_POST['confirm']) && $_POST['confirm'] == sha1('confirmed'.$this->subm->submissionid)) {
