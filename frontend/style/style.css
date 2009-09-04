@@ -102,8 +102,11 @@ h1 {
 	border:			1px solid rgb(240,240,240);
 	background-color:	white;
 }
-#nav .failed,
 #nav .skipped {
+	border:			1px solid rgb(192,192,192);
+	background-color:	rgb(220,220,220);
+}
+#nav .failed {
 	border-color:		rgb(255,120,120);
 	background-color:	rgb(255,193,193);
 }
@@ -124,8 +127,11 @@ h1 {
 	background-color:	rgb(245,245,245);
 }
 #nav .skipped:hover,
+#nav .skipped.current {
+	border-color:		rgb(140,140,140);
+	background-color:	rgb(200,200,200);
+}
 #nav .failed:hover,
-#nav .skipped.current,
 #nav .failed.current {
 	border-color:		rgb(255,50,50);
 	background-color:	rgb(255,146,146);
@@ -322,7 +328,7 @@ h1 {
 }
 
 .results .skipped {
-	background:	rgb(255,80,80);
+	background:	rgb(192,192,192);
 }
 .results .failed {
 	background:	rgb(255,50,50);
@@ -331,7 +337,7 @@ h1 {
 	background:	rgb(120,255,100);
 }
 .results .pending {
-	background:	rgb(245,245,100);
+	background:	rgb(245,245,80);
 }
 
 /* -----------------------------------------------------------------------------
