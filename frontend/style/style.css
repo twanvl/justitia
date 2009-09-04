@@ -371,9 +371,14 @@ a:visited {
 	text-decoration:none;
 	color:		rgb(0,20,180);
 }
-.user-group a:hover {
+#main .user-group a:hover {
 	background:	rgb(0,20,180);
 	color:		white;
+}
+.user-group-error {
+	margin-top:	-.2em;
+	margin-bottom:	.5em;
+	color:		red;
 }
 
 .error-message {

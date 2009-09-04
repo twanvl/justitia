@@ -53,9 +53,12 @@ class Page extends PageWithEntity {
 			echo '</li>';
 		}
 		if (count($group) < $max_size) {
-			echo '<li><a href="user_group_add.php?redirect='.urlencode($current_page).'">[add]</a></li>';
+			echo '<li><a href="user_group_add.php?redirect='.urlencode($current_page).'">[add another student]</a></li>';
 		}
 		echo '</ul>';
+		if (count($group) > $max_size) {
+			echo "<div class=\"user-group-error\">Only groups of $max_size students are allowed, remove some.</div>";
+		}
 	}
 	
 	function write_submit_form() {
@@ -96,6 +99,18 @@ class Page extends PageWithEntity {
 			}
 		} else {
 			echo "All submissions are accepted.";
+		}
+		// downloadable files?
+		$files = $this->entity->attribute('downloadable files');
+		if ($files) {
+			$downloads = '';
+			foreach (explode(' ',$files) as $file) {
+				$downloads .= '<a href="download_entity.php' . htmlspecialchars($this->entity->path()) . '?f=' . urlencode($file) . '">'
+				           .  htmlspecialchars(pathinfo($file, PATHINFO_BASENAME))
+				           .  '</a> | ';
+			}
+			$downloads = substr($downloads,0,-3);
+			echo "<tr><td>Files</td><td>$downloads</td></tr>";
 		}
 		echo "</td>";
 		echo "</table>";

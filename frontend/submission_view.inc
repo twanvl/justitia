@@ -7,10 +7,10 @@ require_once('../lib/bootstrap.inc');
 // -----------------------------------------------------------------------------
 
 // link to download a file
-function download_link($subm,$file,$text, $cond,$before,$after) {
+function download_link($subm,$file,$text, $cond=true, $before='',$after='') {
 	if ($cond || Authentication::is_admin()) {
 		return $before
-		     . "<a href=\"download.php/$subm->submissionid/$file\">$text"
+		     . "<a href=\"download_submission.php/$subm->submissionid/".htmlspecialchars($file).'">'.$text
 		     . ($cond ? '' : ' <small>(hidden)</small>')
 		     . "</a>"
 		     . $after;
@@ -35,8 +35,7 @@ function write_submission($subm, $entity = null, $include_entity = false) {
 	}
 	echo "<tr><td>Submitted on</td><td>" . format_date($subm->time) . "</td></tr>";
 	echo "<tr><td>Submitted by</td><td>" . User::names_html($subm->users()) . "</td></tr>";
-	echo '<tr><td>Files</td><td><a href="download.php/'.$subm->submissionid.'/code/'.urlencode($subm->filename)
-		                        .'">Download submitted files</a></td></tr>';
+	echo "<tr><td>Files</td><td>" . download_link($subm,'code/'.$subm->filename,"Download submitted files") . "</td></tr>";
 	echo "<tr><td>Status</td><td>" . Status::to_text($subm);
 	if ($type == Status::FAILED_COMPILE) {
 		echo download_link($subm,'out/compiler.err','view error message',  $entity->show_compile_errors(),  ' (',')');
