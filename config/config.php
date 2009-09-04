@@ -32,6 +32,9 @@ define('TIMEZONE', 'Europe/Paris');
 //define('REJUDGE_TIMEOUT', 120);
 define('REJUDGE_TIMEOUT', 1);//Debug
 
+// how long should the judge deamon sleep if there are no submissions?
+define('DAEMON_SLEEP_TIME', 1);
+
 // -----------------------------------------------------------------------------
 // default attribute values
 // -----------------------------------------------------------------------------

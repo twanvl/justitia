@@ -11,7 +11,6 @@ if (!isset($_SERVER['argv'])) {
 	die("The judgedeamon must be started from the console.");
 }
 
-define('SLEEP_TIME', 5);
 define('VERBOSE', true);
 
 // Name of this host.
@@ -175,7 +174,7 @@ abstract class JudgementBase {
 		return $result;
 	}
 	
-	// Run with input from $this->
+	// Run with input from $case
 	protected function run_case($case) {
 		// runner
 		$runner = $this->entity->runner();
@@ -416,7 +415,7 @@ while (true) {
 	$subm = Submission::get_pending_submission($my_name . micro_nonce());
 	if (!$subm) {
 		// no submissions right now
-		sleep(SLEEP_TIME);
+		sleep(DAEMON_SLEEP_TIME);
 		continue;
 	}
 	// Some information on this submission
@@ -438,6 +437,14 @@ while (true) {
 	if (VERBOSE) {
 		echo "Result:        ", Status::to_text($subm), "\n";
 	}
+	// free up some memory
+	unset($judgement);
+	unset($subm);
+	if (function_exists('gc_collect_cycles')) {
+		// this doesn't exist in PHP < 5.3.0 :(
+		gc_collect_cycles();
+	}
+	echo "Memory usage: ",memory_get_usage(),"\n";
 	// don't be too fast
 	usleep(100);
 }
