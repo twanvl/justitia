@@ -242,7 +242,8 @@ abstract class JudgementBase {
 	}
 	// Store a file from the tempdir
 	protected function put_tempfile($file) {
-		$contents = file_get_contents($this->tempdir->file($file));
+		$max_file_size = intval($this->entity->filesize_limit()) + 1;
+		$contents = file_get_contents($this->tempdir->file($file), 0,null,0, $max_file_size);
 		$this->put_output_file_contents_checked($file, $contents);
 	}
 	
