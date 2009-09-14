@@ -30,12 +30,12 @@ class Entity {
 	}
 	
 	// singleton constructor for Entities
-	static function get($path, $require_visible = false) {
+	static function get($path, $require_visible = false, $require_exists = true) {
 		$parts = explode('/',$path);
 		$here  = Entity::get_root();
 		foreach ($parts as $part) {
 			if ($part == '') continue;
-			$here = $here->get_child($part);
+			$here = $here->get_child($part, $require_exists);
 			if ($here === NULL) {
 				throw new Exception("Entity not found: $path");
 			}
@@ -63,6 +63,9 @@ class Entity {
 	}
 	function is_ancestor_of($that) {
 		return substr($that->_path,0,strlen($this->_path)) == $this->_path;
+	}
+	function exists() {
+		return file_exists($this->data_path());
 	}
 	
 	// get full path
@@ -169,9 +172,15 @@ class Entity {
 		return $this->_children;
 	}
 	// gets a single child entity, if it exists (null otherwise)
-	function get_child($name) {
+	function get_child($name, $require_exists = true) {
 		$this->load_children(); // a bit overkill
-		return isset($this->_children[$name]) ? $this->_children[$name] : NULL;
+		if (isset($this->_children[$name])) {
+			return $this->_children[$name];
+		} else if ($require_exists) {
+			return NULL;
+		} else {
+			return new Entity($this,$name);
+		}
 	}
 	
 	// this, children, children of children, etc.
@@ -193,6 +202,7 @@ class Entity {
 		if (isset($this->_children)) return;
 		$this->_children = array();
 		$this->_testcases = array();
+		if (!$this->exists()) return; // entity doesn't actually exist
 		foreach (new DirectoryIterator($this->data_path()) as $child) {
 			$filename = $child->getFilename();
 			if ($child->isDot() ||  $filename[0] == '.') {

@@ -64,7 +64,8 @@ class Submission {
 	}
 	
 	function entity() {
-		return Entity::get($this->entity_path);
+		// it is not a fetal error if the entity does not exist
+		return Entity::get($this->entity_path, false, false);
 	}
 	
 	// ---------------------------------------------------------------------
