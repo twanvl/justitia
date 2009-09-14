@@ -144,7 +144,7 @@ class Page extends PageWithEntity {
 				$subm = isset($subms[$e]) ? $subms[$e] : false;
 				$status = Status::to_status($subm);
 				echo '<td class="'.Status::to_css_class($status).'">';
-				if ($subm !== false) echo '<a href="admin_view_submission.php?submissionid='.$subm->submissionid.'">';
+				if ($subm !== false) echo '<a href="admin_user_submission.php' . htmlspecialchars($entity->path()) . '?userid='.$user->userid.'">';
 				echo Status::to_short_text($status);
 				if ($subm !== false) echo '</a>';
 				echo '</td>';
