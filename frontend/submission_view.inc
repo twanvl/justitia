@@ -48,7 +48,8 @@ function write_submission($subm, $entity = null, $include_entity = false) {
 	echo "</td></tr>";
 	if (Authentication::is_admin()) {
 		if ($subm->status() != Status::PENDING) {
-			echo "<tr><td>Judged by</td><td>" . htmlspecialchars($subm->judge_host);
+			echo "<tr><td>Judged</td><td>by <tt>" . htmlspecialchars($subm->judge_host) . "</tt>";
+			echo ", on " . format_date($subm->judge_start);
 			echo "</td></tr>";
 		}
 		echo "<tr><td>Actions</td><td>";
