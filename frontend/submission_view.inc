@@ -33,7 +33,7 @@ function write_submission($subm, $entity = null, $include_entity = false) {
 		if ($entity->exists()) {
 			echo "<a href=\"index.php".htmlspecialchars($entity->path())."\">" . htmlspecialchars($entity->title()) . "</a>";
 		} else {
-			echo htmlspecialchars($entity->title()) . " <em>DELETED</em>;
+			echo htmlspecialchars($entity->title()) . " <em>DELETED</em>";
 		}
 		echo " <small>(" . htmlspecialchars($entity->path()) . ")</small>";
 		echo "</td></tr>\n";
