@@ -26,10 +26,6 @@ class Page extends PageWithEntity {
 		} catch (Exception $e) {
 			ErrorPage::die_fancy($e->getMessage());
 		}
-		if ($this->entity->count_pending_submissions() > 0) {
-			$this->auto_refresh_to = 'index.php' . $this->entity->path();
-			//$this->auto_refresh    = 1;
-		}
 	}
 	
 	function write_body() {
@@ -160,6 +156,8 @@ class Page extends PageWithEntity {
 					 . ($is_interesting ? '' : 'collapsed ')
 					 . ($made_this_submission ? 'appear ' : '')
 					 . Status::to_css_class($subm)
+					 , ''
+					 , "submission-$subm->submissionid"
 				);
 				write_submission($subm,$this->entity);
 				$this->write_block_end();

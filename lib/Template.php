@@ -104,8 +104,12 @@ abstract class Template {
 	// Blocks
 	// ---------------------------------------------------------------------
 	
-	function write_block_begin($title, $class='block', $url='') {
-		echo "<div class=\"$class\">";
+	static function write_block_begin($title, $class='block', $url='', $id='') {
+		if ($id) {
+			echo "<div class=\"$class\" id=\"$id\">";
+		} else {
+			echo "<div class=\"$class\">";
+		}
 		$titleHTML = htmlspecialchars($title);
 		if ($url) {
 			$titleHTML = '<a href="'.htmlspecialchars($url).'">'.$titleHTML.'</a>';
@@ -115,7 +119,7 @@ abstract class Template {
 		echo "<div class=\"title\">".$titleHTML."</div>";
 		echo "<div class=\"content\">";
 	}
-	function write_block_end() {
+	static function write_block_end() {
 		echo "</div></div>";
 	}
 	

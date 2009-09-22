@@ -18,6 +18,28 @@ function download_link($subm,$file,$text, $cond=true, $before='',$after='') {
 }
 
 // ---------------------------------------------------------------------
+// Submission information in a block
+// ---------------------------------------------------------------------
+
+function write_submission_block($subm, $entity = null, $include_entity = false, $is_interesting, $made_this_submission) {
+	if (Status::is_pending($subm->status)) {
+		echo "<div id=\"submission-$subm->submissionid\" class=\"refreshing-submission\">"; // for ajax magic
+	}
+	Template::$this->write_block_begin(
+		'Submission '. $i,
+		'collapsable block submission '
+			. ($is_interesting ? '' : 'collapsed ')
+			. ($made_this_submission ? 'appear ' : '')
+			. Status::to_css_class($subm)
+	);
+	write_submission($subm,$this->entity);
+	if (Status::is_pending($subm->status)) {
+		echo "</div>";
+	}
+	Template::write_block_end();
+}
+
+// ---------------------------------------------------------------------
 // Submission information
 // ---------------------------------------------------------------------
 
