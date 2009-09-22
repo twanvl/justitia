@@ -19,12 +19,16 @@ class Page extends PageWithEntity {
 		try {
 			// submit?
 			$uploaded = handle_uploaded_submission($this->entity);
-			if ($uploaded || $this->entity->count_pending_submissions() > 0) {
-				$this->auto_refresh_to = 'index.php' . $this->entity->path();
-				$this->auto_refresh    = 1;
+			if ($uploaded) {
+				$self_url = 'index.php' . $this->entity->path() . '?made_submission=' . $uploaded->submissionid;
+				Util::redirect($self_url);
 			}
 		} catch (Exception $e) {
 			ErrorPage::die_fancy($e->getMessage());
+		}
+		if ($this->entity->count_pending_submissions() > 0) {
+			$this->auto_refresh_to = 'index.php' . $this->entity->path();
+			//$this->auto_refresh    = 1;
 		}
 	}
 	
@@ -119,6 +123,7 @@ class Page extends PageWithEntity {
 	
 	function write_submitable_page() {
 		$submissions = Authentication::current_user()->submissions_to($this->entity);
+		$made_submission = isset($_REQUEST['made_submission']) ? $_REQUEST['made_submission'] : false;
 		
 		$this->write_block_begin('Problem description');
 		$this->write_submitable_entity_info();
@@ -144,13 +149,16 @@ class Page extends PageWithEntity {
 			$i = count($submissions);
 			foreach($submissions as $subm) {
 				// is this an interesting submission?
-				$is_interesting = $this->entity->is_more_interesting_submission($subm,$last_submission);
+				$made_this_submission = $made_submission !== false && $subm->submissionid == $made_submission;
+				$is_interesting = $this->entity->is_more_interesting_submission($subm,$last_submission)
+				               || $made_this_submission;
 				if ($is_interesting) $last_submission = $subm;
 				// write
 				$this->write_block_begin(
 					'Submission '. $i,
 					'collapsable block submission '
 					 . ($is_interesting ? '' : 'collapsed ')
+					 . ($made_this_submission ? 'appear ' : '')
 					 . Status::to_css_class($subm)
 				);
 				write_submission($subm,$this->entity);

@@ -3,16 +3,20 @@
 // Collapsing blocks
 // -----------------------------------------------------------------------------
 
+function update_collapsed(){
+	if (this.style.display == 'none') {
+		$(this.parentNode).addClass("collapsed");
+	} else {
+		$(this.parentNode).removeClass("collapsed");
+	}
+}
+
 $(document).ready(function(){
 	$(".collapsable .title").click(function(){
-		$(".content",this.parentNode).slideToggle(200,function(){
-			if (this.style.display == 'none') {
-				$(this.parentNode).addClass("collapsed");
-			} else {
-				$(this.parentNode).removeClass("collapsed");
-			}
-		});
+		$(".content",this.parentNode).slideToggle(200,update_collapsed);
 	});
+	$(".appear").hide();
+	$(".appear").slideDown(600);
 });
 
 // -----------------------------------------------------------------------------

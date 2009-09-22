@@ -236,7 +236,6 @@ h1 {
 }
 .collapsed .content {
 	display:	none;
-	
 }
 
 .collapsable .title {
@@ -272,6 +271,9 @@ h1 {
 .block.collapsable.pending .title:hover,
 .block.linky.pending       .title:hover { background-color:	rgb(255,255,10); }
 
+.block.pending .content {
+	background:		url(ajax-loader.gif) no-repeat 99% 10px;
+}
 
 /* -----------------------------------------------------------------------------
  * Testcases table
