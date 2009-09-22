@@ -16,7 +16,6 @@ function update_collapsed() {
 // -----------------------------------------------------------------------------
 
 function refresh_submission() {
-	//if (this.id.match(/submission-\d*/) && $(".pending",this).size() > 0) {
 	var subm = this.parentNode;
 	var content = this;
 	if (subm.id.match(/submission-\d*/) && subm.className.match(/pending/)) {
@@ -31,6 +30,7 @@ function refresh_submission_on_load() {
 	// set new class
 	var newstatus = $(".newstatus",this).get(0);
 	if (newstatus && !newstatus.className.match(/pending/)) {
+		// yes, there is a new status, so we can stop refreshing
 		$(subm).removeClass("pending")
 		       .addClass(newstatus.className);
 	} else {
@@ -47,7 +47,6 @@ $(document).ready(function(){
 	$(".appear").hide();
 	$(".appear").fadeIn(600);
 	// refresh pending submissions
-	//$(".refreshing-submission").each(refresh_submission);
 	$(".submission.pending .content").each(refresh_submission);
 });
 
