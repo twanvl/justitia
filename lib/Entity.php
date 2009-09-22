@@ -68,6 +68,10 @@ class Entity {
 		return file_exists($this->data_path());
 	}
 	
+	// get the directory name
+	function dir_name() {
+		return $this->_dir_name;
+	}
 	// get full path
 	function path() {
 		return $this->_path;
@@ -115,6 +119,14 @@ class Entity {
 	
 	function title() {
 		return $this->attribute("title");
+	}
+	function order() {
+		$this->load_attributes();
+		if (isset($this->_attributes['order'])) {
+			return $this->_attributes['order'];
+		} else {
+			return $this->_dir_name;
+		}
 	}
 	
 	function compile() {
@@ -216,7 +228,8 @@ class Entity {
 			}
 		}
 		sort($this->_testcases);
-		ksort($this->_children);
+		//ksort($this->_children);
+		uasort($this->_children, 'compare_order');
 	}
 	
 	// ---------------------------------------------------------------------
@@ -432,3 +445,10 @@ function parse_attribute_file(&$attributes, $filename) {
 	}
 	return $attributes;
 }
+
+function compare_order($a, $b) {
+	if ($a->order() < $b->order()) return -1;
+	if ($a->order() > $b->order()) return +1;
+	return 0;
+}
+
