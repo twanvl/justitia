@@ -9,9 +9,14 @@ class DB {
 	static function get() {
 		static $db;
 		if (!isset($db)) {
-			$db = new PDO(DB_PATH, DB_USERNAME, DB_PASSWORD, array(
-				PDO::ATTR_PERSISTENT => DB_PERSISTENT
-			));
+			try {
+				$db = new PDO(DB_PATH, DB_USERNAME, DB_PASSWORD, array(
+					PDO::ATTR_PERSISTENT => DB_PERSISTENT
+				));
+			} catch (Exception $e) {
+				// prevent passwords from being exposed
+				throw new Exception("Can't connect to database");
+			}
 		}
 		return $db;
 	}
@@ -34,5 +39,4 @@ class DB {
 			throw new Exception($status[2]);
 		}
 	}
-	// TODO
 }
