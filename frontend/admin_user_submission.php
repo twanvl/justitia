@@ -45,6 +45,8 @@ class Page extends PageWithEntity {
 					'collapsable block submission '
 					 . ($is_interesting ? '' : 'collapsed ')
 					 . Status::to_css_class($subm)
+					 , ''
+					 , "submission-$subm->submissionid"
 				);
 				write_submission($subm,$this->entity);
 				$this->write_block_end();

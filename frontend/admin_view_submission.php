@@ -58,6 +58,8 @@ class Page extends PageWithEntity {
 		$this->write_block_begin(
 			"Submission",
 			'block submission ' . Status::to_css_class($this->subm)
+			, ''
+			, "submission-".$this->subm->submissionid
 		);
 		write_submission($this->subm,$this->entity,true);
 		$this->write_block_end();
