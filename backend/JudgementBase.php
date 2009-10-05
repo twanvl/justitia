@@ -203,12 +203,19 @@ abstract class JudgementBase {
 			$contents = substr($contents,0,$max_file_size) . "\n<<FILE TOO LARGE>>";
 		}
 		$this->put_output_file_contents($file,$contents);
+		// try to clean up
+		unset($file);
+		unset($contents);
 	}
+	
 	// Store a file from the tempdir
 	protected function put_tempfile($file) {
 		$max_file_size = intval($this->entity->filesize_limit()) + 1;
 		$contents = file_get_contents($this->tempdir->file($file), 0,null,0, $max_file_size);
 		$this->put_output_file_contents_checked($file, $contents);
+		// try to clean up
+		unset($file);
+		unset($contents);
 	}
 	
 }
