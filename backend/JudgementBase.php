@@ -110,7 +110,7 @@ abstract class JudgementBase {
 				return false;
 			}
 			throw new Exception("TODO: archives");
-			SystemUtil::run_command($this->language['archive_extract'], $this->source_file);
+			SystemUtil::run_command(false, $this->language['archive_extract'], $this->source_file);
 			// look for the actual source file
 		}
 		return true;
@@ -121,7 +121,18 @@ abstract class JudgementBase {
 		// compiler script to use
 		$compiler = $this->entity->compiler();
 		if ($compiler == '') $compiler = $this->language['name'];
-		$compiler = "compilers/$compiler.sh";
+		$compiler = getcwd() . "/compilers/$compiler.sh";
+		// flags?
+		$flags = $this->entity->compiler_flags();
+		// copy some files?
+		$files_to_copy = $this->entity->compiler_files();
+		print_r($files_to_copy);
+		foreach ($files_to_copy as $filename) {
+			$local_name = $this->tempdir->file($filename);
+			copy($this->entity->data_path() . $filename, $local_name);
+			echo "$local_name\n";
+			make_file_readable($local_name);
+		}
 		// compile
 		$this->exe_file = $this->source_file . '.exe';
 		$compile_err_file = $this->tempdir->file('compiler.err');
@@ -129,7 +140,7 @@ abstract class JudgementBase {
 		make_file_writable($this->exe_file);
 		make_file_writable($compile_err_file);
 		$limits = $this->entity->compile_limits();
-		$result =SystemUtil::safe_command($compiler, array($this->source_file, $this->exe_file, $compile_err_file), $limits);
+		$result = SystemUtil::safe_command($this->tempdir->dir, $compiler, array($this->source_file, $this->exe_file, $compile_err_file, $flags), $limits);
 		if (!$result) {
 			$this->put_tempfile('compiler.err');
 		} else {
@@ -142,7 +153,7 @@ abstract class JudgementBase {
 	protected function run_case($case) {
 		// runner
 		$runner = $this->entity->runner();
-		$runner = "runners/$runner.sh";
+		$runner = getcwd() . "/runners/$runner.sh";
 		// copy case input, prepare output files
 		$case_input  = $this->tempdir->file("$case.in");
 		$case_output = $this->tempdir->file("$case.out");
@@ -155,7 +166,7 @@ abstract class JudgementBase {
 		make_file_writable($case_limit_error);
 		// run program
 		$limits = $this->entity->run_limits();
-		$result = SystemUtil::safe_command($runner, array($this->exe_file, $case_input, $case_output, $case_error), $limits, $case_limit_error);
+		$result = SystemUtil::safe_command($this->tempdir->dir, $runner, array($this->exe_file, $case_input, $case_output, $case_error), $limits, $case_limit_error);
 		if (!file_exists($case_output)) {
 			file_put_contents($case_output, "<<NO OUTPUT FILE CREATED>>");
 			$result = false;
@@ -175,7 +186,7 @@ abstract class JudgementBase {
 	protected function check_case($case) {
 		// checker
 		$checker = $this->entity->checker();
-		$checker = "checkers/$checker.sh";
+		$checker = getcwd() . "/checkers/$checker.sh";
 		// the files
 		$case_ref  = $this->entity->testcase_reference_output($case);
 		$case_my   = $this->tempdir->file("$case.out");
@@ -185,7 +196,7 @@ abstract class JudgementBase {
 			throw new Exception("Reference implementation does not exists:\n$case_ref");
 		}
 		// run checker
-		$result = SystemUtil::run_command($checker, array($case_my, $case_ref, $case_diff));
+		$result = SystemUtil::run_command($this->tempdir->dir, $checker, array($case_my, $case_ref, $case_diff));
 		if (!$result) {
 			$this->put_tempfile("$case.diff");
 			echo "     Output does not match\n";

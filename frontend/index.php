@@ -102,10 +102,10 @@ class Page extends PageWithEntity {
 			echo "All submissions are accepted.";
 		}
 		// downloadable files?
-		$files = $this->entity->attribute('downloadable files');
+		$files = $this->entity->downloadable_files();
 		if ($files) {
 			$downloads = '';
-			foreach (explode(' ',$files) as $file) {
+			foreach ($files as $file) {
 				$downloads .= '<a href="download_entity.php' . htmlspecialchars($this->entity->path()) . '?f=' . urlencode($file) . '">'
 				           .  htmlspecialchars(pathinfo($file, PATHINFO_BASENAME))
 				           .  '</a> | ';

@@ -11,8 +11,8 @@ $entity = Entity::get(@$_SERVER['PATH_INFO'], !$user->is_admin);
 
 // Which file are we downloading?
 $filename = @$_REQUEST['f'];
-$files = explode(' ',$entity->attribute('downloadable files'));
-if ($filename == '' || !in_array($filename,$files)) {
+$files = $entity->downloadable_files();
+if (!in_array($filename,$files)) {
 	die("You have no rights to view this file.");
 }
 $filename = $entity->data_path() . $filename;

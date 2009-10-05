@@ -25,6 +25,12 @@ class ReferenceJudgement extends JudgementBase {
 		}
 		if (($status = $this->prepare_and_compile()) != 0) {
 			echo "Compiling reference implementation failed with status " . Status::to_text($status) . "\n";
+			if (file_exists($this->output_dir . '/compiler.err')) {
+				echo file_get_contents($this->output_dir . '/compiler.err');
+			} else {
+				echo "<no message>\n";
+			}
+			echo "\n";
 			return false;
 		}
 		// Now build all testcases

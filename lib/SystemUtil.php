@@ -74,9 +74,12 @@ class SystemUtil {
 	}
 	
 	// Run a shell command more conveniently
-	function run_command($cmd,$args, $error_out = NULL) {
-		// execute
+	function run_command($working_dir,$cmd,$args, $error_out = NULL) {
+		// change dir and execute
+		$previous_dir = getcwd();
+		if ($working_dir) chdir($working_dir);
 		system(SystemUtil::build_command($cmd,$args,$error_out), $retval);
+		chdir($previous_dir);
 		return $retval == 0;
 	}
 	
@@ -155,11 +158,11 @@ class SystemUtil {
 	}
 	
 	// Run a shell command in a safe way
-	function safe_command($cmd,$args, $limits, $error_out = NULL) {
+	function safe_command($working_dir,$cmd,$args, $limits, $error_out = NULL) {
 		// not on windows
 		if (SystemUtil::is_windows()) {
 			echo "Security Warning: Runguard doesn't work on windows!\n";
-			return SystemUtil::run_command($cmd,$args, $error_out);
+			return SystemUtil::run_command($working_dir,$cmd,$args, $error_out);
 		}
 		// build command
 		$actual_cmd  = RUNGUARD_PATH;
@@ -178,7 +181,7 @@ class SystemUtil {
 		// run
 		$actual_args []= $cmd;
 		$actual_args = array_merge($actual_args,$args);
-		return SystemUtil::run_command($actual_cmd,$actual_args, $error_out);
+		return SystemUtil::run_command($working_dir,$actual_cmd,$actual_args, $error_out);
 	}
 	
 }

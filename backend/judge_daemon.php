@@ -57,7 +57,7 @@ function judge_a_single_submission() {
 	if (!$subm) {
 		// no submissions right now
 		sleep(DAEMON_SLEEP_TIME);
-		continue;
+		return;
 	}
 	// Some information on this submission
 	if (VERBOSE) {

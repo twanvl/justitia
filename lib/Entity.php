@@ -142,6 +142,10 @@ class Entity {
 		return $this->attribute('checker');
 	}
 	
+	function compiler_flags() {
+		return $this->attribute('compiler flags');
+	}
+	
 	function compile_limits() {
 		return array(
 			'time limit' => intval($this->attribute('compile time limit'))
@@ -172,6 +176,15 @@ class Entity {
 		if ($pattern == 'none') return false;
 		if (in_array($case,explode(' ',$pattern))) return true;
 		return false;
+	}
+	
+	function compiler_files() {
+		$files = $this->attribute('compiler files');
+		return $files ? explode(' ',$files) : array();
+	}
+	function downloadable_files() {
+		$files = $this->attribute('downloadable files');
+		return $files ? explode(' ',$files) : array();
 	}
 	
 	// ---------------------------------------------------------------------
@@ -283,9 +296,9 @@ class Entity {
 		} else {
 			if ($warn) {
 				if (count($code_files) == 0) {
-					echo "No reference implementation found.\n";
+					throw new Exception("No reference implementation found.");
 				} else {
-					echo "Multiple source files found, not sure which one to use.\n";
+					throw new Exception("Multiple source files found, not sure which one to use.\nSet 'reference implementation: something' in the info file.");
 				}
 			}
 			return false;
