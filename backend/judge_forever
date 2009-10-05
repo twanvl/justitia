@@ -1,0 +1,6 @@
+#!/bin/sh
+while true; do
+      php -f judge_deamon.php;
+      echo "The judge daemon died :(, starting it again";
+      sleep 10;
+done
