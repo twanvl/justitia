@@ -126,7 +126,6 @@ abstract class JudgementBase {
 		$flags = $this->entity->compiler_flags();
 		// copy some files?
 		$files_to_copy = $this->entity->compiler_files();
-		print_r($files_to_copy);
 		foreach ($files_to_copy as $filename) {
 			$local_name = $this->tempdir->file($filename);
 			copy($this->entity->data_path() . $filename, $local_name);

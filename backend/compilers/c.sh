@@ -12,6 +12,5 @@ FLAGS="$4"
 # -O2:		Level 2 optimizations (default for speed)
 # -static:	Static link with all libraries
 # -lm:		Link with math-library (has to be last argument!)
-echo gcc -Wall -O2 -static -o $DEST $SOURCE $FLAGS -lm
 gcc -Wall -O2 -static -o $DEST $SOURCE $FLAGS -lm 2>$ERROR
 exit $?
