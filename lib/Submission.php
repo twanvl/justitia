@@ -283,7 +283,8 @@ class Submission {
 	static function get_pending_submission($host) {
 		static $query_check, $query_take, $query_fetch;
 		DB::prepare_query($query_check,
-			"SELECT COUNT(*) FROM `submission` WHERE `status` = ".Status::PENDING." AND `judge_start` < :old_start");
+			"SELECT COUNT(*) FROM `submission`".
+			" WHERE `status` = ".Status::PENDING." AND `judge_start` < :old_start");
 		DB::prepare_query($query_take,
 			"UPDATE `submission` SET `judge_start` = :new_start, `judge_host` = :host" .
 			" WHERE `status` = ".Status::PENDING." AND `judge_start` < :old_start".
@@ -298,6 +299,7 @@ class Submission {
 		$params['old_start'] = time() - REJUDGE_TIMEOUT;
 		$query_check->execute($params);
 		$num = $query_check->fetchColumn();
+		DB::check_errors($query_check);
 		$query_check->closeCursor();
 		if ($num == 0) {
 			return false;
@@ -308,14 +310,17 @@ class Submission {
 		$params['host']      = $host;
 		$query_take->execute($params);
 		$num = $query_take->rowCount();
-		$query_check->closeCursor();
+		DB::check_errors($query_take);
+		$query_take->closeCursor();
 		if ($num == 0) {
+			echo "Submission stolen from under our nose\n";
 			return false;
 		}
 		
 		// and return it
 		unset($params['old_start']);
 		$query_fetch->execute($params);
+		DB::check_errors($query_fetch);
 		return Submission::fetch_one($query_fetch);
 	}
 }

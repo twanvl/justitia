@@ -20,7 +20,7 @@ $salt = '';
 for ($i = 0 ; $i < 5 ; ++$i) {
 	$salt .= chr(mt_rand(65,65+25));
 }
-$my_name = trim(`hostname`) . '[' . $salt . ']';
+$my_name = trim(`hostname`) . ' [' . $salt . ']';
 
 // -----------------------------------------------------------------------------
 // Welcome message
@@ -45,7 +45,7 @@ if (VERBOSE) {
 
 function micro_nonce() {
 	$t = microtime(true);
-	return "[" . substr(strval($t - intval($t)), 2,4) . "]";
+	return "[" . substr(strval($t - intval($t)), 2,5) . "]";
 }
 
 function judge_a_single_submission() {
