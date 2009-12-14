@@ -16,15 +16,11 @@ class View extends PageWithEntity {
 	function __construct() {
 		// find active entity
 		parent::__construct();
-		try {
-			// submit?
-			$uploaded = handle_uploaded_submission($this->entity);
-			if ($uploaded) {
-				$self_url = 'index.php' . $this->entity->path() . '?made_submission=' . $uploaded->submissionid;
-				Util::redirect($self_url);
-			}
-		} catch (Exception $e) {
-			ErrorPage::die_fancy($e->getMessage());
+		// submit?
+		$uploaded = handle_uploaded_submission($this->entity);
+		if ($uploaded) {
+			$self_url = 'index.php' . $this->entity->path() . '?made_submission=' . $uploaded->submissionid;
+			Util::redirect($self_url);
 		}
 	}
 	

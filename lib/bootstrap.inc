@@ -15,8 +15,7 @@ function __autoload($class_name) {
 // -----------------------------------------------------------------------------
 
 function fancy_exception_handler($e) {
-	//ErrorPage::die_fancy(htmlspecialchars($e->getMessage()) . "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>");
-	ErrorPage::die_fancy(htmlspecialchars($e->getMessage()));
+	ErrorPage::die_fancy($e);
 }
 
 set_exception_handler('fancy_exception_handler');

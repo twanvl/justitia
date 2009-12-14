@@ -17,11 +17,7 @@ class View extends PageWithEntity {
 		Authentication::require_admin();
 		$this->is_admin_page = true;
 		// find submission
-		try {
-			$this->subm = Submission::by_id(intval($_REQUEST['submissionid']));
-		} catch (Exception $e) {
-			ErrorPage::die_fancy($e->getMessage());
-		}
+		$this->subm = Submission::by_id(intval($_REQUEST['submissionid']));
 		$this->entity = $this->subm->entity();
 		// rejudge?
 		if (isset($_REQUEST['rejudge'])) {

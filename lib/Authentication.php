@@ -18,7 +18,7 @@ class Authentication {
 	static function require_admin() {
 		$user = Authentication::require_user();
 		if (!$user->is_admin) {
-			ErrorPage::die_fancy("Administrators only");
+			ErrorPage::die_fancy(new NotAuthorizedException());
 		}
 		return $user;
 	}

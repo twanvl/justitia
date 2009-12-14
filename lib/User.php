@@ -36,7 +36,7 @@ class User {
 	function check_password($password, $throw = true) {
 		$ok = check_salted_password_hash($password, $this->data['password']);
 		if ($throw && !$ok) {
-			throw new Exception("User not found: $this->login");
+			throw new NotFoundException("User not found: $this->login");
 		}
 		return $ok;
 	}
@@ -191,7 +191,7 @@ class User {
 		DB::check_errors($query);
 		$query->closeCursor();
 		if ($data === false) {
-			if ($throw) throw new Exception("User not found: $info");
+			if ($throw) throw new NotFoundException("User not found: $info");
 			else        return false;
 		}
 		return new User($data);

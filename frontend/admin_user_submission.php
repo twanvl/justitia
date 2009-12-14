@@ -19,11 +19,7 @@ class View extends PageWithEntity {
 		// find active entity
 		parent::__construct();
 		// find user
-		try {
-			$this->user = User::by_id(intval($_REQUEST['userid']));
-		} catch (Exception $e) {
-			ErrorPage::die_fancy($e->getMessage());
-		}
+		$this->user = User::by_id(intval($_REQUEST['userid']));
 	}
 	
 	function title() {

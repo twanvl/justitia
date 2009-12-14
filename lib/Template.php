@@ -18,7 +18,7 @@ abstract class Template {
 	// Message utilities
 	// ---------------------------------------------------------------------
 	
-	static $messages;
+	private static $messages;
 	function add_message($what,$good,$msg) {
 		global $messages;
 		if (!isset($messages))        $messages = array();
@@ -125,44 +125,29 @@ abstract class Template {
 	// Navigation
 	// ---------------------------------------------------------------------
 	
+	function write_admin_nav_link($script,$title) {
+		static $first = true;
+		if ($first) {
+			$first = false;
+		} else {
+			echo " | ";
+		}
+		$current = Util::current_script_is($script) ? ' class="current"' : '';
+		$url = htmlspecialchars( $script . @$_SERVER['PATH_INFO'] );
+		echo "<a href=\"$url\"$current>$title</a>";
+	}
 	function write_admin_nav() {
 		if (!Authentication::is_admin()) return;
 		echo '<div id="admin-nav">';
-		$admin_nav_item = array(
-			array(
-				'title'   => 'Normal view',
-				'url'     => 'index.php' . @$_SERVER['PATH_INFO'],
-				'current' => Util::current_script_is('index.php')
-			),
-			array(
-				'title'   => 'Users',
-				'url'     => 'admin_user.php' . @$_SERVER['PATH_INFO'],
-				'current' => Util::current_script_is('admin_user.php')
-			),
-			array(
-				'title'   => 'Latest submissions',
-				'url'     => 'admin_submissions.php' . @$_SERVER['PATH_INFO'],
-				'current' => Util::current_script_is('admin_submissions.php')
-			),
-			array(
-				'title'   => 'Results table',
-				'url'     => 'admin_results.php' . @$_SERVER['PATH_INFO'],
-				'current' => Util::current_script_is('admin_results.php')
-			),
-			array(
-				'title'   => 'Print submissions',
-				'url'     => 'admin_print.php' . @$_SERVER['PATH_INFO'],
-				'current' => Util::current_script_is('admin_print.php')
-			),
-		);
-		$first = true;
-		foreach ($admin_nav_item as $i) {
-			if (!$first) echo ' | ';
-			$first = false;
-			echo "<a href=\"$i[url]\"".($i['current'] ? ' class="current"': '').">$i[title]</a>";
-		}
+		$this->write_admin_nav_link('index.php','Normal view');
+		$this->write_admin_nav_link('admin_user.php','Users');
+		$this->write_admin_nav_link('admin_submissions.php','Latest submissions');
+		$this->write_admin_nav_link('admin_results.php','Results table');
+		$this->write_admin_nav_link('admin_print.php','Print submissions');
+		$this->write_admin_nav_link('documentation.php','Documentation');
 		echo '</div>';
 	}
+	
 	// ---------------------------------------------------------------------
 	// Navigation
 	// ---------------------------------------------------------------------

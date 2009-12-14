@@ -18,6 +18,8 @@ if (isset($_REQUEST['login'],$_REQUEST['password'])) {
 		$user->check_password($_REQUEST['password']);
 		Authentication::set_current_user($user);
 		Util::redirect(@$_REQUEST['redirect']);
+	} catch (InternalException $e) {
+		ErrorPage::die_fancy($e);
 	} catch (Exception $e) {
 		Template::add_message('login','error', "Incorrect username or password.");
 	}
