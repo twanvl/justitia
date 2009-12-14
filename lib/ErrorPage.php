@@ -1,6 +1,6 @@
 <?php
 
-class ErrorPage extends template {
+class ErrorPage extends Template {
 	function __construct($message) {
 		$this->message = $message;
 	}
@@ -15,8 +15,8 @@ class ErrorPage extends template {
 	// Die with a fancy error message
 	static function die_fancy($message) {
 		// Utility: error pages
-		$page = new ErrorPage($message);
-		$page->write();
+		$view = new ErrorPage($message);
+		$view->write();
 		exit();
 	}
 }

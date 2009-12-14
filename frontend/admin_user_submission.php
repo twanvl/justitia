@@ -4,10 +4,13 @@ require_once('../lib/bootstrap.inc');
 require_once('./submission_view.inc');
 
 // -----------------------------------------------------------------------------
-// View a multiple submissions
+// View all submissions made by a SINGLE user to a SINGLE entity
+// 
+//   url: admin_user_submission.php/path/to/entity?userid=$USERID
+// 
 // -----------------------------------------------------------------------------
 
-class Page extends PageWithEntity {
+class View extends PageWithEntity {
 	private $user;
 	
 	function __construct() {
@@ -56,5 +59,5 @@ class Page extends PageWithEntity {
 	}
 }
 
-$page = new Page();
-$page->write();
+$view = new View();
+$view->write();

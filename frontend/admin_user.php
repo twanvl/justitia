@@ -15,7 +15,7 @@ function get_request_bool(&$data, $prefix, $name) {
 	$data[$name] = isset($_REQUEST[$prefix.$name]);
 }
 
-class Page extends Template {
+class View extends Template {
 	function __construct() {
 		Authentication::require_admin();
 		$this->is_admin_page = true;
@@ -169,5 +169,5 @@ class Page extends Template {
 	
 }
 
-$page = new Page();
-$page->write();
+$view = new View();
+$view->write();

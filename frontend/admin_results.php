@@ -48,7 +48,7 @@ function print_layers_header($layers) {
 }
 
 
-class Page extends PageWithEntity {
+class View extends PageWithEntity {
 	
 	function __construct() {
 		Authentication::require_admin();
@@ -156,5 +156,5 @@ class Page extends PageWithEntity {
 	
 }
 
-$page = new Page();
-$page->write();
+$view = new View();
+$view->write();

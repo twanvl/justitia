@@ -10,7 +10,7 @@ require_once('../lib/bootstrap.inc');
 // Print submissions : selection page
 // -----------------------------------------------------------------------------
 
-class Page extends PageWithEntity {
+class View extends PageWithEntity {
 	
 	function __construct() {
 		Authentication::require_admin();
@@ -171,5 +171,5 @@ class Page extends PageWithEntity {
 	}
 }
 
-$page = new Page();
-$page->write();
+$view = new View();
+$view->write();

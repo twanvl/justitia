@@ -12,7 +12,7 @@ function format_bool($b) {
 	return $b ? "yes" : "no";
 }
 
-class Page extends PageWithEntity {
+class View extends PageWithEntity {
 	function __construct() {
 		// find active entity
 		parent::__construct();
@@ -192,5 +192,5 @@ class Page extends PageWithEntity {
 	
 }
 
-$page = new Page();
-$page->write();
+$view = new View();
+$view->write();

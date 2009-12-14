@@ -13,7 +13,7 @@ function get_request_data(&$data, $prefix, $name) {
 	}
 }
 
-class Page extends Template {
+class View extends Template {
 	private $user;
 	
 	function __construct() {
@@ -81,5 +81,5 @@ class Page extends Template {
 	}
 }
 
-$page = new Page();
-$page->write();
+$view = new View();
+$view->write();

@@ -17,7 +17,7 @@ if (isset($_REQUEST['add'])) {
 // Page for picking user
 // -----------------------------------------------------------------------------
 
-class Page extends Template {
+class View extends Template {
 	function title() {
 		return "Add user to group";
 	}
@@ -60,5 +60,5 @@ class Page extends Template {
 	
 }
 
-$page = new Page();
-$page->write();
+$view = new View();
+$view->write();

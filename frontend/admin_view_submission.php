@@ -5,9 +5,12 @@ require_once('./submission_view.inc');
 
 // -----------------------------------------------------------------------------
 // View a single submission
+// 
+//   url: admin_view_submission.php?submissionid=$ID
+// 
 // -----------------------------------------------------------------------------
 
-class Page extends PageWithEntity {
+class View extends PageWithEntity {
 	private $subm;
 	
 	function __construct() {
@@ -66,5 +69,5 @@ class Page extends PageWithEntity {
 	}
 }
 
-$page = new Page();
-$page->write();
+$view = new View();
+$view->write();

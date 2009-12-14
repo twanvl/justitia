@@ -24,10 +24,10 @@ if (isset($_REQUEST['login'],$_REQUEST['password'])) {
 }
 
 // -----------------------------------------------------------------------------
-// Page template
+// Login page
 // -----------------------------------------------------------------------------
 
-class Page extends Template {
+class View extends Template {
 	function title() {
 		return "Log in";
 	}
@@ -44,5 +44,5 @@ class Page extends Template {
 	}
 }
 
-$page = new Page();
-$page->write();
+$view = new View();
+$view->write();
