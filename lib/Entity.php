@@ -37,10 +37,10 @@ class Entity {
 			if ($part == '') continue;
 			$here = $here->get_child($part, $require_exists);
 			if ($here === NULL) {
-				throw new Exception("Entity not found: $path");
+				throw new NotFoundException("Entity not found: $path");
 			}
 			if (!$here->visible() && $require_visible) {
-				throw new Exception("Entity not found: $path");
+				throw new NotFoundException("Entity not found: $path");
 			}
 		}
 		return $here;

@@ -56,7 +56,7 @@ class SystemUtil {
 		}
 		// only run existing files?
 		if (!file_exists($cmd)) {
-			throw new Exception("Command not found: $cmd");
+			throw new InternalException("Command not found: $cmd");
 		}
 		// build command line
 		$command = escapeshellcmd($cmd);

@@ -55,7 +55,7 @@ abstract class JudgementBase {
 			return Status::FAILED_LANGUAGE;
 		}
 		if (!$this->create_tempdir()) {
-			throw new Exception("Failed to create tempdir");
+			throw new InternalException("Failed to create tempdir");
 			return Status::FAILED_INTERNAL;
 		}
 		if (!$this->download_source()) {
@@ -109,7 +109,7 @@ abstract class JudgementBase {
 				// TODO: Check this during submit
 				return false;
 			}
-			throw new Exception("TODO: archives");
+			throw new InternalException("TODO: archives");
 			SystemUtil::run_command(false, $this->language['archive_extract'], $this->source_file);
 			// look for the actual source file
 		}

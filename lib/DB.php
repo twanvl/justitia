@@ -15,7 +15,7 @@ class DB {
 				));
 			} catch (Exception $e) {
 				// prevent passwords from being exposed
-				throw new Exception("Can't connect to database");
+				throw new InternalException("Can't connect to database");
 			}
 		}
 		return $db;
@@ -35,8 +35,7 @@ class DB {
 	static function check_errors($query) {
 		$status = $query->errorInfo();
 		if ($status[0] != 0) {
-			//die($status[2]);
-			throw new Exception($status[2]);
+			throw new InternalException($status[2]);
 		}
 	}
 }

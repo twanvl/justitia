@@ -104,7 +104,7 @@ class Submission {
 		DB::check_errors($query);
 		$query->closeCursor();
 		if ($data === false) {
-			if ($throw) throw new Exception("Submission not found: $info");
+			if ($throw) throw new NotFoundException("Submission not found: $info");
 			else        return false;
 		}
 		return new Submission($data);
