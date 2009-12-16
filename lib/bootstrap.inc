@@ -19,3 +19,15 @@ function fancy_exception_handler($e) {
 }
 
 set_exception_handler('fancy_exception_handler');
+
+
+// -----------------------------------------------------------------------------
+// Date/time handling
+// -----------------------------------------------------------------------------
+
+if (defined('TIMEZONE')) {
+	date_default_timezone_set(TIMEZONE);
+} else {
+	// shut up warnings about the timezone
+	@date_default_timezone_set(@date_default_timezone_get());
+}

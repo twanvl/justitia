@@ -395,3 +395,34 @@ a:visited {
 	padding:	.5em;
 	margin:		1em;
 }
+
+/* -----------------------------------------------------------------------------
+ * Documentation
+ * ----------------------------------------------------------------------------- */
+
+.doc {
+	border-collapse:	collapse;
+}
+.doc td, .doc th {
+	padding-top:	.2em;
+	border:		1px solid rgb(192,192,192);
+}
+.doc td ul {
+	margin-top:	0;
+	margin-bottom:	0;
+}
+.doc th[colspan] {
+	padding-top:	2px;
+	text-align:	center;
+	background:	rgb(192,192,192);
+	border-bottom:	hidden;
+	border-top:	10px solid white;
+}
+.doc .legend {
+	background:	rgb(192,192,192);
+	font-size:	80%;
+	font-weight:	normal;
+}
+.doc .legend th {
+	padding:	1px;
+}

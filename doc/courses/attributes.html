@@ -1,0 +1,139 @@
+<h1>Attribute reference</h1>
+
+<h2>Inheritance</h2>
+
+<h2>Attributes</h2>
+
+<table class="doc">
+  <tr><th colspan="3">Description
+  <tr class="legend"><th>Attribute
+      <th>Description
+      <th width="10%">Default
+  <tr><th><tt>title</tt>
+      <td>Title of the entity/directory/assignment
+      <td>the filename
+  <tr><th><tt>order</tt>
+      <td>Position in which this element should appear in the sorted list (note: string comparison is used).
+      <td>the filename
+  <tr><th><tt>visible</tt>
+      <td>Is this entity visible?
+          Possible values are <tt>true</tt> and <tt>false</tt>
+      <td><tt>true</tt>
+  <tr><th><tt>show date</tt>
+      <td>When does this entity become visible to students?
+          Should be an ISO date, like "<tt>2009-09-01 09:00</tt>".
+          Time is optional, the default is "<tt>00:00</tt>". Note that the time can be "<tt>24:00</tt>".
+          Other possiblities are "<tt>always</tt>" and "<tt>never</tt>".
+      <td><tt>always</tt>
+  <tr><th><tt>hide date</tt>
+      <td>After which date will the entity be hidden?
+          Can be an ISO date, or a date relative to the show date. For example "<tt>+ 7 days</tt>" or "<tt>next Tuesday</tt>".
+      <td><tt>never</tt>
+  <tr><th><tt>downloadable files</tt>
+      <td>A space separated list of files that can be downloaded by students.
+      <td><em>none</em>
+          
+  <tr><th colspan="3">Submitting
+  <tr class="legend"><th>Attribute
+      <th>Description
+      <th width="10%">Default
+  <tr><th><tt>submitable</tt>
+      <td>Can submissions be made for this entity, i.e. is it an assignment?.
+      <td><tt>false</tt>
+  <tr><th><tt>start date</tt>
+      <td>When does this assignment become available for submission?
+      <td><tt>always</tt>
+  <tr><th><tt>end date</tt>
+      <td>When is the submission deadline? Can be relative to the <tt>start date</tt>.
+      <td><tt>never</tt>
+  <tr><th><tt>keep best</tt>
+      <td>Keep the best submission (as opposed to the last one)
+      <td><tt>true</tt>
+      
+  <tr><th colspan="3">Compiling
+  <tr class="legend"><th>Attribute
+      <th>Description
+      <th width="10%">Default
+  <tr><th><tt>language</tt>
+      <td>The programming language the submissions must be made in.
+      <td><i>by extension</i>
+  <tr><th><tt>filename regex</tt>
+      <td>Regular expression that filename of submissions is matched against.
+          By default based on <tt>language</tt>
+      <td><i>by language</i>
+  <tr><th><tt>allow archives</tt>
+      <td>Can multi-file archives be submitted?
+      <td><tt>false</tt>
+  <tr><th><tt>compile</tt>
+      <td>Should submissions be compiled?
+      <td><tt>true</tt>
+  <tr><th><tt>compiler</tt>
+      <td>Compiler script to use (from <tt>backend/compiler</tt>).
+      <td><i>by language</i>
+  <tr><th><tt>compiler flags</tt>
+      <td>Additional flags to pass to the compiler.
+      <td><em>none</em>
+  <tr><th><tt>compiler files</tt>
+      <td>Files that should be made available to the compiler and the runner.
+          Note: you also have to pass the names as <tt>compiler flags</tt> to link them in.
+      <td><em>none</em>
+      
+  <tr><th colspan="3">Testing
+  <tr class="legend"><th>Attribute
+      <th>Description
+      <th width="10%">Default
+  <tr><th><tt>reference implementation</tt>
+      <td>Path to the source code of a reference implementation.
+      <td><i>automatic</i>
+  <tr><th><tt>runner</tt>
+      <td>Wrapper for running the program (from <tt>backend/runner</tt>).
+      <td><tt>run</tt>
+  <tr><th><tt>checker</tt>
+      <td>Program used to check the output (from <tt>backend/checker</tt>).
+          Default is the simple unix diff program.
+          Note that the checker is only used if there are any test cases, in files name <tt><i>x</i>.in</tt>.
+      <td><tt>diff</tt>
+  <tr><th><tt>time limit</tt>
+      <td>Timelimit for running the program on a single test case, in seconds
+      <td>1
+  <tr><th><tt>memory limit</tt>
+      <td>Limit on the amount of memory that may be used, in KiB
+      <td>100000
+      
+  <tr><th colspan="3">Feedback
+  <tr class="legend"><th>Attribute
+      <th>Description
+      <th width="10%">Default
+  <tr><th><tt>show compile errors</i></tt>
+      <td>Should compiler errors be shown? (syntax errors, typing errors, etc.)
+      <td><tt>true</tt>
+  <tr><th><tt>show run errors</i></tt>
+      <td>Should runtime errors be shown? (stack overflow, div by 0, etc.) For which test cases?
+          Possible values are:
+          <ul>
+            <li>A space separated list of test cases.
+            <li>"<tt>none</tt>".
+            <li>"<tt>all</tt>".
+          </ul>
+      <td><tt>all</tt>
+  <tr><th><tt>show input/output</tt>
+      <td>Should the input, output and a diff be shown? For which test cases?
+      <td><tt>none</tt>
+  <!--<tr><th><tt>failure feedback for <i>x</i></tt>
+      <td>The message shown to the student if test case <i>x</i> fails.
+      <td>""
+  <tr><th><tt>failure feedback</tt>
+      <td>Default for above.
+      <td>""-->
+      
+  <tr><th colspan="3">Groups
+  <tr class="legend"><th>Attribute
+      <th>Description
+      <th width="10%">Default
+  <tr><th><tt>max group size</tt>
+      <td>Maximum number of students that can submit as a single group.
+      <td><i>unbounded</i>
+  <!--<tr><th><tt>defines groups</tt>
+      <td>Groups are by default formed for the duration of this entity.
+      <td><tt>true</t> for courses-->
+</table>

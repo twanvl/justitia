@@ -24,8 +24,6 @@ function now() {
 	}
 }
 
-date_default_timezone_set(TIMEZONE);
-
 function format_date($date, $is_deadline = false) {
 	if ($date >= 1e99) return "never";
 	$str = date('l, j F Y, H:i:s',$date);
@@ -44,8 +42,8 @@ function format_date($date, $is_deadline = false) {
 
 class DateRange {
 	// start/end timestamps
-	var $start;
-	var $end;
+	public $start;
+	public $end;
 	
 	function __construct($start_str, $end_str) {
 		$this->start = parse_date($start_str);

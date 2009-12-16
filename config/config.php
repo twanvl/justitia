@@ -25,9 +25,6 @@ define('DB_PERSISTENT', true);
 // Other options
 // -----------------------------------------------------------------------------
 
-// what timezone are we in?
-define('TIMEZONE', 'Europe/Paris');
-
 // how long before submissions are re-judged if no answer has yet been received (in seconds)?
 //define('REJUDGE_TIMEOUT', 120);
 define('REJUDGE_TIMEOUT', 1);//Debug

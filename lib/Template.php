@@ -2,6 +2,12 @@
 
 // -----------------------------------------------------------------------------
 // Page template
+//
+//  All HTML pages inherit from Template.
+//  They override the title() and write_body() functions
+//
+//  To write a page, $some_derived_view->write() is invoked.
+//
 // -----------------------------------------------------------------------------
 
 abstract class Template {
@@ -9,13 +15,25 @@ abstract class Template {
 	// Overloadable interface
 	// ---------------------------------------------------------------------
 	
-	protected $is_admin_page = false;
+	protected $is_admin_page = false; // use the admin stylesheet?
 	
 	abstract function title();
 	abstract function write_body();
 	
+	// array (layed out horizontally) of arrays (layed out vertically) of navigation items
+	// each navigation item is an associative array
+	//   array('title'=>, 'url'=>, 'class'=>)
+	function get_nav() {
+		return array();
+	}
+	
 	// ---------------------------------------------------------------------
 	// Message utilities
+	//
+	//  Template::add_message('something','error','bla bla bla'
+	//     queues a message
+	//  Template::write_messages('something')
+	//     then writes all queued messages. This method is called from write_body()
 	// ---------------------------------------------------------------------
 	
 	private static $messages;
@@ -57,6 +75,7 @@ abstract class Template {
 	function write_form_hidden($name,$value) {
 		echo '<input type="hidden" name="'.$name.'" value="'. htmlspecialchars($value) .'">';
 	}
+	// pass along the value of a request variable using a hidden form field
 	function write_form_preserve($what) {
 		if (!isset($_REQUEST[$what])) return;
 		$this->write_form_hidden($what,$_REQUEST[$what]);
@@ -122,7 +141,7 @@ abstract class Template {
 	}
 	
 	// ---------------------------------------------------------------------
-	// Navigation
+	// Admin navigation (tab bar)
 	// ---------------------------------------------------------------------
 	
 	function write_admin_nav_link($script,$title) {
@@ -151,10 +170,6 @@ abstract class Template {
 	// ---------------------------------------------------------------------
 	// Navigation
 	// ---------------------------------------------------------------------
-	
-	function get_nav() {
-		return array();
-	}
 	
 	function write_nav_item($items) {
 		if (count($items) == 0) return;
