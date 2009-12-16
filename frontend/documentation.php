@@ -52,80 +52,54 @@ class View extends Template {
 	// Navigation: all known documentation pages
 	// ---------------------------------------------------------------------
 	
+	function is_path_prefix($url) {
+		return substr($this->path,0,strlen($url)) == $url;
+	}
+	function nav_item($title, $url) {
+		if ($this->path == $url) {
+			$class = 'current';
+		} else if ($this->is_path_prefix($url)) {
+			$class = 'ancestor';
+		} else {
+			$class = '';
+		}
+		return array(
+			'title' => $title,
+			'url'   => "documentation.php$url",
+			'class' => $class
+		);
+	}
+	
 	function get_nav() {
 		$result [] = array(
-			array(
-				'title' => 'User documentation',
-				'url'   => 'documentation.php/user'
-			),
-			array(
-				'title' => 'Course administration',
-				'url'   => 'documentation.php/courses'
-			),
-			array(
-				'title' => 'Results & grading',
-				'url'   => 'documentation.php/results'
-			),
-			array(
-				'title' => 'Program design',
-				'url'   => 'documentation.php/design'
-			)
+			$this->nav_item('User documentation', '/user'),
+			$this->nav_item('Course administration', '/courses'),
+			$this->nav_item('Results & grading', '/results'),
+			$this->nav_item('Program design', '/design')
 		);
+		if ($this->is_path_prefix('/user'))
 		$result [] = array(
-			array(
-				'title' => 'About Justitia',
-				'url'   => 'documentation.php/user/index'
-			),
-			array(
-				'title' => 'Submitting programs',
-				'url'   => 'asdf'
-			)
+			$this->nav_item('About Justitia', '/user/index'),
+			$this->nav_item('Submitting programs', 'TODO')
 		);
+		if ($this->is_path_prefix('/courses'))
 		$result [] = array(
-			array(
-				'title' => 'Introduction',
-				'url'   => 'documentation.php/courses/index'
-			),
-			array(
-				'title' => 'Directory structure',
-				'url'   => 'asdf'
-			),
-			array(
-				'title' => 'Test cases',
-				'url'   => 'documentation.php/courses/test_cases'
-			),
-			array(
-				'title' => 'Attribute reference',
-				'url'   => 'documentation.php/courses/attributes'
-			),
-			array(
-				'title' => 'Example',
-				'url'   => 'asdf'
-			)
+			$this->nav_item('Introduction', '/courses/index'),
+			$this->nav_item('Directory structure', 'TODO'),
+			$this->nav_item('Test cases', '/courses/test_cases'),
+			$this->nav_item('Attribute reference', '/courses/attributes'),
+			$this->nav_item('Example', 'TODO')
 		);
+		if ($this->is_path_prefix('/admin'))
 		$result [] = array(
-			array(
-				'title' => 'Introduction',
-				'url'   => 'asdf'
-			),
-			array(
-				'title' => 'Users',
-				'url'   => 'asdf'
-			),
-			array(
-				'title' => 'Viewing results',
-				'url'   => 'asdf'
-			)
+			$this->nav_item('Introduction', 'TODO'),
+			$this->nav_item('Users', 'TODO'),
+			$this->nav_item('Viewing results', 'TODO')
 		);
+		if ($this->is_path_prefix('/design'))
 		$result [] = array(
-			array(
-				'title' => 'Introduction',
-				'url'   => 'asdf'
-			),
-			array(
-				'title' => 'Security considerations',
-				'url'   => 'asdf'
-			)
+			$this->nav_item('Introduction', '/design/index'),
+			$this->nav_item('Security considerations', '/design/security')
 		);
 		return $result;
 	}
