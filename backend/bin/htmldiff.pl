@@ -26,12 +26,15 @@ GetOptions ('b'=>\$ignore_whitespace_change,
 	    'w'=>\$ignore_whitespace,
 	    'i'=>\$ignore_case);
 
-my ($name_a,$file_a) = split_file($ARGV[$#ARGV-1]);
+my $name_a = '';#$ENV{'FILE1'};
+my $file_a = $ARGV[$#ARGV-1];
+my $name_b = '';#$ENV{'FILE2'};
+my $file_b = $ARGV[$#ARGV];
+
 open(FILEA, $file_a) or die "File not found: $file_a";
 my@a=<FILEA>;
 close(FILEA);
 
-my ($name_b,$file_b) = split_file($ARGV[$#ARGV]);
 open(FILEB, $file_b) or die "File not found: $file_b";
 my@b=<FILEB>;
 close(FILEB);
@@ -235,16 +238,6 @@ sub encode_entities {
     ($_)=@_;
     s/([&<>"'])/$entities{$1}/ge;
     return $_;
-}
-
-sub split_file {
-    ($_)=@_;
-    my ($a,$b) = split ':', $_;
-    if ($b ne '') {
-	return ($a,$b);
-    } else {
-	return ($_,$_);
-    }
 }
 
 #------------------------------------------------------- : Algorithm::Diff

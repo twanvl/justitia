@@ -5,7 +5,7 @@
 // -----------------------------------------------------------------------------
 
 // Course data files
-define('COURSE_DIR',       '../courses');
+define('COURSE_DIR',       'I:/i/justitia/courses');
 
 // Program to safely run submissions
 define('RUNGUARD_PATH',    'bin/runguard');

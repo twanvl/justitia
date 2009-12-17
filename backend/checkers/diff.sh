@@ -8,10 +8,6 @@
 # <refout>    File containing reference output.
 # <diff>      File where to write the diff.
 
-TESTOUT="$1";   shift
-REFOUT="$1";    shift
-DIFF="$1";      shift
-
 # Run the unix diff tool
 diff -y $4 $1 $2 >$3
 exit $?
