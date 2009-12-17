@@ -144,7 +144,7 @@ abstract class Template {
 	// Admin navigation (tab bar)
 	// ---------------------------------------------------------------------
 	
-	function write_admin_nav_link($script,$title) {
+	function write_admin_nav_link($script,$title,$include_path=true) {
 		static $first = true;
 		if ($first) {
 			$first = false;
@@ -152,18 +152,20 @@ abstract class Template {
 			echo " | ";
 		}
 		$current = Util::current_script_is($script) ? ' class="current"' : '';
-		$url = htmlspecialchars( $script . @$_SERVER['PATH_INFO'] );
+		$url = htmlspecialchars( $script . ($include_path ? @$_SERVER['PATH_INFO'] : '') );
 		echo "<a href=\"$url\"$current>$title</a>";
 	}
 	function write_admin_nav() {
 		if (!Authentication::is_admin()) return;
+		// documentation.php paths are not the same as entity paths
+		$is_doc = Util::current_script_is('documentation.php');
 		echo '<div id="admin-nav">';
-		$this->write_admin_nav_link('index.php','Normal view');
-		$this->write_admin_nav_link('admin_user.php','Users');
-		$this->write_admin_nav_link('admin_submissions.php','Latest submissions');
-		$this->write_admin_nav_link('admin_results.php','Results table');
-		$this->write_admin_nav_link('admin_print.php','Print submissions');
-		$this->write_admin_nav_link('documentation.php','Documentation');
+		$this->write_admin_nav_link('index.php','Normal view', !$is_doc);
+		$this->write_admin_nav_link('admin_user.php','Users', !$is_doc);
+		$this->write_admin_nav_link('admin_submissions.php','Latest submissions', !$is_doc);
+		$this->write_admin_nav_link('admin_results.php','Results table', !$is_doc);
+		$this->write_admin_nav_link('admin_print.php','Print submissions', !$is_doc);
+		$this->write_admin_nav_link('documentation.php','Documentation', $is_doc);
 		echo '</div>';
 	}
 	
