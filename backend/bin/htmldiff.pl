@@ -26,9 +26,9 @@ GetOptions ('b'=>\$ignore_whitespace_change,
 	    'w'=>\$ignore_whitespace,
 	    'i'=>\$ignore_case);
 
-my $name_a = 'file1';
+my $name_a = $ENV{'FILE1'};
 my $file_a = $ARGV[$#ARGV-1];
-my $name_b = 'file2';
+my $name_b = $ENV{'FILE2'};
 my $file_b = $ARGV[$#ARGV];
 
 open(FILEA, $file_a) or die "File not found: $file_a";

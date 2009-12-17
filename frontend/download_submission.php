@@ -46,6 +46,22 @@ function is_allowed_file($subm,$entity,$user,$dir,$filename) {
 	}
 	return false; // unknown file
 }
+function content_type($filename) {
+	$ext = pathinfo($filename, PATHINFO_EXTENSION);
+	$lang = Util::language_from_filename($filename);
+	if ($ext == 'diff') {
+		// TODO: determine whether this is a diff in HTML format
+		return 'text/html';
+	} else if ($ext == 'in' || $ext == 'out' || $ext == 'diff' || $ext == 'err') {
+		return 'text/plain';
+	} else if (function_exists('mime_content_type')) {
+		return mime_content_type($filename);
+	} else if ($lang['is_language']) {
+		return 'text/plain';
+	} else {
+		return 'application/octet-stream';
+	}
+}
 
 // Parse arguments
 if (!isset($_SERVER['PATH_INFO'])) die("no file specified");
@@ -65,18 +81,6 @@ if ($fileinfo === false) {
 	list($in_db,$filename) = $fileinfo;
 }
 
-if (!function_exists('mime_content_type')) {
-	// windows doesn't have this
-	function mime_content_type($filename) {
-		$ext = pathinfo($filename, PATHINFO_EXTENSION);
-		$lang = Util::language_from_filename($filename);
-		if ($ext == 'in' || $ext == 'out' || $ext == 'diff' || $ext == 'err' || $lang['is_language']) {
-			return 'text/plain';
-		} else {
-			return 'application/octet-stream';
-		}
-	}
-}
 header("Content-Type: " . mime_content_type($sub_file));
 
 if ($in_db) {

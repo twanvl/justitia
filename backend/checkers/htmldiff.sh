@@ -8,7 +8,7 @@
 # <refout>    File containing reference output.
 # <diff>      File where to write the diff.
 
-export FILE1=reference output
-export FILE2=your output
+export FILE1="expected output"
+export FILE2="your output"
 perl $JUSTITIA_BACKEND_DIR/bin/htmldiff.pl $4 $2 $1 >$3
 exit $?
