@@ -81,7 +81,7 @@ if ($fileinfo === false) {
 	list($in_db,$filename) = $fileinfo;
 }
 
-header("Content-Type: " . mime_content_type($sub_file));
+header("Content-Type: " . content_type($sub_file));
 
 if ($in_db) {
 	// get the file from the database
