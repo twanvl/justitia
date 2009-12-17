@@ -85,10 +85,9 @@ class View extends Template {
 		if ($this->is_path_prefix('/courses'))
 		$result [] = array(
 			$this->nav_item('Introduction', '/courses/index'),
-			$this->nav_item('Directory structure', 'TODO'),
 			$this->nav_item('Test cases', '/courses/test_cases'),
 			$this->nav_item('Attribute reference', '/courses/attributes'),
-			$this->nav_item('Example', 'TODO')
+			$this->nav_item('Example', '/courses/example')
 		);
 		if ($this->is_path_prefix('/admin'))
 		$result [] = array(

@@ -69,3 +69,15 @@ $(document).ready(function(){
 	});
 });
 
+// -----------------------------------------------------------------------------
+// Documentation fancyness
+// -----------------------------------------------------------------------------
+
+$(document).ready(function(){
+	$(".to-viewer").click(function(){
+		var body = unescape(this.href).replace("data:text/html,","");
+		$("#viewer").html(body);
+		return false;
+	});
+});
+

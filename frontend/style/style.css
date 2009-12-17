@@ -426,3 +426,29 @@ a:visited {
 .doc .legend th {
 	padding:	1px;
 }
+
+.dirtree, .dirtree ul {
+	margin:		0;
+	padding:	0;
+	margin-left:	1.5em;
+	list-style:	disc;
+}
+.dirtree li {
+	margin-bottom:	.2em;
+}
+
+#viewer {
+	min-width:	400px;
+	padding-left:	4em;
+}
+#viewer h1 {
+	font-size:	100%;
+}
+#viewer pre {
+	border:		1px solid black;
+	margin:		0;
+	margin-top:	.2em;
+	margin-bottom:	.5em;
+	padding:	2px;
+	padding-right:	5px;
+}
