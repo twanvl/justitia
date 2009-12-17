@@ -205,13 +205,13 @@ ____END_DINGES
 	"<td class=\"filename center\"> </td>".
 	"<td class=\"filename right\">FILE B</td></tr>\n";
 
-    printrow("","empty","Excess line","added",">","iadded");
-    printrow("Missing line","removed","","empty",">","iremoved");
-    printrow("Excess letter:","changed",
-	     "Excess letter: <span class=\"addedw\">a</span>","changed",
+    printrow("","empty","Missing line","added",">","iadded");
+    printrow("Excess line","removed","","empty","<","iremoved");
+    printrow("Missing letter:","changed",
+	     "Missing letter: <span class=\"addedw\">a</span>","changed",
 	     ,"~","ichanged");
-    printrow("Missing letter: <span class=\"removedw\">a</span>","changed",
-	     "Missing letter: ","changed",
+    printrow("Excess letter: <span class=\"removedw\">a</span>","changed",
+	     "Excess letter: ","changed",
 	     ,"~","ichanged");
     printrow("Changed letter: <span class=\"changedw\">a</span>","changed",
 	     "Changed letter: <span class=\"changedw\">b</span>","changed",
