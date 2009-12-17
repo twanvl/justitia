@@ -14,6 +14,9 @@ if (!isset($_SERVER['argv'])) {
 
 define('VERBOSE', true);
 
+// for shell scripts
+putenv("JUSTITIA_BACKEND_DIR=" . getcwd());
+
 // Name of this host.
 // Add randomness, so two judges can run on one computer if needed
 $salt = '';

@@ -2,12 +2,13 @@
 
 # Run wrapper-script
 
-# Usage: $0 <program> <testin> <output> <error>
+# Usage: $0 <program> <testin> <output> <error> <flags>
 #
 # <program>   Executable of the program to be run.
 # <testin>    File containing test-input.
 # <output>    File where to write solution output.
 # <error>     File where to write error messages.
+# <flags>     More flags
 
 PROGRAM="$1";   shift
 TESTIN="$1";    shift

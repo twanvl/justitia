@@ -2,16 +2,11 @@
 
 # Checker script
 
-# Usage: $0 <testout> <refout> <diff>
+# Usage: $0 <testout> <refout> <diff> <flags>
 #
 # <testout>   File containing submission output.
 # <refout>    File containing reference output.
 # <diff>      File where to write the diff.
 
-TESTOUT="$1";   shift
-REFOUT="$1";    shift
-DIFF="$1";      shift
-
-# Run the unix diff tool
-diff -y $4 $1 $2 >$3
+perl $JUSTITIA_BACKEND_DIR/bin/htmldiff.pl $4 "reference output:$2" "your output:$1" >$3
 exit $?

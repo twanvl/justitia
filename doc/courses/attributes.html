@@ -1,11 +1,30 @@
 <h1>Attribute reference</h1>
 
+<h2>Info files</h2>
+Each cours and assignment directory should contain a file named <tt>info</tt>.
+The syntax of the file is as follows:
+<pre>
+attribute: value
+attribute: value
+# this line is a comment, it is ignored
+attribute:
+	long value
+	spanning multiple lines
+</pre>
+
 <h2>Inheritance</h2>
+<p>
+Attributes are by default inherited.
+This means that if, for example, in some directory <tt>language: c</tt> is specified, then that also applies to all subdirectories.
+
+<p>
+An attribute <tt>child <em>xxx</em>: <em>yyy</em></tt> means that attribute <em>xxx</em> has the value <em>yyy</em> in all subdirectories, but not in the current directory.
+
 
 <h2>Attributes</h2>
 
 <table class="doc">
-  <tr><th colspan="3">Description
+  <tr><th colspan="3">Directory description
   <tr class="legend"><th>Attribute
       <th>Description
       <th width="10%">Default
@@ -14,20 +33,21 @@
       <td>the filename
   <tr><th><tt>order</tt>
       <td>Position in which this element should appear in the sorted list (note: string comparison is used).
+          <br>For example, setting <tt>order: baz</tt> places this item after "bar" but before "foo", regardless of the filename or title.
       <td>the filename
   <tr><th><tt>visible</tt>
       <td>Is this entity visible?
           Possible values are <tt>true</tt> and <tt>false</tt>
       <td><tt>true</tt>
   <tr><th><tt>show date</tt>
-      <td>When does this entity become visible to students?
+      <td>When does this entity become visible to students?<br>
           Should be an ISO date, like "<tt>2009-09-01 09:00</tt>".
           Time is optional, the default is "<tt>00:00</tt>". Note that the time can be "<tt>24:00</tt>".
           Other possiblities are "<tt>always</tt>" and "<tt>never</tt>".
       <td><tt>always</tt>
   <tr><th><tt>hide date</tt>
-      <td>After which date will the entity be hidden?
-          Can be an ISO date, or a date relative to the show date. For example "<tt>+ 7 days</tt>" or "<tt>next Tuesday</tt>".
+      <td>After which date will the entity be hidden?<br>
+          Can be an ISO date, or a date relative to the <tt>show date</tt>. For example "<tt>+ 7 days</tt>" or "<tt>next Tuesday</tt>".
       <td><tt>never</tt>
   <tr><th><tt>downloadable files</tt>
       <td>A space separated list of files that can be downloaded by students.
@@ -49,6 +69,14 @@
   <tr><th><tt>keep best</tt>
       <td>Keep the best submission (as opposed to the last one)
       <td><tt>true</tt>
+  <tr><th><tt>final submission</tt>
+      <td>Which submission counts as the final one?
+          Possible values are:
+          <ul>
+            <li>"<tt>last</tt>": the last submission counts, regardless of its outcome.
+            <li>"<tt>best</tt>": the best submission counts.
+          </ul>
+      <td><tt>best</tt>
       
   <tr><th colspan="3">Compiling
   <tr class="legend"><th>Attribute
@@ -74,7 +102,7 @@
       <td>Additional flags to pass to the compiler.
       <td><em>none</em>
   <tr><th><tt>compiler files</tt>
-      <td>Files that should be made available to the compiler and the runner.
+      <td>Files that should be made available to the compiler and the runner.<br>
           Note: you also have to pass the names as <tt>compiler flags</tt> to link them in.
       <td><em>none</em>
       
@@ -90,9 +118,18 @@
       <td><tt>run</tt>
   <tr><th><tt>checker</tt>
       <td>Program used to check the output (from <tt>backend/checker</tt>).
-          Default is the simple unix diff program.
+          Default is the simple unix diff program.<br>
           Note that the checker is only used if there are any test cases, in files name <tt><i>x</i>.in</tt>.
-      <td><tt>diff</tt>
+      <td><tt>htmldiff</tt>
+  <tr><th><tt>checker flags</tt>
+      <td>Additional flags to pass to the checker scripts.
+          The (html)diff command understands these flags:
+          <ul>
+            <li><tt>-i</tt>:  Consider upper- and lower-case to be the same.
+            <li><tt>-w</tt>:  Ignore all white space.
+            <li><tt>-b</tt>:  Ignore changes in the amount of white space.
+          </ul>
+      <td><tt>-b</tt>
   <tr><th><tt>time limit</tt>
       <td>Timelimit for running the program on a single test case, in seconds
       <td>1

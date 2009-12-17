@@ -153,6 +153,7 @@ abstract class JudgementBase {
 		// runner
 		$runner = $this->entity->runner();
 		$runner = getcwd() . "/runners/$runner.sh";
+		$flags = $this->entity->runner_flags();
 		// copy case input, prepare output files
 		$case_input  = $this->tempdir->file("$case.in");
 		$case_output = $this->tempdir->file("$case.out");
@@ -165,7 +166,7 @@ abstract class JudgementBase {
 		make_file_writable($case_limit_error);
 		// run program
 		$limits = $this->entity->run_limits();
-		$result = SystemUtil::safe_command($this->tempdir->dir, $runner, array($this->exe_file, $case_input, $case_output, $case_error), $limits, $case_limit_error);
+		$result = SystemUtil::safe_command($this->tempdir->dir, $runner, array($this->exe_file, $case_input, $case_output, $case_error, $flags), $limits, $case_limit_error);
 		if (!file_exists($case_output)) {
 			file_put_contents($case_output, "<<NO OUTPUT FILE CREATED>>");
 			$result = false;
@@ -186,6 +187,7 @@ abstract class JudgementBase {
 		// checker
 		$checker = $this->entity->checker();
 		$checker = getcwd() . "/checkers/$checker.sh";
+		$flags = $this->entity->checker_flags();
 		// the files
 		$case_ref  = $this->entity->testcase_reference_output($case);
 		$case_my   = $this->tempdir->file("$case.out");
@@ -195,7 +197,7 @@ abstract class JudgementBase {
 			throw new Exception("Reference implementation does not exists:\n$case_ref");
 		}
 		// run checker
-		$result = SystemUtil::run_command($this->tempdir->dir, $checker, array($case_my, $case_ref, $case_diff));
+		$result = SystemUtil::run_command($this->tempdir->dir, $checker, array($case_my, $case_ref, $case_diff, $flags));
 		if (!$result) {
 			$this->put_tempfile("$case.diff");
 			echo "     Output does not match\n";

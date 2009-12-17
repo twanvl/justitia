@@ -56,4 +56,5 @@ $attribute_defaults['show run errors']		= 'all';
 $attribute_defaults['show input/output']	= 'none';
 $attribute_defaults['compiler']			= ''; // automatic
 $attribute_defaults['runner']			= 'run';
-$attribute_defaults['checker']			= 'diff';
+$attribute_defaults['checker']			= 'htmldiff';
+$attribute_defaults['checker flags']		= '-b';

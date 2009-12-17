@@ -145,6 +145,12 @@ class Entity {
 	function compiler_flags() {
 		return $this->attribute('compiler flags');
 	}
+	function runner_flags() {
+		return $this->attribute('runner flags');
+	}
+	function checker_flags() {
+		return $this->attribute('checker flags');
+	}
 	
 	function compile_limits() {
 		return array(
