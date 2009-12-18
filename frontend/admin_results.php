@@ -48,6 +48,24 @@ function print_layers_header($layers) {
 }
 
 
+class Timer {
+	private static $t = false;
+	private static $times = array();
+	static function after($name) {
+		$t_end = microtime(true);
+		if (Timer::$t) {
+			Timer::$times[$name] = $t_end - Timer::$t;
+		}
+		Timer::$t = $t_end;
+	}
+	static function write() {
+		echo "<pre>";
+		print_r(Timer::$times);
+		echo "</pre>";
+	}
+}
+
+
 class View extends PageWithEntity {
 	
 	function __construct() {
@@ -55,6 +73,8 @@ class View extends PageWithEntity {
 		$this->is_admin_page = true;
 		// find active entity
 		parent::__construct();
+		// debugging
+		$this->debug = true;
 	}
 	
 	function title() {
@@ -69,8 +89,11 @@ class View extends PageWithEntity {
 		function is_submitable($e) {
 			return $e->submitable();
 		}
+		Timer::after("init");
 		$entities = array_filter($this->entity->descendants(),'is_submitable');
+		Timer::after("find entities");
 		$this->write_get_submission_results($entities);
+		Timer::write();
 	}
 	
 	
@@ -97,14 +120,15 @@ class View extends PageWithEntity {
 				}
 				$users[$userid]['subms'][$e] = $subm;
 			}
-			
 		}
+		Timer::after("find submissions");
 		// sort users by name
 		$users_sorted = array();
 		foreach($users as $user) {
 			$users_sorted[$user['user']->name_for_sort()] = $user;
 		}
 		ksort($users_sorted);
+		Timer::after("sort");
 		// write statistics
 		echo "<table>\n";
 		echo "<tr><th>Number of submissions</th><td>$num_submissions</td>";
@@ -113,6 +137,7 @@ class View extends PageWithEntity {
 		echo "</table>\n";
 		// write table
 		$this->write_submission_results($entities,$users_sorted);
+		Timer::after("write");
 	}
 	
 	// write a table, given
