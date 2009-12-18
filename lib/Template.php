@@ -209,6 +209,7 @@ abstract class Template {
 	}
 	
 	function write() {
+		Authentication::session_start(); // we need the current user later
 		$base  = htmlspecialchars(Util::base_url());
 		$title = htmlspecialchars($this->title());
 		
