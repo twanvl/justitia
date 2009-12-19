@@ -359,6 +359,26 @@ a:visited {
 	color:		rgb(100,0,140);
 }
 
+.list-like {
+	color:		rgb(128,128,128);
+}
+a.file {
+	padding-left:	18px;
+	min-height:	16px;
+	background:	url(page_white.png) left center no-repeat;
+}
+.file.java { background-image: url(page_white_cup.png) }
+.file.c    { background-image: url(page_white_c.png) }
+.file.h    { background-image: url(page_white_h.png) }
+.file.cpp, .file.cc, .file.hpp, .file.hh, .file.hxx,
+.file.cxx  { background-image: url(page_white_cplusplus.png) }
+.file.cs   { background-image: url(page_white_cs.png) }
+.file.txt  { background-image: url(page_white_text.png) }
+.file.doc  { background-image: url(page_white_word.png) }
+.file.pdf  { background-image: url(page_white_acrobat.png) }
+.file.tar, .file.gz, .file.bz2, .file.rar,
+.file.zip  { background-image: url(page_white_zip.png) }
+
 .user-list {
 	margin-top:	1em;
 }

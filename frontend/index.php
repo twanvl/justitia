@@ -102,12 +102,13 @@ class View extends PageWithEntity {
 		if ($files) {
 			$downloads = '';
 			foreach ($files as $file) {
-				$downloads .= '<a href="download_entity.php' . htmlspecialchars($this->entity->path()) . '?f=' . urlencode($file) . '">'
-				           .  htmlspecialchars(pathinfo($file, PATHINFO_BASENAME))
+				$ext = pathinfo($file, PATHINFO_EXTENSION);
+				$downloads .= '<a href="download_entity.php' . htmlspecialchars($this->entity->path()) . '?f=' . urlencode($file) . '" class="file '.$ext.'">'
+				           .  htmlspecialchars(basename($file))
 				           .  '</a> | ';
 			}
-			$downloads = substr($downloads,0,-3);
-			echo "<tr><td>Files</td><td>$downloads</td></tr>";
+			$downloads = substr($downloads,0,-3); // strip last " | "
+			echo "<tr><td>Files</td><td class=\"list-like\">$downloads</td></tr>";
 		}
 		echo "</td>";
 		echo "</table>";

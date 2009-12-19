@@ -180,17 +180,17 @@ class Entity {
 	private static function is_allowed_testcase($case, $pattern) {
 		if ($pattern == 'all')  return true;
 		if ($pattern == 'none') return false;
-		if (in_array($case,explode(' ',$pattern))) return true;
+		if (in_array($case,explode_whitespace($pattern))) return true;
 		return false;
 	}
 	
 	function compiler_files() {
 		$files = $this->attribute('compiler files');
-		return $files ? explode(' ',$files) : array();
+		return $files ? explode_whitespace($files) : array();
 	}
 	function downloadable_files() {
 		$files = $this->attribute('downloadable files');
-		return $files ? explode(' ',$files) : array();
+		return $files ? explode_whitespace($files) : array();
 	}
 	
 	// ---------------------------------------------------------------------
@@ -471,3 +471,6 @@ function compare_order($a, $b) {
 	return 0;
 }
 
+function explode_whitespace($s) {
+	return preg_split('@\s+@',$s);
+}
