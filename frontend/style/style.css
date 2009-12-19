@@ -468,13 +468,6 @@ a.file {
 	margin-bottom:	.2em;
 }
 
-#viewer {
-	min-width:	400px;
-	padding-left:	4em;
-}
-#viewer h1 {
-	font-size:	100%;
-}
 #viewer pre {
 	border:		1px solid black;
 	margin:		0;
@@ -482,4 +475,23 @@ a.file {
 	margin-bottom:	.5em;
 	padding:	2px;
 	padding-right:	5px;
+}
+#viewer-table h2 {
+	margin:		.5em 0;
+	font-size:	100%;
+}
+#viewer {
+	min-width:	400px;
+	padding-left:	2em;
+}
+#viewer-table td:first-child {
+	border-right:	1px solid black;
+	padding-right:	2em;
+}
+.to-viewer {
+	display:	block;
+}
+.to-viewer.shown {
+	background:	rgb(210,230,255);
+	color:		black;
 }

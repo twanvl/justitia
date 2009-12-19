@@ -74,9 +74,15 @@ $(document).ready(function(){
 // -----------------------------------------------------------------------------
 
 $(document).ready(function(){
+	var active_to_viewer = null;
 	$(".to-viewer").click(function(){
 		var body = unescape(this.href).replace("data:text/html,","");
 		$("#viewer").html(body);
+		if (active_to_viewer) {
+			$(active_to_viewer).removeClass("shown");
+		}
+		active_to_viewer = this;
+		$(active_to_viewer).addClass("shown");
 		return false;
 	});
 });

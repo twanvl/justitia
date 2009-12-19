@@ -3,46 +3,54 @@
 Here is a simple example course.
 Click on a file to view it.
 
-<table>
+<table id="viewer-table">
 <tr><td>
+<h2>Directory hierarchy</h2>
 <ul class="dirtree">
  <li>courses/
   <ul>
    <li>OOP1/
     <ul>
-     <li><a href="data:text/html,<h1>courses/OOP1/info</h1><pre>title: Object Oriented Programming 1<br>language: java</pre>" class="to-viewer">info</a>
+     <li><a href="data:text/html,<h2>courses/OOP1/info</h2><pre>title: Object Oriented Programming 1<br>language: java</pre>" class="to-viewer">info</a>
      <li>week1/
       <ul>
-       <li><a href="data:text/html,<h1>courses/OOP1/week1/info</h1><pre>title: Week 1<br>start date: 2009-08-07 00:00<br>end date: +1 week</pre>This directory inherits the attributes:<pre>language: java</pre>" class="to-viewer">info</a>
+       <li><a href="data:text/html,<h2>courses/OOP1/week1/info</h2><pre>title: Week 1<br>start date: 2009-08-07 00:00<br>end date: +1 week</pre>This directory inherits the attributes:<pre>language: java</pre>" class="to-viewer">info</a>
        <li>first-exercise/
         <ul>
-         <li><a href="data:text/html,<h1>courses/OOP1/week1/first-exercise/info</h1><pre>title: Simple exercise<br>submitable: true</pre>This directory inherits the attributes:<pre>language: java<br>start date: 2009-08-07 00:00<br># end date: +1 week, i.e.:<br>end date: 2009-08-14 00:00</pre>" class="to-viewer">info</a>
-         <li><a href="data:text/html,<h1>courses/OOP1/week1/first-exercise/1.in</h1><pre>first input</pre>" class="to-viewer">1.in</a>
-         <li><a href="data:text/html,<h1>courses/OOP1/week1/first-exercise/1.out</h1><pre>first output</pre>The program should produce this when given the contents of <tt>1.in</tt>" class="to-viewer">1.out</a>
-         <li><a href="data:text/html,<h1>courses/OOP1/week1/first-exercise/1.desc</h1><pre>You should replace &quot;input&quot; by &quot;output&quot;</pre>The student sees this message when his program fails on <tt>1.in</tt>" class="to-viewer">1.desc</a>
-         <li><a href="data:text/html,<h1>courses/OOP1/week1/first-exercise/2.in</h1><pre>second input</pre>" class="to-viewer">2.in</a>
-         <li><a href="data:text/html,<h1>courses/OOP1/week1/first-exercise/2.out</h1><pre>second output</pre>The program should produce this when given the contents of <tt>2.in</tt>" class="to-viewer">2.out</a>
+         <li><a href="data:text/html,<h2>courses/OOP1/week1/first-exercise/info</h2><pre>title: Simple exercise<br>submitable: true</pre>This directory inherits the attributes:<pre>language: java<br>start date: 2009-08-07 00:00<br># end date: +1 week, i.e.:<br>end date: 2009-08-14 00:00</pre>" class="to-viewer">info</a>
+         <li><a href="data:text/html,<h2>courses/OOP1/week1/first-exercise/1.in</h2><pre>first input</pre>" class="to-viewer">1.in</a>
+         <li><a href="data:text/html,<h2>courses/OOP1/week1/first-exercise/1.out</h2><pre>first output</pre>The program should produce this when given the contents of <tt>1.in</tt>" class="to-viewer">1.out</a>
+         <li><a href="data:text/html,<h2>courses/OOP1/week1/first-exercise/1.desc</h2><pre>You should replace &quot;input&quot; by &quot;output&quot;</pre>The student sees this message when his program fails on <tt>1.in</tt>" class="to-viewer">1.desc</a>
+         <li><a href="data:text/html,<h2>courses/OOP1/week1/first-exercise/2.in</h2><pre>second input</pre>" class="to-viewer">2.in</a>
+         <li><a href="data:text/html,<h2>courses/OOP1/week1/first-exercise/2.out</h2><pre>second output</pre>The program should produce this when given the contents of <tt>2.in</tt>" class="to-viewer">2.out</a>
         </ul>
        <li>c++-exercise/
         <ul>
-         <li><a href="data:text/html,<h1>courses/OOP1/week1/c++-exercise/info</h1><pre>title: Exercise in C++<br>submitable: true<br>language: c++<br><br># By specifying a reference implementation we don't need to make .out files<br>reference implementation: increment.cpp<br><br># Help the students get started by giving them this:<br>downloadable files: template.cpp</pre>This directory inherits the attributes:<pre>start date: 2009-08-07 00:00<br># end date: +1 week, i.e.:<br>end date: 2009-08-14 00:00</pre>" class="to-viewer">info</a>
-         <li><a href="data:text/html,<h1>courses/OOP1/week1/c++-exercise/framework.cpp</h1><pre>#include &amp;lt;iostream&gt;<br><br>int main() {<br>    // fill in your program here<br>    return 0;<br>}</pre>This file can be downloaded by students." class="to-viewer">framework.cpp</a>
-         <li><a href="data:text/html,<h1>courses/OOP1/week1/c++-exercise/increment.cpp</h1><pre>#include &amp;lt;iostream&gt;<br><br>int main() {<br>    int i;<br>    std::cin >> i;<br>    std::cout << i+1 << std::endl;<br>    return 0;<br>}</pre>This file is compiled and run against the <tt>1.in</tt> file to produce <tt>1.out</tt>" class="to-viewer">increment.cpp</a>
-         <li><a href="data:text/html,<h1>courses/OOP1/week1/c++-exercise/1.in</h1><pre>123</pre>" class="to-viewer">1.in</a>
+         <li><a href="data:text/html,<h2>courses/OOP1/week1/c++-exercise/info</h2><pre>title: Exercise in C++<br>submitable: true<br>language: c++<br><br># By specifying a reference implementation we don't need to make .out files<br>reference implementation: increment.cpp<br><br># Help the students get started by giving them this:<br>downloadable files: template.cpp</pre>This directory inherits the attributes:<pre>start date: 2009-08-07 00:00<br># end date: +1 week, i.e.:<br>end date: 2009-08-14 00:00</pre>" class="to-viewer">info</a>
+         <li><a href="data:text/html,<h2>courses/OOP1/week1/c++-exercise/framework.cpp</h2><pre>#include &amp;lt;iostream&gt;<br><br>int main() {<br>    // fill in your program here<br>    return 0;<br>}</pre>This file can be downloaded by students." class="to-viewer">framework.cpp</a>
+         <li><a href="data:text/html,<h2>courses/OOP1/week1/c++-exercise/increment.cpp</h2><pre>#include &amp;lt;iostream&gt;<br><br>int main() {<br>    int i;<br>    std::cin >> i;<br>    std::cout << i+1 << std::endl;<br>    return 0;<br>}</pre>This file is compiled and run against the <tt>1.in</tt> file to produce <tt>1.out</tt>" class="to-viewer">increment.cpp</a>
+         <li><a href="data:text/html,<h2>courses/OOP1/week1/c++-exercise/1.in</h2><pre>123</pre>" class="to-viewer">1.in</a>
         </ul>
       </ul>
      <li>week2/
       <ul>
-       <li><a href="data:text/html,<h1>courses/OOP1/week2/info</h1><pre>title: Week 2<br>start date: 2009-08-14 00:00<br>end date: +1 week</pre>This directory inherits the attributes:<pre>language: java</pre>" class="to-viewer">info</a>
+       <li><a href="data:text/html,<h2>courses/OOP1/week2/info</h2><pre>title: Week 2<br>start date: 2009-08-14 00:00<br>end date: +1 week</pre>This directory inherits the attributes:<pre>language: java</pre>" class="to-viewer">info</a>
        <li>drop-box-exercise/
         <ul>
-         <li><a href="data:text/html,<h1>courses/OOP1/week1/drop-box-exercise/info</h1><pre>title: Drop box<br>submitable: true<br><br># Files are not compiled, they are only stored for later reviewing<br>compiled: false<br></pre>This directory inherits the attributes:<pre>language: java<br>start date: 2009-08-14 00:00<br># end date: +1 week, i.e.:<br>end date: 2009-08-21 00:00</pre>" class="to-viewer">info</a>
+         <li><a href="data:text/html,<h2>courses/OOP1/week1/drop-box-exercise/info</h2><pre>title: Drop box<br>submitable: true<br><br># Files are not compiled, they are only stored for later reviewing<br>compiled: false<br></pre>This directory inherits the attributes:<pre>language: java<br>start date: 2009-08-14 00:00<br># end date: +1 week, i.e.:<br>end date: 2009-08-21 00:00</pre>" class="to-viewer">info</a>
+        </ul>
+       <li>downloadable-file-exercise/
+        <ul>
+         <li><a href="data:text/html,<h2>courses/OOP1/week1/downloadable-file-exercise/info</h2><pre>title: Downloadable files<br>submitable: true<br>compiled: false<br><br># These files can be downloaded by students:<br>downloadable files:<br>%09download-me-1.txt<br>%09download-me-2.cpp<br>%09download-me-3.hpp</pre>This directory inherits the attributes:<pre>language: java<br>start date: 2009-08-14 00:00<br># end date: +1 week, i.e.:<br>end date: 2009-08-21 00:00</pre>" class="to-viewer">info</a>
+         <li>download-me-1.txt
+         <li>download-me-2.cpp
+         <li>download-me-3.hpp
         </ul>
        <li>delegation-exercise/
       </ul>
      <li>week3/
       <ul>
-       <li><a href="data:text/html,<h1>courses/OOP1/week3/info</h1><pre>title: Week 3<br>start date: 2009-08-21 00:00<br>end date: +1 week<br><br># This directory is hidden until the second week<br>start date: 2009-08-14 00:00</pre>This directory inherits the attributes:<pre>language: java</pre>" class="to-viewer">info</a>
+       <li><a href="data:text/html,<h2>courses/OOP1/week3/info</h2><pre>title: Week 3<br>start date: 2009-08-21 00:00<br>end date: +1 week<br><br># This directory is hidden until the second week<br>start date: 2009-08-14 00:00</pre>This directory inherits the attributes:<pre>language: java</pre>" class="to-viewer">info</a>
       </ul>
     </ul>
    </li>
@@ -50,4 +58,4 @@ Click on a file to view it.
  </li>
 </ul>
 </td>
-<td id="viewer"></td></tr></table>
+<td id="viewer"><h2>Click on a file to show it here</h2></td></tr></table>
