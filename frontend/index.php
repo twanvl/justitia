@@ -49,7 +49,7 @@ class View extends PageWithEntity {
 			echo '</li>';
 		}
 		if (count($group) < $max_size) {
-			echo '<li><a href="user_group_add.php?redirect='.urlencode($current_page).'">[add another student]</a></li>';
+			echo '<li class="add"><a href="user_group_add.php?redirect='.urlencode($current_page).'">[add another student]</a></li>';
 		}
 		echo '</ul>';
 		if (count($group) > $max_size) {

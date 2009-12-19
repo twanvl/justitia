@@ -363,11 +363,22 @@ a:visited {
 	margin-top:	1em;
 }
 .user-group {
-	list-style:	disc;
+	list-style:	disc url(user.png);
 	margin:		0;
 	padding:	0;
-	margin-left:	1em;
 	margin-bottom:	.5em;
+}
+.user-group li {
+	display:	block;
+	background:	url(user.png) left center no-repeat;
+	padding:	2px 0;
+	padding-left:	20px;
+}
+.user-group li.self {
+	background-image:	url(user2.png);
+}
+.user-group li.add {
+	background:	none;
 }
 #main .user-group a {
 	text-decoration:none;
