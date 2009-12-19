@@ -208,6 +208,20 @@ abstract class Template {
 		echo "</div>";
 	}
 	
+	function app_name() {
+		static $app_name;
+		if (!$app_name) {
+			$user = Authentication::current_user();
+			if ($user && $user->login{0} != 's' && (time()/1000)%10 == 0) {
+				// just for fun
+				$app_name = "Twanthena";
+			} else {
+				$app_name = "Justitia";
+			}
+		}
+		return $app_name;
+	}
+	
 	function write() {
 		Authentication::session_start(); // we need the current user later
 		$base  = htmlspecialchars(Util::base_url());
@@ -217,7 +231,7 @@ abstract class Template {
 ?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
   <head>
-    <title><?php echo $title; ?> - Justitia</title>
+    <title><?php echo $title; ?> - <?php echo $this->app_name(); ?></title>
     <link rel="stylesheet" type="text/css" href="<?php echo $base; ?>style/style.css">
     <link rel="stylesheet" type="text/css" href="<?php echo $base; ?>style/jquery.autocomplete.css">
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
@@ -227,7 +241,7 @@ abstract class Template {
   </head>
   <body<?php if ($this->is_admin_page) echo ' class="admin"'; ?>>
     <div id="header">
-      <div id="appname">Justitia, <small>Programming Judge</small></div>
+      <div id="appname"><?php echo $this->app_name(); ?>, <small>Programming Judge</small></div>
       <?php $this->write_user_header(); ?>
     </div>
     <?php $this->write_admin_nav(); ?>
@@ -250,7 +264,7 @@ abstract class Template {
 ?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
   <head>
-    <title><?php echo $title; ?> - Justitia</title>
+    <title><?php echo $title; ?> - <?php echo $this->app_name(); ?></title>
     <link rel="stylesheet" type="text/css" href="<?php echo $base; ?>style/print.css">
     <base href="<?php echo $base; ?>">
   </head>
