@@ -64,6 +64,7 @@ class Timer {
 		echo "</pre>";
 	}
 }
+Timer::after("");
 
 
 class View extends PageWithEntity {
