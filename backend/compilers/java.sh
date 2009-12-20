@@ -22,7 +22,7 @@ fi
 
 # Find the classname in the output, and write executing script
 perl $JUSTITIA_BACKEND_DIR/compilers/java_make_runner.pl $SOURCE $MEMLIMIT < verbose.log > $DEST 2> $ERROR
-result=$&
+result=$?
 
 # Done
 rm verbose.log
