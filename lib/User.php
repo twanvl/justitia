@@ -140,6 +140,9 @@ class User {
 		}
 		$data['password'] = make_salted_password_hash($data['password']);
 		$data['is_admin'] = $data['is_admin']?1:0;
+		if (!isset($data['notes'])) $data['notes'] = '';
+		if (!isset($data['class'])) $data['class'] = '';
+		//if (!isset($data['auth_method'])) $data['auth_method'] = 'pass';
 		static $query;
 		DB::prepare_query($query,
 			"INSERT INTO `user` (`login`,`password`,`firstname`,`midname`,`lastname`,`email`,`class`,`notes`,`is_admin`)".

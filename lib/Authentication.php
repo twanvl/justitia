@@ -67,4 +67,36 @@ class Authentication {
 	static function show_login_page() {
 		Util::redirect("login.php?redirect=" . urlencode(Util::current_url()));
 	}
+	
+	// ---------------------------------------------------------------------
+	// LDAP authentication
+	// ---------------------------------------------------------------------
+	
+	static function authenticate_ldap($login,$pass, $make_new_user = false) {
+		if (!function_exists('ldap_connect')) return false;
+		if (!function_exists('ldap_dn_from_login')) return false;
+		$con = ldap_connect(LDAP_SERVER);
+		$bind = @ldap_bind($con,ldap_dn_from_login($login), $pass);
+		echo "con [$con]\n";
+		echo "dn [",ldap_dn_from_login($login),"]\n";
+		echo "bind [$bind]\n";
+		if ($bind) {
+			if ($make_new_user && function_exists('userdata_from_ldap')) {
+				// create a new user based on LDAP data
+				$search = ldap_search($con, LDAP_BASE_DN, "cn=$user");
+				$entries = ldap_get_entries($search);
+				$data = userdata_from_ldap($entries[0]);
+				$data['login']    = $login;
+				$data['password'] = $pass;
+				//$data['auth_method'] = 'ldap';
+				$data['is_admin'] = false;
+				return User::add($data);
+			} else {
+				ldap_unbind($con);
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
 }
