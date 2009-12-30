@@ -227,7 +227,7 @@ abstract class Template {
 		$base  = htmlspecialchars(Util::base_url());
 		$title = htmlspecialchars($this->title());
 		
-		header('Content-Type', 'text/html; charset=UTF-8');
+		header('Content-Type: text/html; charset=UTF-8');
 ?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
   <head>
@@ -260,7 +260,7 @@ abstract class Template {
 	function write_print() {
 		$base  = htmlspecialchars(Util::base_url());
 		$title = htmlspecialchars($this->title());
-		header('Content-Type', 'text/html; charset=UTF-8');
+		header('Content-Type: text/html; charset=UTF-8');
 ?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
   <head>
