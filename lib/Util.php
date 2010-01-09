@@ -26,6 +26,11 @@ $languages = array(
 		'name'			=> 'haskell',
 		'filename_regex'	=> '.*\.(hs|lhs)'
 	),
+	'matlab' => array(
+		'is_language'		=> true,
+		'name'			=> 'matlab',
+		'filename_regex'	=> '.*\.(m)'
+	),
 	'any' => array(
 		'is_language'		=> false,
 		'name'			=> 'any',
@@ -50,6 +55,7 @@ $languages_by_extension = array(
 	'java' => $languages['java'],
 	'hs'   => $languages['haskell'],
 	'lhs'  => $languages['haskell'],
+	'm'    => $languages['matlab'],
 	//'zip'  => $languages['zip'],
 );
 

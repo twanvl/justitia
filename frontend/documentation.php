@@ -87,6 +87,7 @@ class View extends Template {
 			$this->nav_item('Introduction', '/courses/index'),
 			$this->nav_item('Test cases', '/courses/test_cases'),
 			$this->nav_item('Attribute reference', '/courses/attributes'),
+			$this->nav_item('Language notes', '/courses/languages'),
 			$this->nav_item('Example', '/courses/example')
 		);
 		if ($this->is_path_prefix('/admin'))

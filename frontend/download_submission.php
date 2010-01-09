@@ -54,8 +54,6 @@ function content_type($filename) {
 		return 'text/html';
 	} else if ($ext == 'in' || $ext == 'out' || $ext == 'diff' || $ext == 'err') {
 		return 'text/plain';
-	} else if (function_exists('mime_content_type')) {
-		return mime_content_type($filename);
 	} else if ($lang['is_language']) {
 		return 'text/plain';
 	} else {
