@@ -11,6 +11,13 @@ DEST="$2"
 ERROR="$3"
 MEMLIMIT="$4"
 
+if [ "$TERM" = cygwin ]; then
+	# We are on windows, where shell scripts must be named .sh
+	echo "(Using windows shell script workaround)"
+	rm $DEST
+	DEST="$DEST.sh"
+fi
+
 # Compile with -verbose, stop in case of error
 javac -verbose $SOURCE 2>verbose.log
 exitcode_compile=$?

@@ -13,7 +13,9 @@ class SystemUtil {
 	// Create a new (temporary) directory
 	static function temporary_name($parent, $prefix = '') {
 		// TODO: should we make this path relative?
-		return tempnam($parent, $prefix);
+		$name = tempnam($parent, $prefix);
+		$name = str_replace("\\","/",$name); // (windows fix) backslashes in paths are a bad idea
+		return $name;
 	}
 	static function temporary_directory($parent, $prefix = '') {
 		$tempfile = SystemUtil::temporary_name($parent, $prefix);
@@ -77,8 +79,9 @@ class SystemUtil {
 	function run_command($working_dir,$cmd,$args, $error_out = NULL) {
 		// change dir and execute
 		$previous_dir = getcwd();
+		$command = SystemUtil::build_command($cmd,$args,$error_out);
 		if ($working_dir) chdir($working_dir);
-		system(SystemUtil::build_command($cmd,$args,$error_out), $retval);
+		system($command, $retval);
 		chdir($previous_dir);
 		return $retval == 0;
 	}

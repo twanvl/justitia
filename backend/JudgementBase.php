@@ -140,6 +140,19 @@ abstract class JudgementBase {
 		make_file_writable($compile_err_file);
 		$limits = $this->entity->compile_limits();
 		$result = SystemUtil::safe_command($this->tempdir->dir, $compiler, array($this->source_file, $this->exe_file, $compile_err_file, $flags), $limits);
+		// did compilation succeed?
+		if ($result && !file_exists($this->exe_file)) {
+			if (file_exists($this->exe_file . ".sh")) {
+				// compiler scripts may decide to generate a .sh script instead
+				// this is useful on windows, because there the file extension determines how the program is run
+				echo "(Detecting windows shell script workaround: output renamed to .sh)\n";
+				$this->exe_file .= ".sh";
+			} else {
+				// no executable was produced
+				$result = false;
+				file_put_contents($compile_err_file,"No executable file was generated.\n",FILE_APPEND);
+			}
+		}
 		if (!$result) {
 			$this->put_tempfile('compiler.err');
 		} else {
