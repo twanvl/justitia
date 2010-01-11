@@ -33,6 +33,5 @@ result=$?
 
 # Done
 rm verbose.log
-chmod a+x $DEST
 
 exit $result

@@ -16,4 +16,3 @@ fi
 
 # write script
 echo "octave --silent --norc" > $DEST
-chmod a+x $DEST
