@@ -7,6 +7,7 @@
 # <testout>   File containing submission output.
 # <refout>    File containing reference output.
 # <diff>      File where to write the diff.
+# <flags>     Extra flags.
 
 export FILE1="your output"
 export FILE2="expected output"

@@ -12,57 +12,76 @@
 #use Algorithm::Diff qw/sdiff diff/;
 use Getopt::Long qw/GetOptions/;
 #use HTML::Entities (encode_entities);
-my %entities = ('&'=>'&amp;', '<'=>'&lt;', '>'=>'&gt;', '"'=>'&quot;', "'"=>'&apos;');
 use strict;
+my %entities = ('&'=>'&amp;', '<'=>'&lt;', '>'=>'&gt;', '"'=>'&quot;', "'"=>'&apos;');
+
+###################################################################################################
+# Read options, open files
+###################################################################################################
 
 Getopt::Long::Configure ('bundling');
 Getopt::Long::Configure ('require_order');
 
-my$ignore_whitespace_change=0;
-my$ignore_whitespace=0;
-my$ignore_case=0;
+my $ignore_whitespace_change=0;
+my $ignore_whitespace=0;
+my $ignore_case=0;
+my $float_abs_epsilon=0;
+my $float_rel_epsilon=0;
 
-GetOptions ('b'=>\$ignore_whitespace_change,
-	    'w'=>\$ignore_whitespace,
-	    'i'=>\$ignore_case);
+GetOptions
+    ('b|ignore-space-change' => \$ignore_whitespace_change
+    ,'w|ignore-all-space'    => \$ignore_whitespace
+    ,'i|ignore-case'         => \$ignore_case
+    ,'absolute-precission=f' => \$float_abs_epsilon
+    ,'relative-precission=f' => \$float_rel_epsilon
+    );
 
-my $name_a = $ENV{'FILE1'};
-my $file_a = $ARGV[$#ARGV-1];
-my $name_b = $ENV{'FILE2'};
-my $file_b = $ARGV[$#ARGV];
+my ($name_a, $name_b, $file_a, $file_b);
+$name_a = $ENV{'FILE1'};
+$file_a = $ARGV[-2];
+$name_b = $ENV{'FILE2'};
+$file_b = $ARGV[-1];
+$name_a ||= "Your file";
+$name_b ||= "Their file";
+
+print "[$ignore_whitespace_change|$ignore_whitespace|$ignore_case|$float_abs_epsilon|$float_rel_epsilon]";
+
+###################################################################################################
+# Open files and diff
+###################################################################################################
 
 open(FILEA, $file_a) or die "File not found: $file_a";
-my@a=<FILEA>;
+my @a=<FILEA>;
 close(FILEA);
 
 open(FILEB, $file_b) or die "File not found: $file_b";
-my@b=<FILEB>;
+my @b=<FILEB>;
 close(FILEB);
 
-my@a2=@a;
-my@b2=@b;
+my @a2=@a;
+my @b2=@b;
 
+# Line based diff
 my @diffs = diff(\@a2,\@b2,\&hash);
-exit 0 if$#diffs<0;
+exit 0 if $#diffs < 0;
 
 
+# Output
 printheader();
 print "<tr><td class=\"filename left\">".encode_entities($name_a)."</td>".
     "<td class=\"filename center\"> </td>".
     "<td class=\"filename right\">".encode_entities($name_b)."</td></tr>\n";
-my@sdiffs = sdiff( \@a, \@b,\&hash);
-for(my$x=0;$x<=$#sdiffs;$x++){
+
+my @sdiffs = sdiff( \@a, \@b, \&hash);
+for(my $x=0 ; $x<=$#sdiffs ; $x++){
     my ($ch,$l,$r) = @{$sdiffs[$x]};
-    if    ($ch eq 'u'){printrow(encode_entities($l),'normal',encode_entities($r),'normal',"|","isame");}
-    elsif ($ch eq '+'){printrow(encode_entities($l),'empty',encode_entities($r),'added',">","iadd");}
-    elsif ($ch eq '-'){printrow(encode_entities($l),'removed',encode_entities($r),'empty',"<","iminus");}
+    if    ($ch eq 'u'){printrow(encode_entities($l),'normal', encode_entities($r),'normal',"|","isame");}
+    elsif ($ch eq '+'){printrow(encode_entities($l),'empty',  encode_entities($r),'added', ">","iadd");}
+    elsif ($ch eq '-'){printrow(encode_entities($l),'removed',encode_entities($r),'empty', "<","iminus");}
     elsif ($ch eq 'c'){printchangedrow($l,$r);}
 }
 printfooter();
 exit 1;
-
-
-
 
 
 sub sdif {
@@ -75,8 +94,8 @@ sub sdif {
 sub printrow {
     my ($l,$lc,$r,$rc,$ch,$ic) = @_;
     print "<tr><td class=\"left $lc\"><pre>$l</pre></td>".
-	"<td class=\"center idiff\"><span class=\"$ic\">$ch</span></td>".
-	"<td class=\"right $rc\"><pre>$r</pre></td></tr>\n";
+          "<td class=\"center idiff\"><span class=\"$ic\">$ch</span></td>".
+          "<td class=\"right $rc\"><pre>$r</pre></td></tr>\n";
 }
 
 sub printchangedrow {
@@ -84,27 +103,27 @@ sub printchangedrow {
     my@rdiff = sdif( $l, $r, '(?!\s)|(?<!\s)' );
     my@rdif = ();
     if ($#rdiff>=0){
-	my($l_ch,$l_l,$l_r)=@{$rdiff[0]};
-	for my$x(1..$#rdiff){
-	    my ($r_ch,$r_l,$r_r) = @{$rdiff[$x]};
-	    if ($r_ch eq $l_ch){
-		$l_l.=$r_l;$l_r.=$r_r;
-	    }else{
-		$rdif[$#rdif+1]=[$l_ch,$l_l,$l_r];
-		($l_ch,$l_l,$l_r)=($r_ch,$r_l,$r_r);
-	    }
-	}
-	$rdif[$#rdif+1]=[$l_ch,$l_l,$l_r];
+        my($l_ch,$l_l,$l_r)=@{$rdiff[0]};
+        for my$x(1..$#rdiff){
+            my ($r_ch,$r_l,$r_r) = @{$rdiff[$x]};
+            if ($r_ch eq $l_ch){
+                $l_l.=$r_l;$l_r.=$r_r;
+            }else{
+                $rdif[$#rdif+1]=[$l_ch,$l_l,$l_r];
+                ($l_ch,$l_l,$l_r)=($r_ch,$r_l,$r_r);
+            }
+        }
+        $rdif[$#rdif+1]=[$l_ch,$l_l,$l_r];
     }
     my ($left,$right);
     for my$rd(@rdif){
-	my ($r_ch,$r_l,$r_r) = @$rd;
-	if    ($r_ch eq 'u'){$left .=encode_entities($r_l);
+        my ($r_ch,$r_l,$r_r) = @$rd;
+        if    ($r_ch eq 'u'){$left .=encode_entities($r_l);
                              $right.=encode_entities($r_r);}
-	elsif ($r_ch eq '+'){$right.=spanword(encode_entities($r_r),"addedw");}
-	elsif ($r_ch eq '-'){$left .=spanword(encode_entities($r_l),"removedw");}
-	elsif ($r_ch eq 'c'){$left .=spanword(encode_entities($r_l),"changedw");
-			     $right.=spanword(encode_entities($r_r),"changedw");}
+        elsif ($r_ch eq '+'){$right.=spanword(encode_entities($r_r),"addedw");}
+        elsif ($r_ch eq '-'){$left .=spanword(encode_entities($r_l),"removedw");}
+        elsif ($r_ch eq 'c'){$left .=spanword(encode_entities($r_l),"changedw");
+                             $right.=spanword(encode_entities($r_r),"changedw");}
     }
     printrow($left,'changed',$right,'changed',"~","ichanged");
 }
@@ -121,56 +140,56 @@ sub printheader{
     <html>
     <head>
         <title>Differences</title>
-	<style type="text/css">
-	* {padding:0;margin:0;}
-	.empty{
-	    background-color:#ccc;
-	}
-	.added{
-	    background-color:#9f9;
-	}
-	.removed{
-	    background-color:#f99;
-	}
-	.changed{
-	    background-color:#ff9;
-	}
+        <style type="text/css">
+        * {padding:0;margin:0;}
+        .empty{
+            background-color:#ccc;
+        }
+        .added{
+            background-color:#9f9;
+        }
+        .removed{
+            background-color:#f99;
+        }
+        .changed{
+            background-color:#ff9;
+        }
 
         td, td *, td * *, td * * *{
-	    white-space:pre;
+            white-space:pre;
         }
 
-	.addedw{
-	    background-color:#9f9;
-	}
-	.removedw{
-	    background-color:#f99;
-	}
-	.changedw{
-	    background-color:#99f;
-	}
-	.filename{
-	    background-color:#009;
-	    color:white;
-	    text-align:center;
-	}
+        .addedw{
+            background-color:#9f9;
+        }
+        .removedw{
+            background-color:#f99;
+        }
+        .changedw{
+            background-color:#99f;
+        }
+        .filename{
+            background-color:#009;
+            color:white;
+            text-align:center;
+        }
         table,tbody,tr,td {
-	    margin:0;
-	    padding:0;
+            margin:0;
+            padding:0;
             border:0;
-	    border-spacing:0;
+            border-spacing:0;
         }
         table {
-	    width:100%;
+            width:100%;
         }
         td.left, td.right{
-	    width:50%;
-	      padding-left:0.5em;
-	      padding-right:0.5em;
+            width:50%;
+              padding-left:0.5em;
+              padding-right:0.5em;
         }
         td.center {
-	    max-width:11px;
-	    width:11px;
+            max-width:11px;
+            width:11px;
             text-align:center;
             vertical-align:middle;
         }
@@ -178,12 +197,12 @@ sub printheader{
             font-family:monospace;
         }
         td.diff{
-	  background: url(booooring.gif) center center repeat-y;
+          background: url(booooring.gif) center center repeat-y;
         }
         .isame{
-	  visibility:none;
+          visibility:none;
         }
-	</style>
+        </style>
     </head>
     <body>
     <table>
@@ -201,21 +220,21 @@ sub printfooter{
     <table style="width:33%;">
 ____END_DINGES
     ;
-    print "<tr><td class=\"filename left\">FILE A</td>".
-	"<td class=\"filename center\"> </td>".
-	"<td class=\"filename right\">FILE B</td></tr>\n";
+    print "<tr><td class=\"filename left\">Your file</td>".
+        "<td class=\"filename center\"> </td>".
+        "<td class=\"filename right\">Their file</td></tr>\n";
 
     printrow("","empty","Missing line","added",">","iadded");
     printrow("Excess line","removed","","empty","<","iremoved");
     printrow("Missing letter:","changed",
-	     "Missing letter: <span class=\"addedw\">a</span>","changed",
-	     ,"~","ichanged");
+             "Missing letter: <span class=\"addedw\">a</span>","changed",
+             ,"~","ichanged");
     printrow("Excess letter: <span class=\"removedw\">a</span>","changed",
-	     "Excess letter: ","changed",
-	     ,"~","ichanged");
+             "Excess letter: ","changed",
+             ,"~","ichanged");
     printrow("Changed letter: <span class=\"changedw\">a</span>","changed",
-	     "Changed letter: <span class=\"changedw\">b</span>","changed",
-	     ,"~","ichanged");
+             "Changed letter: <span class=\"changedw\">b</span>","changed",
+             ,"~","ichanged");
     print<<____END_DINGES;
     </table></center>
 
@@ -231,7 +250,7 @@ sub hash{
     s/[ \t]+/ /smg if($ignore_whitespace_change);
     s/[ \t]+//smg  if($ignore_whitespace);
     y/A-Z/a-z/     if($ignore_case);
-    return$_;
+    return $_;
 }
 
 sub encode_entities {
@@ -240,8 +259,54 @@ sub encode_entities {
     return $_;
 }
 
-#------------------------------------------------------- : Algorithm::Diff
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###################################################################################################
+#------------------------------------------------------- : Algorithm::Diff
+###################################################################################################
 
 # Create a hash that maps each element of $aCollection to the set of positions
 # it occupies in $aCollection, restricted to the elements within the range of
