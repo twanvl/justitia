@@ -62,10 +62,14 @@ class View extends Template {
 			// validate
 			if (($data['password'] == '' || $data['password2'] == '') && $editing) {
 				unset($data['password']);
-			} else if (strlen($data['password']) < 5) {
-				$this->add_message('user','error',"Password too short");
-			} else if ($data['password'] != $data['password2']) {
-				$this->add_message('user','error',"Passwords do not match");
+			} else {
+				if ($data['auth_method'] == 'pass') {
+					if (strlen($data['password']) < 5) {
+						$this->add_message('user','error',"Password too short");
+					} else if ($data['password'] != $data['password2']) {
+						$this->add_message('user','error',"Passwords do not match");
+					}
+				}
 			}
 			unset($data['password2']);
 			if (strlen($data['login']) < 3) {

@@ -211,7 +211,7 @@ class User {
 			}
 		} else if ($data['auth_method'] == 'ldap') {
 			// keep old password
-			// $data['password'] = '';
+			$data['password'] = $this->password;
 		} else {
 			throw new InternalException("unsupported auth_method");
 		}

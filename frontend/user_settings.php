@@ -31,16 +31,21 @@ class View extends Template {
 		if (@$_REQUEST['filled']) {
 			$data['password'] = $data['password2'] = '';
 			get_request_data($data,'user_','old_password');
+			get_request_data($data,'user_','auth_method');
 			get_request_data($data,'user_','password');
 			get_request_data($data,'user_','password2');
 			
 			// validate
 			if (!$this->user->check_password($data['old_password'],false)) {
 				$this->add_message('user','error',"Old password does not match.");
-			} else if (strlen($data['password']) < 5) {
-				$this->add_message('user','error',"New password too short.");
-			} else if ($data['password'] != $data['password2']) {
-				$this->add_message('user','error',"New password does not match confirmation.");
+			} else {
+				if ($data['auth_method'] == 'pass') {
+					if (strlen($data['password']) < 5) {
+						$this->add_message('user','error',"New password too short.");
+					} else if ($data['password'] != $data['password2']) {
+						$this->add_message('user','error',"New password does not match confirmation.");
+					}
+				}
 			}
 			unset($data['password2']);
 			unset($data['old_password']);
@@ -68,6 +73,10 @@ class View extends Template {
 		$this->write_form_table_data('Last name',    $data['lastname']);
 		$this->write_form_table_data('Email',        $data['email']);
 		$this->write_form_table_data('Class',        $data['class']);
+		$this->write_form_table_field('radio',   'user_auth_method', 'Authentication', $data['auth_method'], array(
+				'pass' => 'Log in with password',
+				'ldap' => 'Log in via LDAP (central password)',
+			));
 		$this->write_form_table_field('password','user_old_password', 'Old password');
 		$this->write_form_table_field('password','user_password',     'Password');
 		$this->write_form_table_field('password','user_password2',    'Confirm password');
