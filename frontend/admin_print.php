@@ -57,9 +57,11 @@ class View extends PageWithEntity {
 		//$this->write_form_table_field('radio',   'format',         'Text output', $format=='text', ' value="text"');
 		//$this->write_form_table_field('radio',   'format',         'HTML output', $format=='html', ' value="html"');
 		$this->write_form_table_field('checkbox','include_failed', 'Include failed and pending submissions', $include_failed);
-		$this->write_form_table_field('radio',   'tabsize',         'Replace by 4 spaces', true,  ' value="4"', 'Tabs');
-		$this->write_form_table_field('radio',   'tabsize',         'Replace by 8 spaces', false, ' value="8"');
-		$this->write_form_table_field('radio',   'tabsize',         'Keep as tabs',        false, ' value="0"');
+		$this->write_form_table_field('radio',   'tabsize',        'Tabs', 4, array(
+			4 => 'Replace by 4 spaces<br>',
+			8 => 'Replace by 8 spaces<br>',
+			0 => 'Keep as tabs',
+		));
 		$this->write_form_table_end();
 		$this->write_form_end("Generate printout");
 		

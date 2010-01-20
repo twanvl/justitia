@@ -89,23 +89,37 @@ abstract class Template {
 	}
 	
 	function write_form_field($type, $name, $value = null, $extra = null) {
+		$idspec = " id=\"$name\"";
 		if ($type == 'textarea') {
 			echo "<textarea id=\"$name\" name=\"$name\"$extra>";
 			echo htmlspecialchars($value);
 			echo "</textarea>";
 			return;
-		} else if ($type == 'checkbox' || $type == 'radio') {
+		} else if ($type == 'checkbox') {
 			$valuespec = ($value ? ' checked="checked"' : '');
+		} else if ($type == 'radio') {
+			list($name,$part) = $name;
+			$idspec = '';
+			$valuespec = ' value="'. htmlspecialchars($part) . '"';
+			if ($value == $part) $valuespec .= ' checked="checked"';
 		} else {
 			$valuespec = $value === null ? '' : ' value="'. htmlspecialchars($value) . '"';
 		}
-		echo "<input type=\"$type\" id=\"$name\" name=\"$name\"$valuespec$extra>";
+		echo "<input type=\"$type\" $idspec name=\"$name\"$valuespec$extra>";
 	}
-	function write_form_table_field($type, $name, $label, $value = null, $extra = null, $pre_label = '') {
-		if ($type == 'checkbox' || $type == 'radio') {
-			echo "<tr><td>$pre_label</td><td><label>";
+	function write_form_table_field($type, $name, $label, $value = null, $extra = null) {
+		if ($type == 'checkbox') {
+			echo "<tr><td></td><td><label>";
 			$this->write_form_field($type, $name, $value, $extra);
 			echo " $label</label></td></tr>\n";
+		} else if ($type == 'radio') {
+			echo "<tr><td>$label</td><td>";
+			foreach ($extra as $opt_val => $opt_label) {
+				echo "<label>";
+				$this->write_form_field($type, array($name,$opt_val), $value);
+				echo " $opt_label</label> ";
+			}
+			echo "</td></tr>\n";
 		} else {
 			echo "<tr><td><label for=\"$name\">$label</label></td><td>\n";
 			$this->write_form_field($type, $name, $value, $extra);

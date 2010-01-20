@@ -19,8 +19,6 @@ function ldap_dn_from_login($login) {
 }
 
 function ldap_connect_and_login($login,$pass) {
-	if (!function_exists('ldap_connect')) return false;
-	if (!function_exists('ldap_dn_from_login')) return false;
 	$con = ldap_connect(LDAP_SERVER);
 	if (!$con) return false;
 	ldap_set_option($con, LDAP_OPT_PROTOCOL_VERSION, 3);

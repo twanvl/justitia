@@ -70,6 +70,24 @@ $(document).ready(function(){
 });
 
 // -----------------------------------------------------------------------------
+// Greyed form fields
+// -----------------------------------------------------------------------------
+
+function enable_password_fields() {
+	var auth_method = $("input:radio[name=user_auth_method]:checked").val();
+	if (auth_method == undefined) return;
+	if (auth_method == 'pass') {
+		$("input[id^=user_password]").removeAttr("disabled");
+	} else {
+		$("input[id^=user_password]").attr("disabled","disabled");
+	}
+}
+$(document).ready(function(){
+	$("input:radio[name=user_auth_method]").change(enable_password_fields);
+	enable_password_fields();
+});
+
+// -----------------------------------------------------------------------------
 // Documentation fancyness
 // -----------------------------------------------------------------------------
 

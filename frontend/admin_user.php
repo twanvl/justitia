@@ -41,12 +41,14 @@ class View extends Template {
 				'class'     => '',
 				'notes'     => '',
 				'is_admin'  => false,
+				'auth_method' => 'pass',
 			);
 		}
 		
 		if (@$_REQUEST['filled']) {
 			$data['password'] = $data['password2'] = '';
 			get_request_data($data,'user_','login');
+			get_request_data($data,'user_','auth_method');
 			get_request_data($data,'user_','password');
 			get_request_data($data,'user_','password2');
 			get_request_data($data,'user_','firstname');
@@ -108,9 +110,13 @@ class View extends Template {
 		$this->write_form_hidden('filled',1);
 		$this->write_form_table_begin();
 		$this->write_form_table_field('text',    'user_login',    'Login',        $data['login']);
+		$this->write_form_table_field('checkbox','user_is_admin', 'Administrator',$data['is_admin']);
+		$this->write_form_table_field('radio',   'user_auth_method', 'Authentication', $data['auth_method'], array(
+				'pass' => 'Log in with password',
+				'ldap' => 'Log in via LDAP (central password)',
+			));
 		$this->write_form_table_field('password','user_password', 'Password');
 		$this->write_form_table_field('password','user_password2','Confirm password');
-		$this->write_form_table_field('checkbox','user_is_admin', 'Administrator',$data['is_admin']);
 		$this->write_form_table_field('text',    'user_firstname','First name',   $data['firstname']);
 		$this->write_form_table_field('text',    'user_midname',  'Middle name',  $data['midname'], ' size="5"');
 		$this->write_form_table_field('text',    'user_lastname', 'Last name',    $data['lastname']);

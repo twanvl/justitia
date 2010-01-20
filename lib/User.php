@@ -33,10 +33,6 @@ class User {
 	
 	private $data;
 	
-	function set_password($password) {
-		$this->data['password'] = make_salted_password_hash($password);
-	}
-	
 	function __get($attr) {
 		return $this->data[$attr];
 	}
@@ -124,6 +120,7 @@ class User {
 	}
 	
 	private function do_check_password_ldap($password) {
+		if (!function_exists('ldap_connect_and_login')) return false;
 		if ($con = ldap_connect_and_login($this->login, $password)) {
 			ldap_unbind($con);
 			return true;
@@ -144,7 +141,7 @@ class User {
 	}
 	static function by_login($login, $throw=true) {
 		static $query;
-		DB::prepare_query($query, "SELECT userid,login,password FROM `user` WHERE `login`=?");
+		DB::prepare_query($query, "SELECT userid,login,password,auth_method FROM `user` WHERE `login`=?");
 		$query->execute(array($login));
 		return User::fetch_one($query, $login, $throw);
 	}
@@ -185,6 +182,7 @@ class User {
 		return new User($data);
 	}
 	static function add_from_ldap($login,$password) {
+		if (!function_exists('ldap_connect_and_login')) return false;
 		$con = @ldap_connect_and_login($login, $password);
 		if (!$con) return false;
 		// create a new user based on LDAP data
@@ -205,15 +203,22 @@ class User {
 		if ($other !== false && $other->userid != $this->userid) {
 			throw new Exception("Another user with that login already exists");
 		}
-		if (isset($data['password'])) {
-			$data['password'] = make_salted_password_hash($data['password']);
+		if ($data['auth_method'] == 'pass') {
+			if (isset($data['password'])) {
+				$data['password'] = make_salted_password_hash($data['password']);
+			} else {
+				$data['password'] = $this->password;
+			}
+		} else if ($data['auth_method'] == 'ldap') {
+			// keep old password
+			// $data['password'] = '';
 		} else {
-			$data['password'] = $this->password;
+			throw new InternalException("unsupported auth_method");
 		}
 		$data['is_admin'] = $data['is_admin']?1:0;
 		static $query;
 		DB::prepare_query($query,
-			"UPDATE `user` SET `login` = :login, `password` = :password, `firstname` = :firstname, `midname` = :midname, `lastname` = :lastname, `email` = :email, `class` = :class, `notes` = :notes, `is_admin` = :is_admin".
+			"UPDATE `user` SET `login` = :login, `password` = :password, `auth_method` = :auth_method, `firstname` = :firstname, `midname` = :midname, `lastname` = :lastname, `email` = :email, `class` = :class, `notes` = :notes, `is_admin` = :is_admin".
 			" WHERE `userid` = :userid");
 		$query->execute($data);
 		$query->closeCursor();
