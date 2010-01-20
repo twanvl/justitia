@@ -13,7 +13,7 @@ CREATE TABLE `user`
 , `midname`   varchar(20)     NOT NULL                COMMENT 'Tussenvoegsels'
 , `lastname`  varchar(255)    NOT NULL                COMMENT 'Last name'
 , `password`  varchar(255)    NOT NULL                COMMENT 'SHA1 hash of the salted password'
-/*, `auth_method` char(4)       NOT NULL default "pass" COMMENT 'Authentication method, possible values: pass, ldap '*/
+, `auth_method` char(4)       NOT NULL default "pass" COMMENT 'Authentication method, possible values: pass, ldap '
 , `is_admin`  boolean         NOT NULL                COMMENT 'Is this an administrator?'
 , `class`     varchar(255)    NOT NULL                COMMENT 'Study direction / class'
 , `email`     varchar(255)    NOT NULL                COMMENT 'Email address'

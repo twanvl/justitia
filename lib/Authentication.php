@@ -7,6 +7,10 @@
 // -----------------------------------------------------------------------------
 
 class Authentication {
+	// ---------------------------------------------------------------------
+	// The 'current' user
+	// ---------------------------------------------------------------------
+	
 	// Require that a user is logged in
 	static function require_user() {
 		$user = Authentication::current_user();
@@ -23,7 +27,7 @@ class Authentication {
 		return $user;
 	}
 	
-	// Get the currently loged in user
+	// Get the currently loged in user, or return false
 	static function current_user() {
 		static $current_user;
 		if (isset($current_user)) return $current_user;
@@ -36,6 +40,7 @@ class Authentication {
 		}
 		return $current_user;
 	}
+	// Is the current user an admin?
 	static function is_admin() {
 		$user = Authentication::current_user();
 		return $user && $user->is_admin;
@@ -47,14 +52,6 @@ class Authentication {
 		$_SESSION['userid'] = $u->userid;
 	}
 	
-	static function session_start() {
-		static $started = false;
-		if ($started) return;
-		session_name("Justitia");
-		session_start();
-		$started = true;
-	}
-	
 	// Logs the current user out
 	static function logout() {
 		Authentication::session_start();
@@ -63,40 +60,38 @@ class Authentication {
 		setcookie("Justitia", "", time()-3600, "/");
 	}
 	
+	static function session_start() {
+		static $started = false;
+		if ($started) return;
+		session_name("Justitia");
+		session_start();
+		$started = true;
+	}
+	
 	// Redirects the user to the login page
 	static function show_login_page() {
 		Util::redirect("login.php?redirect=" . urlencode(Util::current_url()));
 	}
 	
 	// ---------------------------------------------------------------------
-	// LDAP authentication
+	// Password authentication
 	// ---------------------------------------------------------------------
 	
-	static function authenticate_ldap($login,$pass, $make_new_user = false) {
-		if (!function_exists('ldap_connect')) return false;
-		if (!function_exists('ldap_dn_from_login')) return false;
-		$con = ldap_connect(LDAP_SERVER);
-		$bind = @ldap_bind($con,ldap_dn_from_login($login), $pass);
-		echo "con [$con]\n";
-		echo "dn [",ldap_dn_from_login($login),"]\n";
-		echo "bind [$bind]\n";
-		if ($bind) {
-			if ($make_new_user && function_exists('userdata_from_ldap')) {
-				// create a new user based on LDAP data
-				$search = ldap_search($con, LDAP_BASE_DN, "cn=$user");
-				$entries = ldap_get_entries($search);
-				$data = userdata_from_ldap($entries[0]);
-				$data['login']    = $login;
-				$data['password'] = $pass;
-				//$data['auth_method'] = 'ldap';
-				$data['is_admin'] = false;
-				return User::add($data);
-			} else {
-				ldap_unbind($con);
-				return true;
-			}
-		} else {
-			return false;
+	// Log in the user based on username/password
+	// throws if invalid password
+	static function login($login, $pass) {
+		// Authenticate using password
+		$user = User::by_login($login, false);
+		if ($user) {
+			$user->check_password($pass);
+		} else if (LDAP_CREATE_USER) {
+			$user = User::add_from_ldap($login,$pass);
 		}
+		if (!$user) {
+			throw new NotFoundException("User not found: $login");
+		}
+		// Done
+		Authentication::set_current_user($user);
 	}
+	
 }

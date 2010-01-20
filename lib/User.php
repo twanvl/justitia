@@ -33,14 +33,6 @@ class User {
 	
 	private $data;
 	
-	function check_password($password, $throw = true) {
-		$ok = check_salted_password_hash($password, $this->data['password']);
-		if ($throw && !$ok) {
-			throw new NotFoundException("User not found: $this->login");
-		}
-		return $ok;
-	}
-	
 	function set_password($password) {
 		$this->data['password'] = make_salted_password_hash($password);
 	}
@@ -104,6 +96,43 @@ class User {
 	}
 	
 	// ---------------------------------------------------------------------
+	// Authentication
+	// ---------------------------------------------------------------------
+	
+	function check_password($password, $throw = true) {
+		$ok = $this->do_check_password($password);
+		if ($throw && !$ok) {
+			// Note: we throw the same error as when User::by_login fails, so an attacker doesn't learn anything
+			throw new NotFoundException("User not found: $this->login");
+		}
+		return $ok;
+	}
+	
+	private function do_check_password($password) {
+		if ($this->data['auth_method'] == 'ldap') {
+			return $this->do_check_password_ldap($password);
+		} else if ($this->data['auth_method'] == 'pass') {
+			return $this->do_check_password_pass($password);
+		} else {
+			Log::error("Unsupported auth_method: '$auth_method'");
+			return false; // unsupported
+		}
+	}
+	
+	private function do_check_password_pass($password) {
+		return check_salted_password_hash($password, $this->data['password']);
+	}
+	
+	private function do_check_password_ldap($password) {
+		if ($con = ldap_connect_and_login($this->login, $password)) {
+			ldap_unbind($con);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	// ---------------------------------------------------------------------
 	// Constructing / fetching
 	// ---------------------------------------------------------------------
 	
@@ -142,7 +171,7 @@ class User {
 		$data['is_admin'] = $data['is_admin']?1:0;
 		if (!isset($data['notes'])) $data['notes'] = '';
 		if (!isset($data['class'])) $data['class'] = '';
-		//if (!isset($data['auth_method'])) $data['auth_method'] = 'pass';
+		if (!isset($data['auth_method'])) $data['auth_method'] = 'pass';
 		static $query;
 		DB::prepare_query($query,
 			"INSERT INTO `user` (`login`,`password`,`firstname`,`midname`,`lastname`,`email`,`class`,`notes`,`is_admin`)".
@@ -154,6 +183,21 @@ class User {
 		$data['userid'] = DB::get()->lastInsertId();
 		$query->closeCursor();
 		return new User($data);
+	}
+	static function add_from_ldap($login,$password) {
+		$con = @ldap_connect_and_login($login, $password);
+		if (!$con) return false;
+		// create a new user based on LDAP data
+		$search = ldap_search($con, LDAP_BASE_DN, "cn=$user");
+		if (!$search) return false;
+		$entries = ldap_get_entries($search);
+		ldap_unbind($con);
+		$data = userdata_from_ldap($entries[0]);
+		$data['login']    = $login;
+		$data['password'] = $pass;
+		$data['auth_method'] = 'ldap';
+		$data['is_admin'] = false;
+		return User::add($data);
 	}
 	
 	function alter($data) {

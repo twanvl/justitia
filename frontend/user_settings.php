@@ -44,6 +44,7 @@ class View extends Template {
 			}
 			unset($data['password2']);
 			unset($data['old_password']);
+			
 			// update
 			if (!$this->has_messages('user')) {
 				try {

@@ -26,6 +26,7 @@ define('DB_PERSISTENT', true);
 // -----------------------------------------------------------------------------
 
 require_once('../config/ldap_rug.php');
+define('LDAP_CREATE_USER', true); // logging into ldap can create a justitia user
 
 // -----------------------------------------------------------------------------
 // Other options
