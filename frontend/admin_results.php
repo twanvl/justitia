@@ -75,7 +75,7 @@ class View extends PageWithEntity {
 		// find active entity
 		parent::__construct();
 		// debugging
-		$this->debug = true;
+		$this->debug = false;
 	}
 	
 	function title() {
@@ -94,7 +94,7 @@ class View extends PageWithEntity {
 		$entities = array_filter($this->entity->descendants(),'is_submitable');
 		Timer::after("find entities");
 		$this->write_get_submission_results($entities);
-		Timer::write();
+		if ($this->debug) Timer::write();
 	}
 	
 	
