@@ -1,10 +1,12 @@
 <?php
 
-require_once('JudgementBase.php');
-require_once('ReferenceJudgement.php');
-
 // -----------------------------------------------------------------------------
 // Making judgements for user submissions
+//
+// This class is used from the backend, not from the webserver.
+//
+// For each submission an instance of SubmissionJudgement is created.
+// Calling $this->judge() will judge the submission, and update its status in the database
 // -----------------------------------------------------------------------------
 
 class SubmissionJudgement extends JudgementBase {

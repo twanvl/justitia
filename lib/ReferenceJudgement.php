@@ -1,9 +1,9 @@
 <?php
 
-require_once('JudgementBase.php');
-
 // -----------------------------------------------------------------------------
 // Compiling and running the reference implementation
+//
+// This class is used from the backend, not from the webserver.
 // -----------------------------------------------------------------------------
 
 class ReferenceJudgement extends JudgementBase {

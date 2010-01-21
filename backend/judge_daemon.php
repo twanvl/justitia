@@ -2,7 +2,6 @@
 
 require_once('../lib/bootstrap.inc');
 require_once('../lib/DateRange.php');
-require_once('SubmissionJudgement.php');
 
 // -----------------------------------------------------------------------------
 // Configuration

@@ -4,6 +4,12 @@ require_once('../lib/DateRange.php');
 
 // -----------------------------------------------------------------------------
 // Judgement base : compiling & running submissions and reference implementations
+//
+// This class is used from the backend, not from the webserver.
+//
+// This class does all the heavy lifting for compiling and running submissions.
+// The main entry point is prepare_and_compile(), which does as the name suggests.
+// 
 // -----------------------------------------------------------------------------
 
 function make_file_readable($file) {
@@ -23,9 +29,13 @@ abstract class JudgementBase {
 	private $language;
 	// directory for temp files
 	private $tempdir;
-	// temporary files
+	// filenames of temporary files
 	private $source_file;
 	private $exe_file;
+	
+	// ---------------------------------------------------------------------
+	// Abstract interface (derived classes should override)
+	// ---------------------------------------------------------------------
 	
 	protected abstract function get_source_filename();
 	protected abstract function get_source_file_contents();
@@ -44,7 +54,7 @@ abstract class JudgementBase {
 	}
 	
 	// Prepare the submission for judging: compile it
-	// returns 0 if success
+	// returns 0 if success, otherwise return some Status code
 	protected function prepare_and_compile() {
 		// do we need to compile at all?
 		if (!$this->entity->compile()) {
