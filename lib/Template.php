@@ -195,6 +195,7 @@ abstract class Template {
 			$this->write_tabbar_link('admin_print.php','Print submissions', !$is_doc);
 			$this->write_tabbar_link('admin_user.php','Users', !$is_doc);
 			$this->write_tabbar_link('admin_judge_daemons.php','Judges', !$is_doc);
+			$this->write_tabbar_link('admin_view_log.php','Error log', !$is_doc);
 		}
 		$this->write_tabbar_link('documentation.php','Documentation', $is_doc);
 	}
