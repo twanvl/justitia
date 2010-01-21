@@ -158,7 +158,7 @@ abstract class Template {
 	// Admin navigation (tab bar)
 	// ---------------------------------------------------------------------
 	
-	function write_admin_nav_link($script,$title,$include_path=true) {
+	function write_tabbar_link($script,$title,$include_path=true) {
 		static $first = true;
 		if ($first) {
 			$first = false;
@@ -169,23 +169,21 @@ abstract class Template {
 		$url = htmlspecialchars( $script . ($include_path ? @$_SERVER['PATH_INFO'] : '') );
 		echo "<a href=\"$url\"$current>$title</a>";
 	}
-	function write_admin_nav() {
+	function write_tabbar() {
 		// documentation.php paths are not the same as entity paths
 		$is_doc = Util::current_script_is('documentation.php');
-		echo '<div id="tabbar">';
 		if (Authentication::current_user()) {
-			$this->write_admin_nav_link('index.php','Courses', !$is_doc);
+			$this->write_tabbar_link('index.php','Courses', !$is_doc);
 		} else {
-			$this->write_admin_nav_link('login.php','Log in', !$is_doc);
+			$this->write_tabbar_link('login.php','Log in', !$is_doc);
 		}
 		if (Authentication::is_admin()) {
-			$this->write_admin_nav_link('admin_user.php','Users', !$is_doc);
-			$this->write_admin_nav_link('admin_submissions.php','Latest submissions', !$is_doc);
-			$this->write_admin_nav_link('admin_results.php','Results table', !$is_doc);
-			$this->write_admin_nav_link('admin_print.php','Print submissions', !$is_doc);
+			$this->write_tabbar_link('admin_user.php','Users', !$is_doc);
+			$this->write_tabbar_link('admin_submissions.php','Latest submissions', !$is_doc);
+			$this->write_tabbar_link('admin_results.php','Results table', !$is_doc);
+			$this->write_tabbar_link('admin_print.php','Print submissions', !$is_doc);
 		}
-		$this->write_admin_nav_link('documentation.php','Documentation', $is_doc);
-		echo '</div>';
+		$this->write_tabbar_link('documentation.php','Documentation', $is_doc);
 	}
 	
 	// ---------------------------------------------------------------------
@@ -263,7 +261,9 @@ abstract class Template {
       <div id="appname"><?php echo $this->app_name(); ?>, <small>Programming Judge</small></div>
       <?php $this->write_user_header(); ?>
     </div>
-    <?php $this->write_admin_nav(); ?>
+    <div id="tabbar">
+      <?php $this->write_tabbar(); ?>
+    </div>
     <div id="nav-wrap">
       <?php $this->write_nav(); ?>
     </div>
