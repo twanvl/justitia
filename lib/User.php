@@ -105,12 +105,13 @@ class User {
 	}
 	
 	private function do_check_password($password) {
-		if ($this->data['auth_method'] == 'ldap') {
+		$auth_method = $this->data['auth_method'];
+		if ($auth_method == 'ldap') {
 			return $this->do_check_password_ldap($password);
-		} else if ($this->data['auth_method'] == 'pass') {
+		} else if ($auth_method == 'pass') {
 			return $this->do_check_password_pass($password);
 		} else {
-			Log::error("Unsupported auth_method: '$auth_method'");
+			LogEntry::log("Unsupported auth_method: '$auth_method' for user " . $this->login);
 			return false; // unsupported
 		}
 	}
@@ -213,7 +214,7 @@ class User {
 			// keep old password
 			$data['password'] = $this->password;
 		} else {
-			throw new InternalException("unsupported auth_method");
+			throw new InternalException("Unsupported auth_method: $auth_method");
 		}
 		$data['is_admin'] = $data['is_admin']?1:0;
 		static $query;

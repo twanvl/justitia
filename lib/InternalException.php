@@ -2,7 +2,7 @@
 
 // -----------------------------------------------------------------------------
 // Internal errors
-// these are not the users fault, but they mean that the administrators have to fix something
+// these are not the users fault, but they mean that the system administrators have to fix something
 // -----------------------------------------------------------------------------
 
 class InternalException extends Exception {

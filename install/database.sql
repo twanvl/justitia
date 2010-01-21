@@ -69,6 +69,18 @@ CREATE TABLE `judge_daemon`
 , PRIMARY KEY(`judgeid`)
 ) DEFAULT CHARSET=utf8;
 
+/*
+ * Error log
+ */
+CREATE TABLE `error_log`
+( `logid`        int(4) unsigned NOT NULL auto_increment COMMENT 'Unique ID'
+, `judge_host`   varchar(255)                            COMMENT 'Name of the judge, if any'
+, `entity_path`  varchar(255)                            COMMENT 'Path to the problem, if any'
+, `time`         int(8)          NOT NULL                COMMENT 'Date/Time this message was logged'
+, `message`      varchar(255)                            COMMENT 'The message'
+, PRIMARY KEY(`logid`)
+) DEFAULT CHARSET=utf8;
+
 
 /* -----------------------------------------------------------------------------
  * Initial user

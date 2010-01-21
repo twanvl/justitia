@@ -94,14 +94,16 @@ class Entity {
 	function visible_range() {
 		return new DateRange(
 			$this->attribute("show date"),
-			$this->attribute("hide date")
+			$this->attribute("hide date"),
+			$this
 		);
 	}
 	// get the active date range
 	function active_range() {
 		return new DateRange(
 			$this->attribute("start date"),
-			$this->attribute("end date")
+			$this->attribute("end date"),
+			$this
 		);
 	}
 	// Is this entity visible?
@@ -423,7 +425,12 @@ class Entity {
 			'title' => $this->_dir_name
 		);
 		// load info file
-		parse_attribute_file($this->_attributes, $this->data_path() . "info");
+		try {
+			parse_attribute_file($this->_attributes, $this->data_path() . "info");
+		} catch (Exception $e) {
+			// on failure: log message, but don't die
+			LogEntry::log($e,$this);
+		}
 	}
 	
 	function data_path() {
@@ -447,14 +454,14 @@ function parse_attribute_file(&$attributes, $filename) {
 		} else if ($line{0} == "\t") {
 			// continuation of previous line
 			if (!isset($key)) {
-				throw new Exception("Error on line ".($i+1)." in info '$filename':\n$line");
+				throw new Exception("Error on line ".($i+1)." in info file '$filename':\n\"$line\"");
 			}
 			$attributes[$key] .= ($key_first ? '' : "\n") .  substr($line,1);
 			$key_first = false;
 		} else {
 			$kv = explode(':',$line,2);
 			if (count($kv) < 2) {
-				throw new Exception("Error on line ".($i+1)." in info '$filename':\n$line");
+				throw new Exception("Error on line ".($i+1)." in info file '$filename':\n\"$line\"");
 			}
 			$key   = trim($kv[0]);
 			$value = trim($kv[1]);

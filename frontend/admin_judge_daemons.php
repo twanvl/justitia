@@ -48,6 +48,7 @@ class View extends Template {
 			echo "<em>There are no active judges!</em>";
 			return;
 		}
+		
 		echo "<table>";
 		echo "<tr><th>Name</th><th>Status</th><th>Started</th><th>Last heared from</th></tr>";
 		foreach ($judges as $judge) {
@@ -69,6 +70,7 @@ class View extends Template {
 			echo "</tr>";
 		}
 		echo "</table>";
+		
 		// Control all
 		$links = array();
 		$links['unpause all'] = "admin_judge_daemons.php?judgeid=all&amp;status=" . JudgeDaemon::ACTIVE;
@@ -76,7 +78,6 @@ class View extends Template {
 		$links['stop all']    = "admin_judge_daemons.php?judgeid=all&amp;status=" . JudgeDaemon::MUST_STOP;
 		$links['restart all'] = "admin_judge_daemons.php?judgeid=all&amp;status=" . JudgeDaemon::MUST_RESTART;
 		$this->write_links($links);
-			
 	}
 	
 }

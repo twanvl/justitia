@@ -134,4 +134,22 @@ class Util {
 		}
 	}
 	
+	// ---------------------------------------------------------------------
+	// Content type
+	// ---------------------------------------------------------------------
+	
+	static function content_type($filename) {
+		$ext = pathinfo($filename, PATHINFO_EXTENSION);
+		$lang = Util::language_from_filename($filename);
+		if ($ext == 'diff') {
+			// TODO: determine whether this is a diff in HTML format
+			return 'text/html';
+		} else if ($ext == 'in' || $ext == 'out' || $ext == 'diff' || $ext == 'err') {
+			return 'text/plain';
+		} else if ($lang['is_language']) {
+			return 'text/plain';
+		} else {
+			return 'application/octet-stream';
+		}
+	}
 }

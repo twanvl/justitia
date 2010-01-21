@@ -30,6 +30,10 @@ class ErrorPage extends Template {
 	
 	// Die with a fancy error message
 	static function die_fancy($except) {
+		// Log the error?
+		if ($except instanceof InternalException) {
+			LogEntry::log($except);
+		}
 		// Utility: error pages
 		$view = new ErrorPage($except);
 		$view->write();

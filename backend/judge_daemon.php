@@ -49,8 +49,8 @@ function judge_a_single_submission() {
 	// Clear all caches, otherwise we would use old data!
 	Entity::clear_cache();
 	// Retrieve a submission
-	global $my_name;
-	$subm = Submission::get_pending_submission($my_name . micro_nonce());
+	global $self;
+	$subm = Submission::get_pending_submission($self->name . micro_nonce());
 	if (!$subm) {
 		// no submissions right now
 		sleep(DAEMON_SLEEP_TIME);
@@ -69,7 +69,7 @@ function judge_a_single_submission() {
 		$judgement = new SubmissionJudgement($subm);
 		$judgement->judge();
 	} catch (Exception $e) {
-		// TODO: shout louder
+		LogEntry::log($e,$subm->entity_path,$self);
 		echo "Error during judging!\n", $e;
 	}
 	if (VERBOSE) {

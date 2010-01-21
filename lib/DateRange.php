@@ -4,13 +4,13 @@
 // Date utilities
 // -----------------------------------------------------------------------------
 
-function parse_date($date_str, $rel=NULL) {
+function parse_date($date_str, $rel=NULL, $log_info=NULL) {
 	if (is_int($date_str))     return $date_str; // was already a timestamp
 	if ($date_str == 'always') return 0;
 	if ($date_str == 'never')  return 1e100;
 	$date = strtotime($date_str, $rel);
 	if ($date === false) {
-		Log::error("Parse error in date '$date_str'");
+		LogEntry::log("Parse error in date \"$date_str\"", $log_info);
 	} else {
 		return $date;
 	}
@@ -50,9 +50,9 @@ class DateRange {
 	public $start;
 	public $end;
 	
-	function __construct($start_str, $end_str) {
-		$this->start = parse_date($start_str);
-		$this->end   = parse_date($end_str, $this->start);
+	function __construct($start_str, $end_str, $log_info=NULL) {
+		$this->start = parse_date($start_str, null, $log_info);
+		$this->end   = parse_date($end_str, $this->start, $log_info);
 	}
 	
 	// Does this range contain the given time?
