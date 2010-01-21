@@ -151,26 +151,26 @@ h1 {
  * Admin pages
  * ----------------------------------------------------------------------------- */
 
-#admin-nav {
+#tabbar {
 	background:	black;
 	color:		rgb(128,128,128);
 	padding:	4px;
 	padding-top:	4px;
 	padding-left:	.6em;
 }
-#admin-nav a {
+#tabbar a {
 	color:		white;
 	text-decoration:	none;
 	padding:	2px 5px;
 	margin-left:	.4em;
 	margin-right:	.4em;
 }
-#admin-nav a:hover {
+#tabbar a:hover {
 	background:	rgb(210,230,255);
 	color:		black;
 	-moz-border-radius: 5px;
 }
-#admin-nav a.current {
+#tabbar a.current {
 	background:	rgb(210,230,255);
 	color:		black;
 	margin-bottom:	-2px;
@@ -185,8 +185,8 @@ h1 {
 	background:	rgb(100,40,140);
 }
 .admin #nav-wrap,
-.admin #admin-nav a:hover,
-.admin #admin-nav a.current {
+.admin #tabbar a:hover,
+.admin #tabbar a.current {
 	background:	rgb(230,210,255);
 }
 

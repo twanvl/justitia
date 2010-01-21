@@ -170,15 +170,20 @@ abstract class Template {
 		echo "<a href=\"$url\"$current>$title</a>";
 	}
 	function write_admin_nav() {
-		if (!Authentication::is_admin()) return;
 		// documentation.php paths are not the same as entity paths
 		$is_doc = Util::current_script_is('documentation.php');
-		echo '<div id="admin-nav">';
-		$this->write_admin_nav_link('index.php','Normal view', !$is_doc);
-		$this->write_admin_nav_link('admin_user.php','Users', !$is_doc);
-		$this->write_admin_nav_link('admin_submissions.php','Latest submissions', !$is_doc);
-		$this->write_admin_nav_link('admin_results.php','Results table', !$is_doc);
-		$this->write_admin_nav_link('admin_print.php','Print submissions', !$is_doc);
+		echo '<div id="tabbar">';
+		if (Authentication::current_user()) {
+			$this->write_admin_nav_link('index.php','Courses', !$is_doc);
+		} else {
+			$this->write_admin_nav_link('login.php','Log in', !$is_doc);
+		}
+		if (Authentication::is_admin()) {
+			$this->write_admin_nav_link('admin_user.php','Users', !$is_doc);
+			$this->write_admin_nav_link('admin_submissions.php','Latest submissions', !$is_doc);
+			$this->write_admin_nav_link('admin_results.php','Results table', !$is_doc);
+			$this->write_admin_nav_link('admin_print.php','Print submissions', !$is_doc);
+		}
 		$this->write_admin_nav_link('documentation.php','Documentation', $is_doc);
 		echo '</div>';
 	}
