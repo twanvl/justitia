@@ -116,8 +116,10 @@ while (true) {
 }
 
 // Done
-$must_stop = $self->status == JudgeDaemon::MUST_STOP;
+$must_stop    = $self->status == JudgeDaemon::MUST_STOP;
+$must_restart = $self->status == JudgeDaemon::MUST_RESTART;
 $self->set_status(JudgeDaemon::STOPPED);
 
 // Magic exit code, so the looping script can determine what to do
-if ($must_stop) exit(100);
+if ($must_stop)    exit(100);
+if ($must_restart) exit(101);
