@@ -31,6 +31,15 @@ class LogEntry {
 		return DB::fetch_all('LogEntry',$query);
 	}
 	
+	// Fetch all errors for the given entity
+	public static function all_for_entity($entity) {
+		if ($entity instanceof Entity) $entity = $entity->path();
+		static $query;
+		DB::prepare_query($query, "SELECT * FROM `error_log` WHERE `entity_path`=? ORDER BY `time` DESC");
+		$query->execute(array($entity));
+		return DB::fetch_all('LogEntry',$query);
+	}
+	
 	private static function do_add($message, $entity=NULL, $judge=NULL) {
 		$data = array(
 			'entity_path' => $entity instanceof Entity ? $entity->path() : $entity,
@@ -67,6 +76,19 @@ class LogEntry {
 		$data['logid'] = DB::get()->lastInsertId();
 		$query_add->closeCursor();
 		return new LogEntry($data);
+	}
+	
+	// ---------------------------------------------------------------------
+	// Deleting old entries
+	// ---------------------------------------------------------------------
+	
+	// Delete all errors for the given entity
+	public static function delete_for_entity($entity) {
+		if ($entity instanceof Entity) $entity = $entity->path();
+		static $query;
+		DB::prepare_query($query, "DELETE FROM `error_log` WHERE `entity_path`=?");
+		$query->execute(array($entity));
+		$query->closeCursor();
 	}
 	
 	// ---------------------------------------------------------------------

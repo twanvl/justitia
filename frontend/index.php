@@ -25,11 +25,37 @@ class View extends PageWithEntity {
 	}
 	
 	function write_body() {
+		if (Authentication::is_admin()) {
+			$this->write_error_log();
+		}
 		if ($this->entity->submitable()) {
 			$this->write_submitable_page();
 		} else {
 			$this->write_overview_page();
 		}
+	}
+	
+	// ---------------------------------------------------------------------
+	// Errors
+	// ---------------------------------------------------------------------
+	
+	function write_error_log() {
+		$errors = LogEntry::all_for_entity($this->entity);
+		if (!$errors) return;
+		
+		$this->write_block_begin('Errors in the problem configuration','block failed');
+		
+		echo "<ul>";
+		foreach($errors as $e) {
+			echo "<li>" . htmlspecialchars($e->message) . "</li>";
+		}
+		echo "</ul>";
+		
+		// link to clear the log
+		$current_page = 'index.php' . $this->entity->path();
+		echo "<a href=\"admin_view_log.php?redirect=".urlencode($current_page)."&amp;clear_log_entity=".urlencode($this->entity->path())."\">clear messages</a>";
+		
+		$this->write_block_end();
 	}
 	
 	// ---------------------------------------------------------------------

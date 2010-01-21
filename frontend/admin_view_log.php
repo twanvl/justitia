@@ -11,6 +11,18 @@ class View extends Template {
 	function __construct() {
 		Authentication::require_admin();
 		$this->is_admin_page = true;
+		// delete stuff
+		$this->delete_log_entries();
+	}
+	
+	function delete_log_entries() {
+		if (isset($_REQUEST['clear_log_entity'])) {
+			LogEntry::delete_for_entity($_REQUEST['clear_log_entity']);
+			$this->add_message('log','confirm','Log messages deleted');
+		}
+		if (isset($_REQUEST['redirect'])) {
+			Util::redirect($_REQUEST['redirect']);
+		}
 	}
 	
 	function title() {
@@ -18,6 +30,7 @@ class View extends Template {
 	}
 	
 	function write_body() {
+		$this->write_messages('log');
 		$this->write_entries(LogEntry::all());
 	}
 	function write_entries($entries) {
