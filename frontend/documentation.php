@@ -26,6 +26,8 @@ class View extends Template {
 		$path = preg_replace('@[.].*@','',$path);
 		if (!empty($this->path) && $path{0} != '/') $path = '/' . $path;
 		if (substr($path,-1)=='/') $path = substr($path,0,-1);
+		// default path
+		if ($path=='' || $path=='/') $path = '/user';
 		// does the file exist?
 		if (file_exists("../doc$path.html")) {
 			$this->read_file($path);
@@ -79,8 +81,9 @@ class View extends Template {
 		);
 		if ($this->is_path_prefix('/user'))
 		$result [] = array(
-			$this->nav_item('About Justitia', '/user/index'),
-			$this->nav_item('Submitting programs', 'TODO')
+			$this->nav_item('What is Justitia?', '/user/index'),
+			$this->nav_item('Logging in', '/user/login'),
+			$this->nav_item('Submitting programs', '/user/submit')
 		);
 		if ($this->is_path_prefix('/courses'))
 		$result [] = array(
