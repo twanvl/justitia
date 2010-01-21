@@ -155,6 +155,18 @@ abstract class Template {
 	}
 	
 	// ---------------------------------------------------------------------
+	// List of links
+	// ---------------------------------------------------------------------
+	
+	function write_links($links) {
+		$html = array();
+		foreach ($links as $text=>$url) {
+			$html[] = "<a href=\"$url\">$text</a>";
+		}
+		echo implode(' | ', $html);
+	}
+	
+	// ---------------------------------------------------------------------
 	// Admin navigation (tab bar)
 	// ---------------------------------------------------------------------
 	
@@ -178,10 +190,11 @@ abstract class Template {
 			$this->write_tabbar_link('login.php','Log in', !$is_doc);
 		}
 		if (Authentication::is_admin()) {
-			$this->write_tabbar_link('admin_user.php','Users', !$is_doc);
 			$this->write_tabbar_link('admin_submissions.php','Latest submissions', !$is_doc);
 			$this->write_tabbar_link('admin_results.php','Results table', !$is_doc);
 			$this->write_tabbar_link('admin_print.php','Print submissions', !$is_doc);
+			$this->write_tabbar_link('admin_user.php','Users', !$is_doc);
+			$this->write_tabbar_link('admin_judge_daemons.php','Judges', !$is_doc);
 		}
 		$this->write_tabbar_link('documentation.php','Documentation', $is_doc);
 	}

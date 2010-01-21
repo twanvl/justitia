@@ -100,25 +100,10 @@ class Submission {
 	}
 	
 	static function fetch_one($query, $info='', $throw = true) {
-		$data = $query->fetch(PDO::FETCH_ASSOC);
-		DB::check_errors($query);
-		$query->closeCursor();
-		if ($data === false) {
-			if ($throw) throw new NotFoundException("Submission not found: $info");
-			else        return false;
-		}
-		return new Submission($data);
+		return DB::fetch_one('Submission',$query,$info,$throw);
 	}
 	static function fetch_all($query) {
-		// fetch submissions
-		$result = array();
-		$query->setFetchMode(PDO::FETCH_ASSOC);
-		foreach($query as $subm) {
-			$result []= new Submission($subm);
-		}
-		DB::check_errors($query);
-		$query->closeCursor();
-		return $result;
+		return DB::fetch_all('Submission',$query);
 	}
 	
 	// ---------------------------------------------------------------------

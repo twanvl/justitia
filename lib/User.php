@@ -234,30 +234,15 @@ class User {
 		// TODO : do we want this?
 	}*/
 	
-	private function __construct($data) {
+	public function __construct(array $data) {
 		$this->data = $data;
 	}
 		
 	static function fetch_one($query, $info='', $throw=true) {
-		$data = $query->fetch(PDO::FETCH_ASSOC);
-		DB::check_errors($query);
-		$query->closeCursor();
-		if ($data === false) {
-			if ($throw) throw new NotFoundException("User not found: $info");
-			else        return false;
-		}
-		return new User($data);
+		return DB::fetch_one('User',$query,$info,$throw);
 	}
-	static function fetch_all($query) {
-		DB::check_errors($query);
-		// fetch submissions
-		$result = array();
-		$query->setFetchMode(PDO::FETCH_ASSOC);
-		foreach($query as $user) {
-			$result []= new User($user);
-		}
-		$query->closeCursor();
-		return $result;
+	static function fetch_all(PDOStatement $query) {
+		return DB::fetch_all('User',$query);
 	}
 	
 	// ---------------------------------------------------------------------

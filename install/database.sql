@@ -57,6 +57,18 @@ CREATE TABLE `file`
 , PRIMARY KEY(`submissionid`,`filename`)
 ) DEFAULT CHARSET=utf8;
 
+/*
+ * Judge daemons
+ */
+CREATE TABLE `judge_daemon`
+( `judgeid`      int(4) unsigned NOT NULL auto_increment COMMENT 'Unique ID'
+, `judge_host`   varchar(255)    NOT NULL                COMMENT 'More user friendly unique name'
+, `status`       int(4)          NOT NULL                COMMENT 'Status code: (See lib/JudgeDaemon.php)'
+, `start_time`   int(8)          NOT NULL                COMMENT 'Date/Time this daemon was started'
+, `ping_time`    int(8)          NOT NULL                COMMENT 'Date/Time of last action'
+, PRIMARY KEY(`judgeid`)
+) DEFAULT CHARSET=utf8;
+
 
 /* -----------------------------------------------------------------------------
  * Initial user

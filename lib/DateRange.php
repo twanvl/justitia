@@ -36,6 +36,11 @@ function format_date($date, $is_deadline = false) {
 	return $str;
 }
 
+function format_date_compact($date, $is_deadline = false) {
+	// TODO: Something like "today" or "3 minutes ago"
+	return format_date($date);
+}
+
 // -----------------------------------------------------------------------------
 // Ranges of dates/times
 // -----------------------------------------------------------------------------

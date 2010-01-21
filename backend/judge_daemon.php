@@ -16,13 +16,8 @@ define('VERBOSE', true);
 // for shell scripts
 putenv("JUSTITIA_BACKEND_DIR=" . getcwd());
 
-// Name of this host.
-// Add randomness, so two judges can run on one computer if needed
-$salt = '';
-for ($i = 0 ; $i < 5 ; ++$i) {
-	$salt .= chr(mt_rand(65,65+25));
-}
-$my_name = trim(`hostname`) . ' [' . $salt . ']';
+// Identity of this host (database object)
+$self = JudgeDaemon::add();
 
 // -----------------------------------------------------------------------------
 // Welcome message
@@ -36,7 +31,7 @@ if (VERBOSE) {
 	echo "|           / /_/ /  / /_/ /  (__  ) / /_   / /  / /_   / /  / /_/ /          |\n";
 	echo "|           \____/   \__,_/  /____/  \__/  /_/   \__/  /_/   \__,_/           |\n";
 	echo "|                                                                             |\n";
-	echo "|       Judge daemon   on ".sprintf('%-20s',$my_name)."                                |\n";
+	echo "|       Judge daemon   on ".sprintf('%-20s',$self->name)."                                |\n";
 	echo "|                                                                             |\n";
 	echo "+=============================================================================+\n";
 }
@@ -93,8 +88,36 @@ function judge_a_single_submission() {
 }
 
 while (true) {
-	judge_a_single_submission();
-	// don't be too fast
-	usleep(100);
+	// we are active
+	$self->ping();
+	
+	// are there requests to change our status?
+	$prev_status = $self->status;
+	$self->update_status();
+	if ($self->status != $prev_status) {
+		echo "Switching to status: " . $self->status_text() . "\n";
+	}
+	if ($self->status == JudgeDaemon::MUST_STOP || $self->status == JudgeDaemon::MUST_RESTART || $self->status == JudgeDaemon::STOPPED) {
+		break;
+	} else if ($self->status == JudgeDaemon::PAUSED) {
+		// Don't judge submissions for a while
+		sleep(5);
+		continue;
+	} else if ($self->status == JudgeDaemon::ACTIVE) {
+		// judge
+		judge_a_single_submission();
+		// don't be too fast
+		usleep(100);
+	} else {
+		// something is wrong, we'd better die
+		echo "Unknown status: $self->status\n";
+		break;
+	}
 }
 
+// Done
+$must_stop = $self->status == JudgeDaemon::MUST_STOP;
+$self->set_status(JudgeDaemon::MUST_STOP);
+
+// Magic exit code, so the looping script can determine what to do
+if ($must_stop) exit(100);
