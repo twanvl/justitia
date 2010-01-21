@@ -39,6 +39,10 @@ define('REJUDGE_TIMEOUT', 1);//Debug
 // how long should the judge deamon sleep if there are no submissions?
 define('DAEMON_SLEEP_TIME', 1);
 
+// how long before we consider a daemon to be dead?
+define('DAEMON_INACTIVE_TIMEOUT', 1*60);
+define('DAEMON_GONE_TIMEOUT',  5*60);
+
 // -----------------------------------------------------------------------------
 // default attribute values
 // -----------------------------------------------------------------------------

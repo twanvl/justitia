@@ -24,13 +24,24 @@ class JudgeDaemon {
 	const MUST_STOP    = 3;
 	const MUST_RESTART = 4;
 	
-	public function status_text() {
-		if ($this->status == JudgeDaemon::STOPPED)      return "stopped";
-		if ($this->status == JudgeDaemon::ACTIVE)       return "active";
-		if ($this->status == JudgeDaemon::PAUSED)       return "paused";
-		if ($this->status == JudgeDaemon::MUST_STOP)    return "must stop";
-		if ($this->status == JudgeDaemon::MUST_RESTART) return "must restart";
+	public function is_inactive() {
+		return $this->ping_time < time() - DAEMON_INACTIVE_TIMEOUT;
+	}
+	public function is_gone() {
+		return $this->ping_time < time() - DAEMON_GONE_TIMEOUT;
+	}
+	
+	public function status_to_text($status, $inactive = false) {
+		if ($status == JudgeDaemon::STOPPED)      return "stopped";
+		if ($status == JudgeDaemon::MUST_STOP)    return "must stop";
+		if ($status == JudgeDaemon::MUST_RESTART) return "must restart";
+		if ($inactive)                            return "inactive";
+		if ($status == JudgeDaemon::ACTIVE)       return "active";
+		if ($status == JudgeDaemon::PAUSED)       return "paused";
 		else return "unknown";
+	}
+	public function status_text() {
+		return JudgeDaemon::status_to_text($this->status,$this->is_inactive());
 	}
 	public static function is_valid_status($status) {
 		return $status >= 0 && $status <= 4;
@@ -141,6 +152,16 @@ class JudgeDaemon {
 		}
 	}
 	
+	public function set_status_all($new_status) {
+		if (!JudgeDaemon::is_valid_status($new_status)) {
+			throw new Exception("Invalid status code: $new_status");
+		}
+		static $query;
+		DB::prepare_query($query, "UPDATE `judge_daemon` SET `status` = ?");
+		$query->execute(array($new_status));
+		$query->closeCursor();
+	}
+	
 	public function ping() {
 		$this->ping_time = time();
 		static $query;
@@ -151,6 +172,14 @@ class JudgeDaemon {
 			'ping_time' => $this->ping_time,
 			'judgeid'   => $this->judgeid,
 		));
+		$query->closeCursor();
+	}
+	
+	// Stop all daemons with no ping in the last DAEMON_GONE_TIMEOUT seconds
+	public function cleanup() {
+		static $query;
+		DB::prepare_query($query, "DELETE FROM `judge_daemon` WHERE `ping_time` < ?");
+		$query->execute(array(time() - DAEMON_GONE_TIMEOUT));
 		$query->closeCursor();
 	}
 }
