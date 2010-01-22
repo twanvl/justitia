@@ -20,6 +20,7 @@ function fancy_exception_handler($e) {
 
 set_exception_handler('fancy_exception_handler');
 
+error_reporting(E_ALL);
 
 // -----------------------------------------------------------------------------
 // Date/time handling
