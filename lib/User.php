@@ -172,8 +172,8 @@ class User {
 		if (!isset($data['auth_method'])) $data['auth_method'] = 'pass';
 		static $query;
 		DB::prepare_query($query,
-			"INSERT INTO `user` (`login`,`password`,`firstname`,`midname`,`lastname`,`email`,`class`,`notes`,`is_admin`)".
-			            "VALUES (:login, :password, :firstname, :midname, :lastname, :email, :class, :notes, :is_admin)");
+			"INSERT INTO `user` (`login`,`password`,`auth_method`,`firstname`,`midname`,`lastname`,`email`,`class`,`notes`,`is_admin`)".
+			            "VALUES (:login, :password, :auth_method, :firstname, :midname, :lastname, :email, :class, :notes, :is_admin)");
 		$query->execute($data);
 		if ($query->rowCount() != 1) {
 			throw new Exception("Create user failed");
@@ -187,13 +187,15 @@ class User {
 		$con = @ldap_connect_and_login($login, $password);
 		if (!$con) return false;
 		// create a new user based on LDAP data
-		$search = ldap_search($con, LDAP_BASE_DN, "cn=$user");
+		$search = ldap_search($con, LDAP_BASE_DN, "cn=$login");
 		if (!$search) return false;
-		$entries = ldap_get_entries($search);
+		$entries = ldap_get_entries($con,$search);
 		ldap_unbind($con);
+		if (empty($entries)) return false;
 		$data = userdata_from_ldap($entries[0]);
+		if (!$data) return false;
 		$data['login']    = $login;
-		$data['password'] = $pass;
+		$data['password'] = '';
 		$data['auth_method'] = 'ldap';
 		$data['is_admin'] = false;
 		return User::add($data);
