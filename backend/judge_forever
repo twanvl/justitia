@@ -1,4 +1,9 @@
 #!/bin/sh
+
+# Change directory to the directory of this script
+cd `dirname $0`
+
+# Judge forever, or at least until someone tells us to stop :)
 while true; do
       php -f judge_daemon.php;
       exitcode=$?
