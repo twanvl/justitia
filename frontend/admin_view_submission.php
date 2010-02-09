@@ -17,6 +17,7 @@ class View extends PageWithEntity {
 		Authentication::require_admin();
 		$this->is_admin_page = true;
 		// find submission
+		if (!isset($_REQUEST['submissionid'])) throw new NotFoundException("Missing parameter: submissionid");
 		$this->subm = Submission::by_id(intval($_REQUEST['submissionid']));
 		$this->entity = $this->subm->entity();
 		// rejudge?

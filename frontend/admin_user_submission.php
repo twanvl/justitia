@@ -19,6 +19,7 @@ class View extends PageWithEntity {
 		// find active entity
 		parent::__construct();
 		// find user
+		if (!isset($_REQUEST['userid'])) throw new NotFoundException("Missing parameter: userid");
 		$this->user = User::by_id(intval($_REQUEST['userid']));
 	}
 	

@@ -119,6 +119,11 @@ class Entity {
 		return $this->attribute_bool('submitable');
 	}
 	
+	// For the admin: may he view the results table (not if it is too large)
+	function allow_view_results() {
+		return $this->attribute_bool('allow view results');
+	}
+	
 	function title() {
 		return $this->attribute("title");
 	}

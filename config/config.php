@@ -69,3 +69,4 @@ $attribute_defaults['compiler']			= ''; // automatic
 $attribute_defaults['runner']			= 'run';
 $attribute_defaults['checker']			= 'htmldiff';
 $attribute_defaults['checker flags']		= '-b';
+$attribute_defaults['allow view results']	= true;

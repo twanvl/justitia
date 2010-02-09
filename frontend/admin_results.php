@@ -90,11 +90,21 @@ class View extends PageWithEntity {
 		function is_submitable($e) {
 			return $e->submitable();
 		}
-		Timer::after("init");
-		$entities = array_filter($this->entity->descendants(),'is_submitable');
-		Timer::after("find entities");
-		$this->write_get_submission_results($entities);
-		if ($this->debug) Timer::write();
+		if ($this->entity->allow_view_results() || isset($_REQUEST['force'])) {
+			Timer::after("init");
+			$entities = array_filter($this->entity->descendants(),'is_submitable');
+			Timer::after("find entities");
+			$this->write_get_submission_results($entities);
+			if ($this->debug) Timer::write();
+		} else {
+			// top level results are slow, and often not intended
+			//echo "<em>You are probably looking for the results of one of the courses</em>";
+			echo "<a href=\"admin_results.php".$this->entity->path()."?force\">view results for all courses</a>";
+			foreach ($this->entity->children() as $e) {
+				$this->write_block_begin($e->title(), 'collapsed linky block', 'admin_results.php' . $e->path());
+				$this->write_block_end();
+			}
+		}
 	}
 	
 	
