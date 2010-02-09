@@ -44,8 +44,6 @@ $file_b = $ARGV[-1];
 $name_a ||= "Your file";
 $name_b ||= "Their file";
 
-print "[$ignore_whitespace_change|$ignore_whitespace|$ignore_case|$float_abs_epsilon|$float_rel_epsilon]";
-
 ###################################################################################################
 # Open files and diff
 ###################################################################################################
