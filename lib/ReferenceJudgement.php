@@ -72,9 +72,11 @@ class ReferenceJudgement extends JudgementBase {
 	protected function put_output_file_contents($file, $contents) {
 		file_put_contents($this->output_dir . '/' . $file, $contents);
 	}
-	// Never check the output size
-	protected function put_output_file_contents_checked($file, $contents) {
-		$this->put_output_file_contents($file,$contents);
+	// Warn when we truncate the output file
+	protected function truncate_file($file, $contents, $max_file_size, $actual_file_size) {
+		$actual_file_size_up = intval( ($actual_file_size + 1000*10-1) / (1000*10) ) * (1000*10); // round up to get a nicer number
+		LogEntry::log("The reference implementation produced a file that is too large\n$file has size $actual_file_size, while max is $max_file_size\nTo allow this, add  'filesize limit: $actual_file_size_up' to the into file", $this->entity);
+		return parent::truncate_file($file, $contents, $max_file_size, $actual_file_size);
 	}
 	
 };

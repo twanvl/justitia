@@ -47,7 +47,7 @@ class View extends PageWithEntity {
 		
 		echo "<ul>";
 		foreach($errors as $e) {
-			echo "<li>" . htmlspecialchars($e->message) . "</li>";
+			echo "<li>" . nl2br(htmlspecialchars($e->message)) . "</li>";
 		}
 		echo "</ul>";
 		

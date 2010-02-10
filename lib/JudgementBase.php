@@ -228,29 +228,30 @@ abstract class JudgementBase {
 		return $result;
 	}
 	
-	// Store a file, but check output size first
-	protected function put_output_file_contents_checked($file, $contents) {
+	// Store a file from the tempdir
+	protected function put_tempfile($file) {
+		// read file
+		$filename = $this->tempdir->file($file);
 		$max_file_size = intval($this->entity->filesize_limit());
-		$content_size  = strlen($contents);
+		$contents = file_get_contents($filename, 0,null,0, $max_file_size + 1); // read 1 more than max size, so we can detect files that are too large
+		// check the file size
+		$content_size = strlen($contents);
 		if ($content_size > $max_file_size) {
 			// don't allow files to be too large
-			echo "Putting file of size: ",$content_size,"  while max = ",$max_file_size,"\n";
-			$contents = substr($contents,0,$max_file_size) . "\n[[FILE TOO LARGE]]";
+			$content_size = filesize($filename); // the actual contents size
+			$contents = $this->truncate_file($file, $contents,$max_file_size,$content_size);
 		}
+		// store the file
 		$this->put_output_file_contents($file,$contents);
 		// try to clean up
 		unset($file);
 		unset($contents);
 	}
 	
-	// Store a file from the tempdir
-	protected function put_tempfile($file) {
-		$max_file_size = intval($this->entity->filesize_limit()) + 1;
-		$contents = file_get_contents($this->tempdir->file($file), 0,null,0, $max_file_size);
-		$this->put_output_file_contents_checked($file, $contents);
-		// try to clean up
-		unset($file);
-		unset($contents);
+	// Trim files that are too large
+	protected function truncate_file($file, $contents, $max_file_size, $actual_file_size) {
+		echo "Putting file $file of size: ",$actual_file_size,"  while max is ",$max_file_size,"\n";
+		$contents = substr($contents,0,$max_file_size) . "\n[[FILE TOO LARGE]]";
 	}
 	
 }

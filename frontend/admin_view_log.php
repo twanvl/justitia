@@ -40,7 +40,7 @@ class View extends Template {
 			echo "<tr>";
 			echo "<td>" . format_date_compact($entry->time);
 			echo "<td>" . ($entry->entity_path ? $entry->entity_path : "-");
-			echo "<td>" . htmlspecialchars($entry->message);
+			echo "<td>" . nl2br(htmlspecialchars($entry->message));
 			echo "</tr>";
 		}
 		echo "</table>";
