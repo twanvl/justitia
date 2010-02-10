@@ -72,5 +72,9 @@ class ReferenceJudgement extends JudgementBase {
 	protected function put_output_file_contents($file, $contents) {
 		file_put_contents($this->output_dir . '/' . $file, $contents);
 	}
+	// Never check the output size
+	protected function put_output_file_contents_checked($file, $contents) {
+		$this->put_output_file_contents($file,$contents);
+	}
 	
 };
