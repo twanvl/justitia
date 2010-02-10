@@ -74,9 +74,13 @@ class ReferenceJudgement extends JudgementBase {
 	}
 	// Warn when we truncate the output file
 	protected function truncate_file($file, $contents, $max_file_size, $actual_file_size) {
+		// should we really warn about this?
 		$actual_file_size_up = intval( ($actual_file_size + 1000*10-1) / (1000*10) ) * (1000*10); // round up to get a nicer number
-		LogEntry::log("The reference implementation produced a file that is too large\n$file has size $actual_file_size, while max is $max_file_size\nTo allow this, add  'filesize limit: $actual_file_size_up' to the into file", $this->entity);
-		return parent::truncate_file($file, $contents, $max_file_size, $actual_file_size);
+		LogEntry::log("The reference implementation produced a file that is too large\n$file has size $actual_file_size, while max is $max_file_size\nTo suppress this warning, add  'filesize limit: $actual_file_size_up' to the into file", $this->entity);
+		return $contents; // don't actually truncate
+	}
+	protected function should_truncate_files() {
+		return false;
 	}
 	
 };

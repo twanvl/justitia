@@ -233,7 +233,9 @@ abstract class JudgementBase {
 		// read file
 		$filename = $this->tempdir->file($file);
 		$max_file_size = intval($this->entity->filesize_limit());
-		$contents = file_get_contents($filename, 0,null,0, $max_file_size + 1); // read 1 more than max size, so we can detect files that are too large
+		$contents = $this->should_truncate_files()
+		              ? file_get_contents($filename, 0,null,0, $max_file_size + 1)
+		              : file_get_contents($filename); // read 1 more than max size, so we can detect files that are too large
 		// check the file size
 		$content_size = strlen($contents);
 		if ($content_size > $max_file_size) {
@@ -252,6 +254,9 @@ abstract class JudgementBase {
 	protected function truncate_file($file, $contents, $max_file_size, $actual_file_size) {
 		echo "Putting file $file of size: ",$actual_file_size,"  while max is ",$max_file_size,"\n";
 		$contents = substr($contents,0,$max_file_size) . "\n[[FILE TOO LARGE]]";
+	}
+	protected function should_truncate_files() {
+		return true;
 	}
 	
 }
