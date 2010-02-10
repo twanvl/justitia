@@ -228,6 +228,11 @@ abstract class JudgementBase {
 		return $result;
 	}
 	
+	// Get the contents of a file
+	public function get_tempfile($file, $max_size = 1000) {
+		return file_get_contents($this->tempdir->file($file), 0,null,0, $max_size + 1);
+	}
+	
 	// Store a file from the tempdir
 	protected function put_tempfile($file) {
 		// read file
