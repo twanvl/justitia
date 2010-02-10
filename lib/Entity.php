@@ -281,6 +281,7 @@ class Entity {
 		return $path;
 	}
 	function testcase_reference_output_exists() {
+		// TODO: check timestamp!!!!!!!!!!
 		foreach($this->testcases() as $case) {
 			if (!file_exists($this->testcase_reference_output($case))) {
 				return false;
