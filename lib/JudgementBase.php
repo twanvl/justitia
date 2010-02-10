@@ -252,7 +252,7 @@ abstract class JudgementBase {
 	
 	// Trim files that are too large
 	protected function truncate_file($file, $contents, $max_file_size, $actual_file_size) {
-		echo "Putting file $file of size: ",$actual_file_size,"  while max is ",$max_file_size,"\n";
+		echo "Putting file $file of size: $actual_file_size, while max is $max_file_size\n";
 		$contents = substr($contents,0,$max_file_size) . "\n[[FILE TOO LARGE]]";
 	}
 	protected function should_truncate_files() {
