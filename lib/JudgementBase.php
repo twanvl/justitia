@@ -235,7 +235,7 @@ abstract class JudgementBase {
 		if ($content_size > $max_file_size) {
 			// don't allow files to be too large
 			echo "Putting file of size: ",$content_size,"  while max = ",$max_file_size,"\n";
-			$contents = substr($contents,0,$max_file_size) . "\n<<FILE TOO LARGE>>";
+			$contents = substr($contents,0,$max_file_size) . "\n[[FILE TOO LARGE]]";
 		}
 		$this->put_output_file_contents($file,$contents);
 		// try to clean up
