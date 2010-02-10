@@ -17,8 +17,8 @@ class ReferenceJudgement extends JudgementBase {
 	// Build the testset outputs based on a reference implementation
 	// store outputs in <entitydir>/.output
 	function build_testset_outputs() {
-		echo "\nNote: Testcase reference output does not exist, generating it now.\n";
-		$this->crate_output_dir();
+		echo "\nNote: Testcase reference output does not exist or is out of date, generating it now.\n";
+		$this->create_output_dir();
 		if (!$this->find_sourcefile()) {
 			echo "No reference implementation found.\n";
 			return false;
@@ -46,7 +46,7 @@ class ReferenceJudgement extends JudgementBase {
 		return true;
 	}
 	
-	function crate_output_dir() {
+	function create_output_dir() {
 		// make output dir
 		$this->output_dir = $this->entity->data_path() . ".generated";
 		@mkdir($this->output_dir);

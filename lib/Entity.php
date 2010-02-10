@@ -13,7 +13,8 @@ class Entity {
 	private $_path;       // full path (relative to data directory), ends in '/'
 	private $_attributes; // key=>value pairs specified in "dir.conf" or NULL if not initialized
 	private $_children;   // children array or NULL if not initialized
-	private $_testcases; // array of testcases, initialized when $_children is
+	private $_testcases;  // array of testcases, initialized when $_children is
+	private $_timestamp;  // last modified time
 	
 	// ---------------------------------------------------------------------
 	// Construction: singleton based
@@ -262,6 +263,18 @@ class Entity {
 	// Testcases
 	// ---------------------------------------------------------------------
 	
+	// last modified timestamp
+	function timestamp() {
+		if (isset($this->_timestamp)) return $this->_timestamp;
+		$this->_timestamp = 0;
+		foreach (new DirectoryIterator($this->data_path()) as $child) {
+			$filename = $child->getFilename();
+			if ($filename[0] == '.') continue;
+			if ($child->getMTime() > $this->_timestamp) $this->_timestamp = $child->getMTime();
+		}
+		return $this->_timestamp;
+	}
+	
 	function has_testcases() {
 		return count($this->testcases()) > 0;
 	}
@@ -274,6 +287,10 @@ class Entity {
 	function testcase_input($case) {
 		return $this->data_path() . "$case.in";
 	}
+	function testcase_reference_output_is_manual($case) {
+		$path = $this->data_path() . "$case.out";
+		return file_exists($path);
+	}
 	function testcase_reference_output($case) {
 		$path = $this->data_path() . "$case.out";
 		if (file_exists($path)) return $path;
@@ -281,9 +298,15 @@ class Entity {
 		return $path;
 	}
 	function testcase_reference_output_exists() {
-		// TODO: check timestamp!!!!!!!!!!
 		foreach($this->testcases() as $case) {
-			if (!file_exists($this->testcase_reference_output($case))) {
+			$path = $this->testcase_reference_output($case);
+			if (!file_exists($path)) {
+				//echo "\nNote: Testcase reference output does not exist (at least for case $case).\n";
+				return false;
+			}
+			// is it also up to date?
+			if (!$this->testcase_reference_output_is_manual($case) && filemtime($path) < $this->timestamp()) {
+				//echo "\nNote: Testcase reference output not up to date (at least for case $case).\n";
 				return false;
 			}
 		}
