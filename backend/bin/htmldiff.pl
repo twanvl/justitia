@@ -246,6 +246,7 @@ ____END_DINGES
 sub hash{
     ($_)=@_;
     s/[ \t]+/ /smg if($ignore_whitespace_change);
+    s/[ \t]+$//smg if($ignore_whitespace_change); # trailing whitespace
     s/[ \t]+//smg  if($ignore_whitespace);
     y/A-Z/a-z/     if($ignore_case);
     return $_;
