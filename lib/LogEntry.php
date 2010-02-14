@@ -82,8 +82,17 @@ class LogEntry {
 	// Deleting old entries
 	// ---------------------------------------------------------------------
 	
+	// Delete a single log entry
+	public static function delete_by_id($logid) {
+		if ($logid instanceof LogEntry) $logid = $logid->logid();
+		static $query;
+		DB::prepare_query($query, "DELETE FROM `error_log` WHERE `logid`=?");
+		$query->execute(array($logid));
+		$query->closeCursor();
+	}
+	
 	// Delete all errors for the given entity
-	public static function delete_for_entity($entity) {
+	public static function delete_by_entity($entity) {
 		if ($entity instanceof Entity) $entity = $entity->path();
 		static $query;
 		DB::prepare_query($query, "DELETE FROM `error_log` WHERE `entity_path`=?");
