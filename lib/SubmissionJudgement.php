@@ -39,10 +39,10 @@ class SubmissionJudgement extends JudgementBase {
 		if (!$this->entity->testcase_reference_output_exists()) {
 			// generate testcase output
 			$ref_output_generator = new ReferenceJudgement($this->entity);
-			if (!$ref_output_generator->build_testset_outputs()) {
-				LogEntry::log("Failed to build reference implementation.\n".
-					@$ref_output_generator->get_tempfile('compiler.err'),
-					$this->entity);
+			try {
+				$ref_output_generator->build_testset_outputs();
+			} catch (Exception $e) {
+				LogEntry::log("Failed to build reference implementation.\n".$e->getMessage(), $this->entity);
 				return Status::FAILED_INTERNAL;
 			}
 			$ref_output_generator->__destruct();

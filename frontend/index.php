@@ -92,7 +92,11 @@ class View extends PageWithEntity {
 		echo "<tr><td>Students</td><td>";
 		$this->write_usergroup_view();
 		echo "</td></tr>";
-		$this->write_form_table_field('file', 'file', 'Select file');
+		if ($this->entity->allow_multiple_files()) {
+			$this->write_form_table_field('file multiple', 'files[]', 'Select files');
+		} else {
+			$this->write_form_table_field('file', 'files[]', 'Select file');
+		}
 		$this->write_form_table_end();
 		$this->write_form_end('Submit');
 	}

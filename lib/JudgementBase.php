@@ -151,6 +151,12 @@ abstract class JudgementBase {
 			echo "$local_name\n";
 			make_file_readable($local_name);
 		}
+		// which files to compile?
+		$compiled_files = array();
+		foreach ($this->source_files as $file) {
+			$compiled []= $file; // TODO: don't include .h files
+		}
+		$compiled_files_list = implode(' ',$compiled_files); // space separated list of filenames
 		// compile
 		$this->exe_file = $this->tempdir->file('compiled_program.exe');
 		$compile_err_file = $this->tempdir->file('compiler.err');
@@ -158,8 +164,7 @@ abstract class JudgementBase {
 		make_file_writable($this->exe_file);
 		make_file_writable($compile_err_file);
 		$limits = $this->entity->compile_limits();
-		$source_file_list = implode(' ',$this->source_files); // space separated list of filenames
-		$result = SystemUtil::safe_command($this->tempdir->dir, $compiler, array($source_file_list, $this->exe_file, $compile_err_file, $flags), $limits);
+		$result = SystemUtil::safe_command($this->tempdir->dir, $compiler, array($compiled_files_list, $this->exe_file, $compile_err_file, $flags), $limits);
 		// did compilation succeed?
 		if ($result && !file_exists($this->exe_file)) {
 			if (file_exists($this->exe_file . ".sh")) {
@@ -236,11 +241,6 @@ abstract class JudgementBase {
 			echo "     Output does not match\n";
 		}
 		return $result;
-	}
-	
-	// Get the contents of a file
-	public function get_tempfile($file, $max_size = 1000) {
-		return file_get_contents($this->tempdir->file($file), 0,null,0, $max_size + 1);
 	}
 	
 	// Store a file from the tempdir

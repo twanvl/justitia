@@ -49,6 +49,7 @@ define('DAEMON_GONE_TIMEOUT',  5*60);
 
 $attribute_defaults['allow archives']		= false;
 $attribute_defaults['submitable']		= false;
+$attribute_defaults['allow multiple files']	= false;
 $attribute_defaults['compile']			= true;
 $attribute_defaults['filename regex']		= '';
 $attribute_defaults['visible']			= true;

@@ -88,6 +88,22 @@ $(document).ready(function(){
 });
 
 // -----------------------------------------------------------------------------
+// Multiple file upload
+// -----------------------------------------------------------------------------
+
+function file_multiple_changed() {
+ 	var file = document.createElement("input");
+ 	file.setAttribute("type", "file");
+ 	file.setAttribute("name", this.name);
+ 	file.setAttribute("class", "multi-upload");
+ 	file.addEventListener("change", file_multiple_changed, false);
+ 	this.parentNode.appendChild(file);
+}
+$(document).ready(function(){
+	$("input:file[multiple]").change(file_multiple_changed);
+});
+
+// -----------------------------------------------------------------------------
 // Documentation fancyness
 // -----------------------------------------------------------------------------
 

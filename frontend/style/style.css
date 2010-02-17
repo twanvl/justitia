@@ -414,6 +414,11 @@ a.file {
 	color:		red;
 }
 
+.multi-upload {
+	display:	block;
+	margin-bottom:	.1em;
+}
+
 .error-message {
 	background:	rgb(255,200,200);
 	border:		2px solid red;

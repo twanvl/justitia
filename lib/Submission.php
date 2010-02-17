@@ -108,7 +108,7 @@ class Submission {
 	// Add a new submission to the database, and return it
 	// the submission has status UPLOADING, so it will not yet be judged
 	// to finalize the submission, call set_status(Status::PENDING)
-	static function make_new($entity,$filename) {
+	static function make_new($entity) {
 		// store submission
 		static $query;
 		DB::prepare_query($query,

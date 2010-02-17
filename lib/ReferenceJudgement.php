@@ -7,7 +7,6 @@
 // -----------------------------------------------------------------------------
 
 class ReferenceJudgement extends JudgementBase {
-	private $sourcefile_path;
 	private $output_dir;
 	
 	function __construct($entity) {
@@ -19,26 +18,20 @@ class ReferenceJudgement extends JudgementBase {
 	function build_testset_outputs() {
 		echo "\nNote: Testcase reference output does not exist or is out of date, generating it now.\n";
 		$this->create_output_dir();
-		if (!$this->find_sourcefile()) {
-			echo "No reference implementation found.\n";
-			return false;
-		}
 		if (($status = $this->prepare_and_compile()) != 0) {
-			echo "Compiling reference implementation failed with status " . Status::to_text($status) . "\n";
+			$msg = "Compiling failed with status " . Status::to_text($status) . "\n";
 			if (file_exists($this->output_dir . '/compiler.err')) {
-				echo file_get_contents($this->output_dir . '/compiler.err');
+				$msg .= file_get_contents($this->output_dir . '/compiler.err');
 			} else {
-				echo "<no message>\n";
+				$msg .= "<no message>\n";
 			}
-			echo "\n";
-			return false;
+			throw new Exception($msg);
 		}
 		// Now build all testcases
 		foreach($this->entity->testcases() as $case) {
 			echo "  case: " . $case . "\n";
 			if (!$this->run_case($case)) {
-				echo "Runtime error for case $case.\n";
-				return false;
+				throw new Exception("Runtime error for case $case.\n");
 			}
 		}
 		// Done
@@ -52,21 +45,18 @@ class ReferenceJudgement extends JudgementBase {
 		@mkdir($this->output_dir);
 	}
 	
-	function find_sourcefile() {
-		// find source file
-		$this->sourcefile_path = $this->entity->data_path()
-		                       . $this->entity->reference_implementation();
-		return file_exists($this->sourcefile_path);
-	}
-	
 	// interface for JudgementBase
 	
 	protected function get_source_files() {
-		$filenames = explode_whitespace($this->sourcefile_path);
+		$filenames = explode_whitespace($this->entity->reference_implementation());
 		$files = array();
 		foreach($filenames as $name) {
 			$basename = pathinfo($name,PATHINFO_BASENAME);
-			$contents = file_get_contents($name);
+			$full_path = $this->entity->data_path() . $name;
+			if (!file_exists($full_path)) {
+				throw new Exception("Reference implementation not found: $name");
+			}
+			$contents = file_get_contents($full_path);
 			$files[$basename] = $contents;
 		}
 		return $files;

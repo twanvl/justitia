@@ -119,6 +119,9 @@ class Entity {
 	function submitable() {
 		return $this->attribute_bool('submitable');
 	}
+	function allow_multiple_files() {
+		return $this->attribute_bool('allow multiple files');
+	}
 	
 	// For the admin: may he view the results table (not if it is too large)
 	function allow_view_results() {
@@ -335,7 +338,7 @@ class Entity {
 				if (count($code_files) == 0) {
 					throw new Exception("No reference implementation found.");
 				} else {
-					throw new Exception("Multiple source files found, not sure which one to use.\nSet 'reference implementation: something' in the info file.");
+					throw new Exception("Multiple source files found, not sure which one to use.\nSet 'reference implementation: something' in the info file.\nFound:\n * " . implode("\n * ",$code_files));
 				}
 			}
 			return false;
@@ -508,5 +511,7 @@ function compare_order($a, $b) {
 }
 
 function explode_whitespace($s) {
+	$s = trim($s);
+	if (empty($s)) return array();
 	return preg_split('@\s+@',$s);
 }

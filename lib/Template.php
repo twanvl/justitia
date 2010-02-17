@@ -102,6 +102,10 @@ abstract class Template {
 			$idspec = '';
 			$valuespec = ' value="'. htmlspecialchars($part) . '"';
 			if ($value == $part) $valuespec .= ' checked="checked"';
+		} else if ($type == 'file multiple') {
+			// multiple file upload control
+			echo "<input type=\"file\" $idspec name=\"$name\" multiple=\"multiple\"$extra class=\"multi-upload\">";
+			return;
 		} else {
 			$valuespec = $value === null ? '' : ' value="'. htmlspecialchars($value) . '"';
 		}
