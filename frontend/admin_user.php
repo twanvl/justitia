@@ -108,7 +108,7 @@ class View extends Template {
 		}
 		
 		$this->write_messages('user');
-		$this->write_form_begin('admin_user.php','post');
+		$this->write_form_begin('admin_user.php','post',false,' autocomplete="off"');
 		$this->write_form_preserve('user_filter');
 		$this->write_form_preserve('edit');
 		$this->write_form_hidden('filled',1);
