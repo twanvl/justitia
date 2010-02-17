@@ -130,7 +130,9 @@ class View extends PageWithEntity {
 		}
 		echo "</table>";
 		echo "</div>\n";
-		$this->write_print_file($subm->filename,$subm->get_file($subm->code_filename()));
+		foreach ($subm->get_code_filenames() as $code_name => $filename) {
+			$this->write_print_file($filename, $subm->get_file($code_name));
+		}
 		echo '</div>';
 	}
 	function write_print_file($filename,$contents) {

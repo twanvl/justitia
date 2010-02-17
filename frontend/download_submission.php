@@ -22,7 +22,7 @@ function is_allowed_file($subm,$entity,$user,$dir,$filename) {
 	}
 	if ($dir == 'code') {
 		// the file send by the user
-		return array(true,$subm->code_filename());
+		return array(true,$subm->code_filename($filename));
 	} else if ($dir == 'out') {
 		$ext = pathinfo($filename, PATHINFO_EXTENSION);
 		$base = pathinfo($filename, PATHINFO_FILENAME);

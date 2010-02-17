@@ -62,7 +62,7 @@ class JudgeDaemon {
 	// Fetch all judge daemon records
 	public static function all() {
 		static $query;
-		DB::prepare_query($query, "SELECT * FROM `judge_daemon`");
+		DB::prepare_query($query, "SELECT * FROM `judge_daemon` ORDER BY `judge_host`");
 		$query->execute();
 		return DB::fetch_all('JudgeDaemon',$query);
 	}

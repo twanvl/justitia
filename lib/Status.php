@@ -1,23 +1,35 @@
 <?php
 
 // -----------------------------------------------------------------------------
-// Status codes
+// Status codes of submissions and test cases.
+//
+// The status codes are integers. the 10^7 digit indicates the major/base status group:
+//      00000000 = no submission
+//      10000000 = failed
+//      20000000 = pending result
+//      30000000 = passed
+//  so higher codes are better.
+// The next 10^6 digit indicates the exact status.
+// Further digits are for future use.
+//
+// The Status class provides static methods for working with these status codes.
 // -----------------------------------------------------------------------------
 
 class Status {
 	// higher status is better
 	const NOT_DONE        = 0;        // no submission attempt has been made
+	const UPLOADING       = 1;        // submission is partially uploaded, but not yet finalized
 	const FAILED          = 10000000;
-	const FAILED_INTERNAL = 10000000; // internal error
+	const FAILED_INTERNAL = 10000000; // internal error, not the student's fault
 	const FAILED_LANGUAGE = 11000000;
 	const FAILED_COMPILE  = 12000000;
-	const FAILED_RUN      = 13000000; // + #of test cases attempted
-	const FAILED_COMPARE  = 14000000; // + #of test cases attempted
+	const FAILED_RUN      = 13000000;
+	const FAILED_COMPARE  = 14000000;
 	const PENDING         = 20000000; // submission still in judge queue
 	const JUDGING         = 21000000; // submission still in judge queue, but being processed
 	const PASSED          = 30000000;
 	const PASSED_DEFAULT  = 30000000; // accepted without compiling
-	const PASSED_COMPARE  = 31000000; // + #of test cases attempted
+	const PASSED_COMPARE  = 31000000;
 	
 	// one of the constants
 	static function base_status($status) {

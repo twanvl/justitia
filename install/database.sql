@@ -29,7 +29,6 @@ CREATE TABLE `submission`
 ( `submissionid` int(4) unsigned NOT NULL auto_increment COMMENT 'Unique ID'
 , `time`         int(8)          NOT NULL                COMMENT 'Date/Time of submission'
 , `entity_path`  varchar(255)    NOT NULL                COMMENT 'Path to the problem'
-, `filename`     varchar(255)    NOT NULL                COMMENT 'Original name of the submited file'
 , `judge_host`   varchar(255)    default NULL            COMMENT 'Name of the host that judged this submission'
 , `judge_start`  int(8)          NOT NULL                COMMENT 'Date/Time of start of judging, or 0 if not judging yet'
 , `status`       int(4)          NOT NULL                COMMENT 'Status code: (See lib/Status.php)'

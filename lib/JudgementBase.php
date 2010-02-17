@@ -30,15 +30,17 @@ abstract class JudgementBase {
 	// directory for temp files
 	private $tempdir;
 	// filenames of temporary files
-	private $source_file;
+	private $source_files; // array of temp names
 	private $exe_file;
 	
 	// ---------------------------------------------------------------------
 	// Abstract interface (derived classes should override)
 	// ---------------------------------------------------------------------
 	
-	protected abstract function get_source_filename();
-	protected abstract function get_source_file_contents();
+	// Should return an array of ('filename' => 'contents) for all source files
+	protected abstract function get_source_files();
+//%	protected abstract function get_source_filename();
+//%	protected abstract function get_source_file_contents();
 	protected abstract function put_output_file_contents($file,$contents);
 	
 	
@@ -61,9 +63,6 @@ abstract class JudgementBase {
 			return Status::PASSED_DEFAULT;
 		}
 		
-		if (!$this->determine_language()) {
-			return Status::FAILED_LANGUAGE;
-		}
 		if (!$this->create_tempdir()) {
 			throw new InternalException("Failed to create tempdir");
 			return Status::FAILED_INTERNAL;
@@ -71,6 +70,9 @@ abstract class JudgementBase {
 		if (!$this->download_source()) {
 			throw new Exception("Failed to find submission source");
 			return Status::FAILED_INTERNAL;
+		}
+		if (!$this->determine_language()) {
+			return Status::FAILED_LANGUAGE;
 		}
 		if (!$this->extract_archive()) {
 			return Status::FAILED_LANGUAGE;
@@ -88,7 +90,8 @@ abstract class JudgementBase {
 		$this->language = Util::language_info( $this->entity->attribute('language') );
 		// determine from extension
 		if ($this->language['name'] == 'any') {
-			$this->language = Util::language_from_filename($this->get_source_filename());
+			// TODO: inspect all source files?
+			$this->language = Util::language_from_filename($this->source_files[0]);
 		}
 		// unknown language -> failure
 		return $this->language['name'] != 'unknown';
@@ -104,10 +107,15 @@ abstract class JudgementBase {
 	
 	// Store source in tempdir
 	protected function download_source() {
-		$this->source_file = $this->tempdir->file($this->get_source_filename());
-		$contents = $this->get_source_file_contents();
-		if ($contents === false) return false;
-		file_put_contents($this->source_file, $contents);
+		$files = $this->get_source_files();
+		if (empty($files)) return false;
+		$this->source_files = array();
+		foreach($files as $name => $contents) {
+			$temp_name = $this->tempdir->file($name);
+			if ($contents === false) return false;
+			file_put_contents($temp_name, $contents);
+			$this->source_files []= $temp_name;
+		}
 		return true;
 	}
 	
@@ -120,13 +128,14 @@ abstract class JudgementBase {
 				return false;
 			}
 			throw new InternalException("TODO: archives");
-			SystemUtil::run_command(false, $this->language['archive_extract'], $this->source_file);
+			$source_file_list = implode(' ',$this->source_files); // space separated list of filenames
+			SystemUtil::run_command(false, $this->language['archive_extract'], $source_file_list);
 			// look for the actual source file
 		}
 		return true;
 	}
 	
-	// Compile $source_file to $exe_file
+	// Compile $source_files to $exe_file
 	protected function compile() {
 		// compiler script to use
 		$compiler = $this->entity->compiler();
@@ -143,13 +152,14 @@ abstract class JudgementBase {
 			make_file_readable($local_name);
 		}
 		// compile
-		$this->exe_file = $this->source_file . '.exe';
+		$this->exe_file = $this->tempdir->file('compiled_program.exe');
 		$compile_err_file = $this->tempdir->file('compiler.err');
-		make_file_readable($this->source_file);
+		foreach ($this->source_files as $f) make_file_readable($f);
 		make_file_writable($this->exe_file);
 		make_file_writable($compile_err_file);
 		$limits = $this->entity->compile_limits();
-		$result = SystemUtil::safe_command($this->tempdir->dir, $compiler, array($this->source_file, $this->exe_file, $compile_err_file, $flags), $limits);
+		$source_file_list = implode(' ',$this->source_files); // space separated list of filenames
+		$result = SystemUtil::safe_command($this->tempdir->dir, $compiler, array($source_file_list, $this->exe_file, $compile_err_file, $flags), $limits);
 		// did compilation succeed?
 		if ($result && !file_exists($this->exe_file)) {
 			if (file_exists($this->exe_file . ".sh")) {

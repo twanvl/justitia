@@ -61,17 +61,21 @@ class ReferenceJudgement extends JudgementBase {
 	
 	// interface for JudgementBase
 	
-	protected function get_source_filename() {
-		return pathinfo($this->sourcefile_path,PATHINFO_BASENAME);
-	}
-	
-	protected function get_source_file_contents() {
-		return file_get_contents($this->sourcefile_path);
+	protected function get_source_files() {
+		$filenames = explode_whitespace($this->sourcefile_path);
+		$files = array();
+		foreach($filenames as $name) {
+			$basename = pathinfo($name,PATHINFO_BASENAME);
+			$contents = file_get_contents($name);
+			$files[$basename] = $contents;
+		}
+		return $files;
 	}
 	
 	protected function put_output_file_contents($file, $contents) {
 		file_put_contents($this->output_dir . '/' . $file, $contents);
 	}
+	
 	// Warn when we truncate the output file
 	protected function truncate_file($file, $contents, $max_file_size, $actual_file_size) {
 		/*

@@ -81,11 +81,6 @@ class Submission {
 		return Submission::fetch_one($query,$submissionid);
 	}
 	
-	/*// dummy submission
-	static function no_submission() {
-		return new Submission(array('status' => STATUS_NOT_DONE));
-	}*/
-	
 	static function latest($start,$num) {
 		DB::prepare_query($query,
 			"SELECT * FROM `submission` ORDER BY `time` DESC LIMIT " . (int)$start .",". (int)$num
@@ -111,19 +106,20 @@ class Submission {
 	// ---------------------------------------------------------------------
 	
 	// Add a new submission to the database, and return it
+	// the submission has status UPLOADING, so it will not yet be judged
+	// to finalize the submission, call set_status(Status::PENDING)
 	static function make_new($entity,$filename) {
 		// store submission
 		static $query;
 		DB::prepare_query($query,
 			"INSERT INTO `submission`".
-			       " (`time`,`entity_path`,`filename`,`judge_host`,`judge_start`,`status`)".
-			" VALUES (:time, :entity_path, :filename,  NULL,        0,            :status)"
+			       " (`time`,`entity_path`,`judge_host`,`judge_start`,`status`)".
+			" VALUES (:time, :entity_path,  NULL,        0,            :status)"
 		);
 		$data = array();
 		$data['time']         = time();
 		$data['entity_path']  = $entity->path();
-		$data['filename']     = $filename;
-		$data['status']       = 0; // update after putting file
+		$data['status']       = Status::UPLOADING; // update after putting file
 		if (!$query->execute($data)) {
 			DB::check_errors($query);
 		}
@@ -144,7 +140,6 @@ class Submission {
 	}
 	
 	// Alter the status of the submission
-	// This also moves the associated files
 	function set_status($new_status) {
 		// update db
 		static $query;
@@ -203,6 +198,11 @@ class Submission {
 	
 	// ---------------------------------------------------------------------
 	// Files in the database
+	// Names of files:
+	//   code/<SOMETHING>  =  submitted code files
+	//   in/<SOMETHING>    =  testcase inputs and reference output (not stored in the database)
+	//   out/<SOMETHING>   =  output files from compiling and running tests
+	//   testcases         =  summary of test results, serialized php array
 	// ---------------------------------------------------------------------
 	
 	function put_file($filename,$data) {
@@ -234,12 +234,29 @@ class Submission {
 		return $query->fetchColumn();
 	}
 	
+	// Get an array of all code filenames
+	// array entries are of the form ("code/<SOMETHING>" => "<SOMETHING>");
+	function get_code_filenames() {
+		DB::prepare_query($query,
+			"SELECT filename FROM `file` WHERE `submissionid`=? AND `filename` LIKE 'code/%' ORDER BY `filename`");
+		$query->execute(array($this->submissionid));
+		DB::check_errors($query);
+		$code_names = $query->fetchAll(PDO::FETCH_COLUMN);
+		$names = array();
+		foreach ($code_names as $code_name) {
+			if (substr($code_name,0,5) != 'code/') continue; // shouldn't happend because of query
+			$name = substr($code_name,5);
+			$names[$code_name] = $name;
+		}
+		return $names;
+	}
+	
 	// ---------------------------------------------------------------------
 	// Files
 	// ---------------------------------------------------------------------
 	
-	function code_filename() {
-		return 'code/' . $this->filename;
+	function code_filename($filename) {
+		return 'code/' . $filename;
 	}
 	function output_filename($filename) {
 		return 'out/' . $filename;
@@ -257,6 +274,9 @@ class Submission {
 	}
 	function input_exists($filename) {
 		return file_exists($this->input_filename($filename));
+	}
+	function code_exists($filename) {
+		return file_exists($this->code_filename($filename));
 	}
 	
 	// ---------------------------------------------------------------------

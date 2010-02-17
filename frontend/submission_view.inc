@@ -40,12 +40,22 @@ function write_submission($subm, $entity = null, $include_entity = false) {
 	}
 	echo "<tr><td>Submitted on</td><td>" . format_date($subm->time) . "</td></tr>";
 	echo "<tr><td>Submitted by</td><td>" . User::names_html($subm->users()) . "</td></tr>";
-	echo "<tr><td>Files</td><td>" . download_link($subm,'code/'.$subm->filename,"Download submitted files") . "</td></tr>";
+	
+	// files
+	$files = array();
+	foreach ($subm->get_code_filenames() as $code_name => $name) {
+		$ext = pathinfo($name, PATHINFO_EXTENSION);
+		$files[] = "<a href=\"download_submission.php/$subm->submissionid/".htmlspecialchars($code_name).'" class="file '.$ext.'">' . htmlspecialchars($name) . "</a>";
+	}
+	echo "<tr><td>Files</td><td>" . implode(' | ',$files) . "</td></tr>";
+	
+	// status
 	echo "<tr><td>Status</td><td>" . Status::to_text($subm);
 	if ($type == Status::FAILED_COMPILE) {
 		echo download_link($subm,'out/compiler.err','view error message',  $entity->show_compile_errors(),  ' (',')');
 	}
 	echo "</td></tr>";
+	
 	if (Authentication::is_admin()) {
 		if ($subm->status() != Status::PENDING) {
 			echo "<tr><td>Judged</td><td>by <tt>" . htmlspecialchars($subm->judge_host) . "</tt>";

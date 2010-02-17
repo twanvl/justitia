@@ -72,7 +72,7 @@ function handle_uploaded_submission($entity) {
 	$subm = Submission::make_new($entity, $filename);
 	
 	// add data
-	$subm->put_file($subm->code_filename(),file_get_contents($file['tmp_name']));
+	$subm->put_file($subm->code_filename($filename), file_get_contents($file['tmp_name']));
 	unlink($file['tmp_name']);
 	
 	// assign users

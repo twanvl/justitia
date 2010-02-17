@@ -77,12 +77,14 @@ class SubmissionJudgement extends JudgementBase {
 	
 	// interface for JudgementBase
 	
-	protected function get_source_filename() {
-		return $this->subm->filename;
-	}
-	
-	protected function get_source_file_contents() {
-		return $this->subm->get_file($this->subm->code_filename());
+	protected function get_source_files() {
+		$names = $this->subm->get_code_filenames();
+		$files = array();
+		foreach($names as $code_name => $name) {
+			$contents = $this->subm->get_file($code_name);
+			$files[$name] = $contents;
+		}
+		return $files;
 	}
 	
 	protected function put_output_file_contents($file, $contents) {
