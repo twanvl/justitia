@@ -60,11 +60,12 @@ abstract class Template {
 	// Form utilities
 	// ---------------------------------------------------------------------
 	
-	function write_form_begin($url, $method, $enctype = false) {
+	function write_form_begin($url, $method, $enctype = false, $extra = '') {
 		echo '<form action="'.$url.'" method="'.$method.'"';
 		if ($enctype) {
 			echo ' enctype="multipart/form-data"';
 		}
+		echo $extra;
 		echo ">\n";
 	}
 	function write_form_end($submit) {
