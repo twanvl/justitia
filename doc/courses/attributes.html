@@ -114,7 +114,9 @@ An attribute <tt>child <em>xxx</em>: <em>yyy</em></tt> means that attribute <em>
       <th>Description
       <th width="10%">Default
   <tr><th><tt>reference implementation</tt>
-      <td>Path to the source code of a reference implementation.
+      <td>Path to the source code of a reference implementation.<br>
+          Can be a whitespace separated list of multiple source files.
+          Note that <em>all</em> the necessary loacl files must be listed, including header files.
       <td><i>automatic</i>
   <tr><th><tt>runner</tt>
       <td>Wrapper for running the program (from <tt>backend/runner</tt>).
