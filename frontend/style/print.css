@@ -56,14 +56,14 @@ pre {
 .line {
 	display:		table;
 	width:			100%;
+	margin-left:		-1px;
 }
 .indent {
 	display:		table-cell;
 	white-space:		pre;
-	width:			0;
+	width:			1px; /* opera doesn't like width: 0 */
 }
 .indent b { /* tab indicator */
-	margin-left:		-1px;
 	border-left:		1px dotted rgb(100,100,100);
 	position:		relative;
 	left:			4px;
