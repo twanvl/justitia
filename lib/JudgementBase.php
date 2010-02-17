@@ -154,7 +154,7 @@ abstract class JudgementBase {
 		// which files to compile?
 		$compiled_files = array();
 		foreach ($this->source_files as $file) {
-			$compiled []= $file; // TODO: don't include .h files
+			$compiled_files []= $file; // TODO: don't include .h files
 		}
 		$compiled_files_list = implode(' ',$compiled_files); // space separated list of filenames
 		// compile
