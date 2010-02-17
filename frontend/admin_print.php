@@ -47,6 +47,7 @@ class View extends PageWithEntity {
 	function write_form() {
 		$format = 'html';
 		$include_failed = false;
+		$double_sided = true;
 		
 		$this->write_block_begin("Settings");
 		
@@ -62,6 +63,7 @@ class View extends PageWithEntity {
 			8 => 'Replace by 8 spaces<br>',
 			0 => 'Keep as tabs',
 		));
+		$this->write_form_table_field('checkbox','double_sided',    'Double sided printing (ensure that each submission starts on an odd page, only works in Opera)', $double_sided);
 		$this->write_form_table_end();
 		$this->write_form_end("Generate printout");
 		
@@ -133,7 +135,7 @@ class View extends PageWithEntity {
 		foreach ($subm->get_code_filenames() as $code_name => $filename) {
 			$this->write_print_file($filename, $subm->get_file($code_name));
 		}
-		echo '</div>';
+		echo "</div>\n";
 	}
 	function write_print_file($filename,$contents) {
 		echo '<div class="file-head">';

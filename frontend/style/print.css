@@ -21,7 +21,10 @@ body {
  * ----------------------------------------------------------------------------- */
 
 .submission + .submission {
-	page-break-before:	right;
+	page-break-before:	always;
+}
+.two-sided .submission + .submission {
+	page-break-before:	right; /* only works in opera */
 }
 .submission-head {
 	page-break-inside:	avoid ;
