@@ -39,7 +39,17 @@ function write_submission($subm, $entity = null, $include_entity = false) {
 		echo "</td></tr>\n";
 	}
 	echo "<tr><td>Submitted on</td><td>" . format_date($subm->time) . "</td></tr>";
-	echo "<tr><td>Submitted by</td><td>" . User::names_html($subm->users()) . "</td></tr>";
+	
+	// users
+	echo "<tr><td>Submitted by</td><td>" . User::names_html($subm->users());
+	if (Authentication::is_admin()) {
+		$mail_link = User::emails_url($subm->users());
+		if ($mail_link) {
+			$mail_link .= "?Subject=Your justitia submission to '" . $entity->title() . "'";
+			echo " <a href=\"".htmlspecialchars($mail_link)."\">[send email]</a>";
+		}
+	}
+	echo "</td></tr>";
 	
 	// files
 	$files = array();

@@ -34,7 +34,7 @@ class Submission {
 		if (isset($this->users)) return $this->users;
 		static $query;
 		DB::prepare_query($query,
-			"SELECT user.userid as userid,login,firstname,midname,lastname FROM `user_submission`".
+			"SELECT user.userid as userid,login,firstname,midname,lastname,email FROM `user_submission`".
 			" LEFT JOIN `user` ON `user_submission`.`userid` = `user`.`userid`".
 			" WHERE submissionid=?"
 		);

@@ -76,7 +76,7 @@ class User {
 		// convert
 		$result = "";
 		foreach(User::sort_users($users) as $user) {
-			if (strlen($result) > 0) $result .= ', ';
+			if ($result != '') $result .= ', ';
 			$result .= htmlspecialchars($user->name());
 			$result .= " <small>(" . htmlspecialchars($user->login) . ")</small>";
 		}
@@ -89,6 +89,18 @@ class User {
 			$result .= $user->name_for_sort() . '|';
 		}
 		return $result;
+	}
+	
+	static function emails_url($users) {
+		$result = "";
+		foreach($users as $user) {
+			if ($user->email) {
+				if ($result != '') $result .= ',';
+				$result .= $user->email;
+			}
+		}
+		if ($result == "") return false;
+		else return "mailto:$result";
 	}
 	
 	// ---------------------------------------------------------------------
