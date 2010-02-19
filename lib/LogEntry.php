@@ -26,7 +26,7 @@ class LogEntry {
 	// Fetch all errors
 	public static function all() {
 		static $query;
-		DB::prepare_query($query, "SELECT * FROM `error_log` ORDER BY `time` DESC");
+		DB::prepare_query($query, "SELECT * FROM `error_log` ORDER BY `time` DESC LIMIT 100");
 		$query->execute();
 		return DB::fetch_all('LogEntry',$query);
 	}
