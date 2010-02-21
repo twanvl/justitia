@@ -96,7 +96,7 @@ function file_multiple_changed() {
  	file.setAttribute("type", "file");
  	file.setAttribute("name", this.name);
  	file.setAttribute("class", "multi-upload");
- 	file.addEventListener("change", file_multiple_changed, false);
+ 	$(file).change(file_multiple_changed);
  	this.parentNode.appendChild(file);
 }
 $(document).ready(function(){
