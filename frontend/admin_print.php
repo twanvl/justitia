@@ -55,6 +55,7 @@ class View extends PageWithEntity {
 		$this->write_form_hidden('filled',1);
 		$this->write_form_table_begin();
 		$this->write_form_table_field('text',    'user_filter',    'Only for users', @$_REQUEST['user_filter']);
+		//$this->write_form_table_field('text',    'filename_filter', 'Only include files', @$_REQUEST['filename_filter']);
 		//$this->write_form_table_field('radio',   'format',         'Text output', $format=='text', ' value="text"');
 		//$this->write_form_table_field('radio',   'format',         'HTML output', $format=='html', ' value="html"');
 		$this->write_form_table_field('checkbox','include_failed', 'Include failed and pending submissions', $include_failed);
@@ -63,7 +64,7 @@ class View extends PageWithEntity {
 			8 => 'Replace by 8 spaces<br>',
 			0 => 'Keep as tabs',
 		));
-		$this->write_form_table_field('checkbox','double_sided',    'Double sided printing (ensure that each submission starts on an odd page, only works in Opera)', $double_sided);
+		$this->write_form_table_field('checkbox','double_sided',    'Double sided printing (ensure that each submission starts on an odd page)', $double_sided);
 		$this->write_form_table_end();
 		$this->write_form_end("Generate printout");
 		
@@ -73,6 +74,7 @@ class View extends PageWithEntity {
 		$this->write_block_begin("Tips");
 		echo "<ul>";
 		echo "<li>Disable all headers and footers in the <tt>File</tt> &rarr; <tt>Page Setup</tt> dialog (in Firefox)</li>";
+		echo "<li>Double sided printing only works in Opera.</li>";
 		echo "</ul>";
 		$this->write_block_end();
 	}
@@ -157,10 +159,8 @@ class View extends PageWithEntity {
 			}
 		}
 		echo '</pre>';
-		
-		//$content_html = htmlspecialchars($contents);
-		//echo "<pre class='simple'>$content_html</pre>";
 	}
+	// Split a line into  array(indentation,rest)
 	function take_indent($line) {
 		$len = strlen($line);
 		$indent = '';
