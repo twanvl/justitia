@@ -75,8 +75,8 @@ function check_upload($entity, &$files) {
 	// match filename with regex
 	if ($file_regex != '') {
 		foreach ($files as $file) {
-			if (!preg_match("/$file_regex/", $file['name'])) {
-				Template::add_message('submit','error', "Uploaded file does not match specified filename pattern");
+			if(!preg_match("/($file_regex)|(.*\.h)/",$file['name'])) {# SO SUE ME!het ging opeens stuk met header files...
+				Template::add_message('submit','error',	"Uploaded file does not match specified filename pattern $file_regex");
 				return false;
 			}
 		}
