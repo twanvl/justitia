@@ -1,65 +1,6 @@
 <?php
 
 // -----------------------------------------------------------------------------
-// Programming languages
-// -----------------------------------------------------------------------------
-
-global $languages, $languages_by_extension;
-$languages = array(
-	'c' => array(
-		'is_language'		=> true,
-		'name'			=> 'c',
-		'filename_regex'	=> '.*\.c'
-	),
-	'c++' => array(
-		'is_language'		=> true,
-		'name'			=> 'c++',
-		'filename_regex'	=> '.*\.(c++|cc|cxx)'
-	),
-	'java' => array(
-		'is_language'		=> true,
-		'name'			=> 'java',
-		'filename_regex'	=> '.*\.(java)'
-	),
-	'haskell' => array(
-		'is_language'		=> true,
-		'name'			=> 'haskell',
-		'filename_regex'	=> '.*\.(hs|lhs)'
-	),
-	'matlab' => array(
-		'is_language'		=> true,
-		'name'			=> 'matlab',
-		'filename_regex'	=> '.*\.(m)'
-	),
-	'any' => array(
-		'is_language'		=> false,
-		'name'			=> 'any',
-		'filename_regex'	=> '.*'
-	),
-	'unknown' => array(
-		'is_language'		=> false,
-		'name'			=> 'unknown',
-		'filename_regex'	=> ''
-	)
-);
-$languages['']    = $languages['any'];
-$languages['cpp'] = $languages['c++'];
-
-// extension -> language
-$languages_by_extension = array(
-	'c'    => $languages['c'],
-	'cc'   => $languages['c++'],
-	'cxx'  => $languages['c++'],
-	'cpp'  => $languages['c++'],
-	'c++'  => $languages['c++'],
-	'java' => $languages['java'],
-	'hs'   => $languages['haskell'],
-	'lhs'  => $languages['haskell'],
-	'm'    => $languages['matlab'],
-	//'zip'  => $languages['zip'],
-);
-
-// -----------------------------------------------------------------------------
 // Utility functions
 // -----------------------------------------------------------------------------
 
@@ -106,47 +47,20 @@ class Util {
 	}
 	
 	// ---------------------------------------------------------------------
-	// Languages
-	// ---------------------------------------------------------------------
-	
-	// Is a file sourcecode?
-	static function is_code($filename) {
-		$lang = Util::language_from_filename($filename);
-		return $lang['is_language'];
-	}
-	
-	static function language_from_filename($filename) {
-		$ext = pathinfo($filename, PATHINFO_EXTENSION);
-		global $languages_by_extension;
-		if (isset($languages_by_extension[$ext])) {
-			return $languages_by_extension[$ext];
-		} else {
-			global $languages;
-			return $languages['unknown'];
-		}
-	}
-	static function language_info($code) {
-		global $languages;
-		if (isset($languages[$code])) {
-			return $languages[$code];
-		} else {
-			return $languages['unknown'];
-		}
-	}
-	
-	// ---------------------------------------------------------------------
 	// Content type
 	// ---------------------------------------------------------------------
 	
+	static function is_code($filename) {
+		return Language::by_filename($filename)->is_code;
+	}
 	static function content_type($filename) {
 		$ext = pathinfo($filename, PATHINFO_EXTENSION);
-		$lang = Util::language_from_filename($filename);
 		if ($ext == 'diff') {
 			// TODO: determine whether this is a diff in HTML format
 			return 'text/html';
 		} else if ($ext == 'in' || $ext == 'out' || $ext == 'diff' || $ext == 'err') {
 			return 'text/plain';
-		} else if ($lang['is_language']) {
+		} else if (Util::is_code($filename)) {
 			return 'text/plain';
 		} else {
 			return 'application/octet-stream';

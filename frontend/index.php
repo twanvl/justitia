@@ -64,7 +64,7 @@ class View extends PageWithEntity {
 	
 	function write_usergroup_view() {
 		$group = UserGroup::current();
-		$max_size = intval($this->entity->attribute('max group size'));
+		$max_size = $this->entity->max_group_size();
 		echo '<ul class="user-group">';
 		$current_page = 'index.php' . $this->entity->path();
 		foreach ($group as $user) {
@@ -109,7 +109,7 @@ class View extends PageWithEntity {
 			echo "<tr><td>Starts</td><td>" . format_date($active_range->start) . "</td>";
 		}
 		echo "<tr><td>Deadline</td><td>"   . format_date($active_range->end, true) . "</td>";
-		echo "<tr><td>Language</td><td>"   . ($this->entity->attribute('language')) . "</td>";
+		echo "<tr><td>Language</td><td>"   . $this->entity->language()->name . "</td>";
 		//echo "<tr><td>Archives allowed</td><td>" . format_bool($this->entity->attribute_bool('allow archives')) . "</td>";
 		echo "<tr><td>Judging</td><td>";
 		if ($this->entity->compile()) {

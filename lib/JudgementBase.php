@@ -68,7 +68,7 @@ abstract class JudgementBase {
 			return Status::FAILED_INTERNAL;
 		}
 		if (!$this->download_source()) {
-			throw new Exception("Failed to find submission source");
+			throw new Exception("Failed to download submission source");
 			return Status::FAILED_INTERNAL;
 		}
 		if (!$this->determine_language()) {
@@ -85,16 +85,9 @@ abstract class JudgementBase {
 	
 	// What language is the source code in? store in $this->language
 	protected function determine_language() {
-		// what type of file do we have?
-		// determine from specification
-		$this->language = Util::language_info( $this->entity->attribute('language') );
-		// determine from extension
-		if ($this->language['name'] == 'any') {
-			// TODO: inspect all source files?
-			$this->language = Util::language_from_filename($this->source_files[0]);
-		}
-		// unknown language -> failure
-		return $this->language['name'] != 'unknown';
+		$this->language = $this->entity->language()->adapt_to_filenames($this->source_files);
+		// not a known programming language -> failure
+		return $this->language->is_code;
 	}
 	
 	protected function create_tempdir() {
@@ -122,14 +115,14 @@ abstract class JudgementBase {
 	protected function extract_archive() {
 		// extract archive?
 		$is_archive = false;
-		if (isset($this->language['archive_extract'])) {
+		if (isset($this->language->archive_extract)) {
 			if ($this->entity->attribute_bool('allow archives')) {
 				// TODO: Check this during submit
 				return false;
 			}
 			throw new InternalException("TODO: archives");
 			$source_file_list = implode(' ',$this->source_files); // space separated list of filenames
-			SystemUtil::run_command(false, $this->language['archive_extract'], $source_file_list);
+			SystemUtil::run_command(false, $this->language->archive_extract, $source_file_list);
 			// look for the actual source file
 		}
 		return true;
@@ -139,24 +132,29 @@ abstract class JudgementBase {
 	protected function compile() {
 		// compiler script to use
 		$compiler = $this->entity->compiler();
-		if ($compiler == '') $compiler = $this->language['name'];
+		if ($compiler == '') $compiler = $this->language->compiler;
 		$compiler = getcwd() . "/compilers/$compiler.sh";
 		// flags?
 		$flags = $this->entity->compiler_flags();
+		
 		// copy some files?
 		$files_to_copy = $this->entity->compiler_files();
 		foreach ($files_to_copy as $filename) {
 			$local_name = $this->tempdir->file($filename);
 			copy($this->entity->data_path() . $filename, $local_name);
-			echo "$local_name\n";
+			echo "copying $local_name\n";
 			make_file_readable($local_name);
 		}
+		
 		// which files to compile?
 		$compiled_files = array();
 		foreach ($this->source_files as $file) {
-			$compiled_files []= $file; // TODO: don't include .h files
+			if ($this->language->should_compile($file)) {
+				$compiled_files []= $file;
+			}
 		}
 		$compiled_files_list = implode(' ',$compiled_files); // space separated list of filenames
+		
 		// compile
 		$this->exe_file = $this->tempdir->file('compiled_program.exe');
 		$compile_err_file = $this->tempdir->file('compiler.err');
@@ -165,6 +163,7 @@ abstract class JudgementBase {
 		make_file_writable($compile_err_file);
 		$limits = $this->entity->compile_limits();
 		$result = SystemUtil::safe_command($this->tempdir->dir, $compiler, array($compiled_files_list, $this->exe_file, $compile_err_file, $flags), $limits);
+		
 		// did compilation succeed?
 		if ($result && !file_exists($this->exe_file)) {
 			if (file_exists($this->exe_file . ".sh")) {
@@ -192,6 +191,7 @@ abstract class JudgementBase {
 		$runner = $this->entity->runner();
 		$runner = getcwd() . "/runners/$runner.sh";
 		$flags = $this->entity->runner_flags();
+		
 		// copy case input, prepare output files
 		$case_input  = $this->tempdir->file("$case.in");
 		$case_output = $this->tempdir->file("$case.out");
@@ -202,6 +202,7 @@ abstract class JudgementBase {
 		make_file_writable($case_output);
 		make_file_writable($case_error);
 		make_file_writable($case_limit_error);
+		
 		// run program
 		$limits = $this->entity->run_limits();
 		$result = SystemUtil::safe_command($this->tempdir->dir, $runner, array($this->exe_file, $case_input, $case_output, $case_error, $flags), $limits, $case_limit_error);
@@ -214,6 +215,7 @@ abstract class JudgementBase {
 			// use limit error message as error output
 			copy($case_limit_error, $case_error);
 		}
+		
 		// store results
 		$this->put_tempfile("$case.out");
 		$this->put_tempfile("$case.err");
@@ -226,6 +228,7 @@ abstract class JudgementBase {
 		$checker = $this->entity->checker();
 		$checker = getcwd() . "/checkers/$checker.sh";
 		$flags = $this->entity->checker_flags();
+		
 		// the files
 		$case_ref  = $this->entity->testcase_reference_output($case);
 		$case_my   = $this->tempdir->file("$case.out");
@@ -234,6 +237,7 @@ abstract class JudgementBase {
 		if (!file_exists($case_ref)) {
 			throw new Exception("Reference implementation does not exists:\n$case_ref");
 		}
+		
 		// run checker
 		$result = SystemUtil::run_command($this->tempdir->dir, $checker, array($case_my, $case_ref, $case_diff, $flags));
 		if (!$result) {

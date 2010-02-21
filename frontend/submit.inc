@@ -57,14 +57,14 @@ function check_upload($entity, &$files) {
 	
 	// is the group ok?
 	$group = UserGroup::current();
-	$max_size = intval($entity->attribute('max group size'));
+	$max_size = $entity->max_group_size();
 	if (count($group) > $max_size) {
 		Template::add_message('submit','error', "There are too many students in this group, please remove someone.");
 		return false;
 	}
 	
 	// are the uploads okay?
-	$file_regex = $entity->attribute('filename regex');
+	$file_regex = $entity->filename_regex();
 	foreach ($files as $file) {
 		if ($file['error'] != UPLOAD_ERR_OK) {
 			Template::add_message('submit','error', file_upload_error_message($file['error']));
@@ -73,7 +73,6 @@ function check_upload($entity, &$files) {
 	}
 	
 	// match filename with regex
-	$file_regex = $entity->attribute('filename regex');
 	if ($file_regex != '') {
 		foreach ($files as $file) {
 			if (!preg_match("/$file_regex/", $file['name'])) {

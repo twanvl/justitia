@@ -91,6 +91,18 @@ class Entity {
 	}
 	
 	
+	function title() {
+		return $this->attribute("title");
+	}
+	function order() {
+		$this->load_attributes();
+		if (isset($this->_attributes['order'])) {
+			return $this->_attributes['order'];
+		} else {
+			return $this->_dir_name;
+		}
+	}
+	
 	// get the visible date range
 	function visible_range() {
 		return new DateRange(
@@ -122,22 +134,23 @@ class Entity {
 	function allow_multiple_files() {
 		return $this->attribute_bool('allow multiple files');
 	}
+	function max_group_size() {
+		return intval($this->attribute('max group size'));
+	}
+	function filename_regex() {
+		$regex = $this->attribute('filename regex');
+		if (empty($regex)) {
+			$regex = $this->language()->filename_regex;
+		}
+		return $regex;
+	}
+	function language() {
+		return Language::by_name($this->attribute('language'), $this);
+	}
 	
 	// For the admin: may he view the results table (not if it is too large)
 	function allow_view_results() {
 		return $this->attribute_bool('allow view results');
-	}
-	
-	function title() {
-		return $this->attribute("title");
-	}
-	function order() {
-		$this->load_attributes();
-		if (isset($this->_attributes['order'])) {
-			return $this->_attributes['order'];
-		} else {
-			return $this->_dir_name;
-		}
 	}
 	
 	function compile() {
