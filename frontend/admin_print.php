@@ -24,6 +24,10 @@ class View extends PageWithEntity {
 		}
 	}
 	
+	// ---------------------------------------------------------------------
+	// Form for printout options
+	// ---------------------------------------------------------------------
+	
 	function title() {
 		return "Print submissions for " . parent::title();
 	}
@@ -55,7 +59,7 @@ class View extends PageWithEntity {
 		$this->write_form_hidden('filled',1);
 		$this->write_form_table_begin();
 		$this->write_form_table_field('text',    'user_filter',    'Only for users', @$_REQUEST['user_filter']);
-		//$this->write_form_table_field('text',    'filename_filter', 'Only include files', @$_REQUEST['filename_filter']);
+		$this->write_form_table_field('text',    'filename_filter','Include files', @$_REQUEST['filename_filter']);
 		//$this->write_form_table_field('radio',   'format',         'Text output', $format=='text', ' value="text"');
 		//$this->write_form_table_field('radio',   'format',         'HTML output', $format=='html', ' value="html"');
 		$this->write_form_table_field('checkbox','include_failed', 'Include failed and pending submissions', $include_failed);
@@ -73,11 +77,16 @@ class View extends PageWithEntity {
 		
 		$this->write_block_begin("Tips");
 		echo "<ul>";
-		echo "<li>Disable all headers and footers in the <tt>File</tt> &rarr; <tt>Page Setup</tt> dialog (in Firefox)</li>";
+		echo "<li>The 'include files' filter is a <a href=\"http://php.net/manual/en/reference.pcre.pattern.syntax.php\">regular expression</a>. For example, to exclude files use <tt>^(?!foo)</tt></li>";
+		echo "<li>Disable all headers and footers in the <tt>File</tt> &rarr; <tt>Page Setup</tt> dialog.</li>";
 		echo "<li>Double sided printing only works in Opera.</li>";
 		echo "</ul>";
 		$this->write_block_end();
 	}
+	
+	// ---------------------------------------------------------------------
+	// The printout
+	// ---------------------------------------------------------------------
 	
 	private $tab_replacement = '    ';
 	
@@ -92,13 +101,16 @@ class View extends PageWithEntity {
 				for ($i = 0 ; $i < $tabsize ; ++$i) $this->tab_replacement .= ' ';
 			}
 		}
+		
 		// for each userid => subm
 		$subms = $this->entity->all_final_submissions();
+		
 		// make unique
 		$unique_subms = array();
 		foreach($subms as $subm) {
 			$unique_subms[$subm->submissionid] = $subm;
 		}
+		
 		// sort by users
 		$by_name = array();
 		foreach($unique_subms as $subm) {
@@ -107,7 +119,8 @@ class View extends PageWithEntity {
 			$by_name[$name_of_first_user] = $subm;
 		}
 		ksort($by_name);
-		// TODO: sort submissions by name
+		
+		// print each submission
 		foreach ($by_name as $subm) {
 			$this->write_print_submission($subm);
 		}
@@ -123,7 +136,8 @@ class View extends PageWithEntity {
 			$match = stripos(User::names_text($subm->users()), $_REQUEST['user_filter']);
 			if ($match === false) return;
 		}
-		// print it
+		
+		// submission header
 		echo '<div class="submission">';
 		echo '<div class="submission-head">';
 		echo "<table><tr><td>Submission</td><td>#" . $subm->submissionid . " for <tt>" . htmlspecialchars($subm->entity_path) . "</tt></td></tr>";
@@ -134,17 +148,33 @@ class View extends PageWithEntity {
 		}
 		echo "</table>";
 		echo "</div>\n";
+		
+		// submission files
 		foreach ($subm->get_code_filenames() as $code_name => $filename) {
 			$this->write_print_file($filename, $subm->get_file($code_name));
 		}
+		
 		echo "</div>\n";
 	}
+	
 	function write_print_file($filename,$contents) {
+		// include this file?
+		$class = 'file';
+		if (@$_REQUEST['filename_filter'] != '') {
+			if (!preg_match("@" . @$_REQUEST['filename_filter'] . "@", $filename)) {
+				$class = 'file skipped';
+			}
+		}
+		
+		// file header
+		echo "<div class=\"$class\">";
 		echo '<div class="file-head">';
 		echo htmlspecialchars($filename);
+		if ($class == 'file skipped') echo ' <span>(skipped)</span>';
 		echo '</div>';
 		$contents = str_replace("\r","",$contents);
 		
+		// file contents
 		echo '<pre>';
 		$lines = explode("\n",$contents);
 		foreach($lines as $line) {
@@ -159,7 +189,9 @@ class View extends PageWithEntity {
 			}
 		}
 		echo '</pre>';
+		echo '</div>';
 	}
+	
 	// Split a line into  array(indentation,rest)
 	function take_indent($line) {
 		$len = strlen($line);
@@ -174,6 +206,14 @@ class View extends PageWithEntity {
 			}
 		}
 		return array($indent,substr($line,$i));
+	}
+	
+	
+	function write_skipped_file($filename) {
+		echo '<div class="skipped-file-head">';
+		echo htmlspecialchars($filename);
+		echo ' <span>(skipped)</span>';
+		echo '</div>';
 	}
 }
 
