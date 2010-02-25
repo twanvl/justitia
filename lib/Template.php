@@ -270,6 +270,7 @@ abstract class Template {
     <title><?php echo $title; ?> - <?php echo $this->app_name(); ?></title>
     <link rel="stylesheet" type="text/css" href="<?php echo $base; ?>style/style.css">
     <link rel="stylesheet" type="text/css" href="<?php echo $base; ?>style/jquery.autocomplete.css">
+    <link rel="shortcut icon" href="<?php echo $base; ?>style/favicon.png">
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
     <script type="text/javascript" src="<?php echo $base; ?>style/jquery.autocomplete.js"></script>
     <script type="text/javascript" src="<?php echo $base; ?>style/script.js"></script>
