@@ -173,9 +173,9 @@ class SystemUtil {
 		// time limit
 		$actual_args []= "--time=" . (isset($limits['time limit']) ? $limits['time limit'] : 60);
 		// memory limit
-		if (isset($limits['memory limit'])) $actual_args []= "--memsize=" . ($limits['memory limit'] / 1024);
+		if (isset($limits['memory limit'])) $actual_args []= "--memsize=" . intval($limits['memory limit'] / 1024);
 		// filesize limit
-		if (isset($limits['filesize limit'])) $actual_args []= "--filesize=" . ($limits['filesize limit'] * 1. / 1024);
+		if (isset($limits['filesize limit'])) $actual_args []= "--filesize=" . intval($limits['filesize limit'] / 1024);
 		// process limit
 		if (isset($limits['process limit'])) $actual_args []= "--nproc=" . $limits['process limit'];
 		// no coredumps
