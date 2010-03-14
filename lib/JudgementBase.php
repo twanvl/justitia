@@ -251,11 +251,16 @@ abstract class JudgementBase {
 	protected function put_tempfile($file) {
 		// read file
 		$filename = $this->tempdir->file($file);
+		// limit to use
 		$max_file_size = intval($this->entity->filesize_limit());
 		if ($max_file_size > GLOBAL_FILESIZE_LIMIT) $max_file_size = GLOBAL_FILESIZE_LIMIT;
-		$contents = $this->should_truncate_files()
-		              ? file_get_contents($filename, 0,null,0, $max_file_size + 1) // read 1 more than max size, so we can detect files that are too large
-		              : file_get_contents($filename, 0,null,0, GLOBAL_FILESIZE_LIMIT); // *always* limit the filesize, to prevent out-of-memory errors
+		$read_limit = $this->should_truncate_files()
+			? $max_file_size + 1 // read 1 more than max size, so we can detect files that are too large
+			: GLOBAL_FILESIZE_LIMIT + 1; // *always* limit the filesize, to prevent out-of-memory errors
+		// for some reason limiting the filesize convinces php to always allocate a buffer that large, so we hack around that
+		$actual_file_size = filesize($filename);
+		if ($actual_file_size < $read_limit) $read_limit = $actual_file_size;
+		$contents = file_get_contents($filename, 0,null,0, $read_limit);
 		// check the file size
 		$content_size = strlen($contents);
 		if ($content_size > $max_file_size) {
