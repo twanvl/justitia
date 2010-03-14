@@ -52,7 +52,7 @@ class LogEntry {
 			// !(NULL = NULL)
 			DB::prepare_query($query_get_null, "SELECT * FROM `error_log` WHERE `entity_path` IS NULL AND `message`=:message LIMIT 1");
 			$query_get_null->execute(array('message' => $message));
-			$result = DB::fetch_one('LogEntry', $query_get, '', false);
+			$result = DB::fetch_one('LogEntry', $query_get_null, '', false);
 		} else {
 			DB::prepare_query($query_get, "SELECT * FROM `error_log` WHERE `entity_path`=:entity_path AND `message`=:message LIMIT 1");
 			$query_get->execute($data);
