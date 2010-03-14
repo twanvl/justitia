@@ -42,7 +42,9 @@ class SubmissionJudgement extends JudgementBase {
 			try {
 				$ref_output_generator->build_testset_outputs();
 			} catch (Exception $e) {
-				LogEntry::log("Failed to build reference implementation.\n".$e->getMessage(), $this->entity);
+				$msg = "Failed to build reference implementation.\n" . $e->getMessage();
+				LogEntry::log($msg, $this->entity);
+				echo $msg . "\n";
 				return Status::FAILED_INTERNAL;
 			}
 			$ref_output_generator->__destruct();

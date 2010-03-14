@@ -21,7 +21,7 @@ class ReferenceJudgement extends JudgementBase {
 		if (($status = $this->prepare_and_compile()) != 0) {
 			$msg = "Compiling failed with status " . Status::to_text($status) . "\n";
 			if (file_exists($this->output_dir . '/compiler.err')) {
-				$msg .= file_get_contents($this->output_dir . '/compiler.err');
+				$msg .= file_get_contents($this->output_dir . '/compiler.err', 0,null,0, 10000);
 			} else {
 				$msg .= "<no message>\n";
 			}
@@ -31,7 +31,11 @@ class ReferenceJudgement extends JudgementBase {
 		foreach($this->entity->testcases() as $case) {
 			echo "  case: " . $case . "\n";
 			if (!$this->run_case($case)) {
-				throw new Exception("Runtime error for case $case.\n");
+				$msg = "Runtime error for case $case.\n";
+				if (file_exists($this->output_dir . "/$case.err")) {
+					$msg .= file_get_contents($this->output_dir . "/$case.err", 0,null,0, 10000);
+				}
+				throw new Exception($msg);
 			}
 		}
 		// Done
