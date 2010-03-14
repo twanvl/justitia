@@ -43,6 +43,10 @@ define('DAEMON_SLEEP_TIME', 1);
 define('DAEMON_INACTIVE_TIMEOUT', 1*60);
 define('DAEMON_GONE_TIMEOUT',  5*60);
 
+// what is the maximum filesize allowed?
+// this is an upper limit to 'filesize limit'.
+define('GLOBAL_FILESIZE_LIMIT', 5*1000*1000); // 5 MB
+
 // -----------------------------------------------------------------------------
 // default attribute values
 // -----------------------------------------------------------------------------
@@ -61,8 +65,9 @@ $attribute_defaults['max group size']		= 1000000000;
 $attribute_defaults['keep best']		= true;
 $attribute_defaults['compile time limit']	= 30;
 $attribute_defaults['time limit']		= 1;
-$attribute_defaults['memory limit']		= 100000;
+$attribute_defaults['memory limit']		= 100*1000*1000; // 100 MB
 $attribute_defaults['filesize limit']		= 0.5*1000*1000; // 0.5 MB
+$attribute_defaults['process limit']		= 100;
 $attribute_defaults['show compile errors']	= true;
 $attribute_defaults['show run errors']		= 'all';
 $attribute_defaults['show input/output']	= 'none';
