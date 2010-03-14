@@ -186,6 +186,7 @@ class Entity {
 			'time limit'     => intval($this->attribute('time limit')),
 			'memory limit'   => intval($this->attribute('memory limit')),
 			'filesize limit' => intval($this->attribute('filesize limit')),
+			'process limit'  => intval($this->attribute('process limit')),
 		);
 	}
 	function filesize_limit() {

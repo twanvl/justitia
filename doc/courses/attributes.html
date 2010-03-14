@@ -139,8 +139,15 @@ An attribute <tt>child <em>xxx</em>: <em>yyy</em></tt> means that attribute <em>
       <td>Timelimit for running the program on a single test case, in seconds
       <td>1
   <tr><th><tt>memory limit</tt>
-      <td>Limit on the amount of memory that may be used, in KiB
-      <td>100000 (100MB)
+      <td>Limit on the amount of memory that may be used, in bytes
+      <td>100000000 (100MB)
+  <tr><th><tt>filesize limit</tt>
+      <td>Limit on the size of produced files, in bytes.
+          Larger files are truncated
+      <td>500000 (0.5MB)
+  <tr><th><tt>process limit</tt>
+      <td><dd>The maximum number of threads/processes that can be created.
+      <td>100
       
   <tr><th colspan="3">Feedback
   <tr class="legend"><th>Attribute

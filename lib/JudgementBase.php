@@ -252,9 +252,10 @@ abstract class JudgementBase {
 		// read file
 		$filename = $this->tempdir->file($file);
 		$max_file_size = intval($this->entity->filesize_limit());
+		if ($max_file_size > GLOBAL_FILESIZE_LIMIT) $max_file_size = GLOBAL_FILESIZE_LIMIT;
 		$contents = $this->should_truncate_files()
-		              ? file_get_contents($filename, 0,null,0, $max_file_size + 1)
-		              : file_get_contents($filename); // read 1 more than max size, so we can detect files that are too large
+		              ? file_get_contents($filename, 0,null,0, $max_file_size + 1) // read 1 more than max size, so we can detect files that are too large
+		              : file_get_contents($filename, 0,null,0, GLOBAL_FILESIZE_LIMIT); // *always* limit the filesize, to prevent out-of-memory errors
 		// check the file size
 		$content_size = strlen($contents);
 		if ($content_size > $max_file_size) {
