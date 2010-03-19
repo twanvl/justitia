@@ -15,4 +15,4 @@ if [ "$TERM" = cygwin ]; then
 fi
 
 # write script
-echo "octave --silent --norc $SOURCE" > $DEST
+echo "octave --silent $SOURCE" > $DEST
