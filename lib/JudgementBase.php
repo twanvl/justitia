@@ -128,6 +128,11 @@ abstract class JudgementBase {
 		return true;
 	}
 	
+	// Prepare files
+	protected function prepare_files() {
+		  // TODO zooi hierheen verplaatsen
+	}
+	
 	// Compile $source_files to $exe_file
 	protected function compile() {
 		// compiler script to use
@@ -141,10 +146,21 @@ abstract class JudgementBase {
 		$files_to_copy = $this->entity->compiler_files();
 		foreach ($files_to_copy as $filename) {
 			$local_name = $this->tempdir->file($filename);
-			copy($this->entity->data_path() . $filename, $local_name);
+			// warn if file can't be copied
+			if (!copy($this->entity->data_path() . $filename, $local_name)) {
+			   //throw new InternalError("");
+			}
 			echo "copying $local_name\n";
 			make_file_readable($local_name);
 		}
+		// Make some files writable
+		$files_to_touch = $this->entity->writable_files();
+                foreach ($files_to_touch as $filename) {
+                        $local_name = $this->tempdir->file($filename);
+                        touch($local_name);
+                        echo "making $local_name writable\n";
+                        make_file_writable($local_name);
+                }
 		
 		// which files to compile?
 		$compiled_files = array();

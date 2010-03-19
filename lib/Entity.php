@@ -217,6 +217,11 @@ class Entity {
 		$files = $this->attribute('downloadable files');
 		return $files ? explode_whitespace($files) : array();
 	}
+        function writable_files() {
+                $files = $this->attribute('writable files');
+                return $files ? explode_whitespace($files) : array();
+        }
+
 	
 	// ---------------------------------------------------------------------
 	// Children
