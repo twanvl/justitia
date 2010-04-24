@@ -39,8 +39,6 @@ abstract class JudgementBase {
 	
 	// Should return an array of ('filename' => 'contents) for all source files
 	protected abstract function get_source_files();
-//%	protected abstract function get_source_filename();
-//%	protected abstract function get_source_file_contents();
 	protected abstract function put_output_file_contents($file,$contents);
 	
 	
@@ -176,12 +174,10 @@ abstract class JudgementBase {
 		// files produced by the compiler, they must be writable
 		$this->exe_file = $this->tempdir->file('compiled_program.exe');
 		$compile_err_file = $this->tempdir->file('compiler.err');
-		make_file_writable($this->exe_file);
-		make_file_writable($compile_err_file);
-		make_file_writable($this->tempdir->file('verbose.log')); // the java compile script uses this file
 		
 		// compile
 		$limits = $this->entity->compile_limits();
+		unset($limits['as nobody']); // run compiler under our own userid
 		$result = SystemUtil::safe_command($this->tempdir->dir, $compiler, array($compiled_files_list, $this->exe_file, $compile_err_file, $flags), $limits);
 		
 		// did compilation succeed?

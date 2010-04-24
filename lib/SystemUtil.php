@@ -77,6 +77,7 @@ class SystemUtil {
 	
 	// Run a shell command more conveniently
 	function run_command($working_dir,$cmd,$args, $error_out = NULL) {
+		echo "Running: $cmd\n"
 		// change dir and execute
 		$previous_dir = getcwd();
 		$command = SystemUtil::build_command($cmd,$args,$error_out);
@@ -84,62 +85,6 @@ class SystemUtil {
 		system($command, $retval);
 		chdir($previous_dir);
 		return $retval == 0;
-	}
-	
-	// Run a shell command with given stdion, return array(retval,stdout,stderr)
-	function run_command_io($cmd,$args, $stdin,  $workingdir = NULL, $env = NULL) {
-		$command = SystemUtil::build_command($cmd,$args);
-		$descriptorspec = array(
-			0 => array("pipe", "r"), // stdin
-			1 => array("pipe", "w"), // stdout
-			2 => array("pipe", "w")  // stderr
-		);
-		// start
-		$process = proc_open($command, $descriptorspec, $pipes, $workingdir, $env);
-		if (!is_resource($process)) {
-			return array(false,"","Failed to run command $cmd");
-		}
-		// nonblocking
-		foreach ($pipes as $p) stream_set_blocking($p,0);
-		// handle io
-		$stdout = '';
-		$stderr = '';
-		while (true) {
-			// status
-			// poll
-			$to_write = array(); $to_read = array();
-			if ($pipes[0]) $to_write []= $pipes[0];
-			if ($pipes[1]) $to_read  []= $pipes[1];
-			if ($pipes[2]) $to_read  []= $pipes[2];
-			$to_error = NULL;
-			// wait for at most 0.1 seconds
-			$num_changed_streams = stream_select($to_read,$to_write,$to_error,0,100000);
-			echo "----\n";
-			var_dump($num_changed_streams);
-			var_dump($to_read);
-			var_dump($to_write);
-			if ($num_changed_streams === false) {
-				// TODO: handle error
-				echo "error";
-			} else if ($num_changed_streams == 0) {
-				$status = proc_get_status($process);
-				if (!$status['running']) break;
-			} else {
-				// write stdin
-				if (in_array($pipes[0],$to_write)) SystemUtil::write_stream($pipes[0],$stdin);
-				// read stdout
-				if (in_array($pipes[1],$to_read))  SystemUtil::read_stream($pipes[1],$stdout);
-				// read stderr
-				if (in_array($pipes[2],$to_read))  SystemUtil::read_stream($pipes[2],$stderr);
-			}
-		}
-		// done
-		if ($pipes[0]) fclose($pipes[0]);
-		if ($pipes[1]) fclose($pipes[1]);
-		if ($pipes[2]) fclose($pipes[2]);
-		$return_value = proc_close($process);
-		return array($return_value,$stdout,$stderr);
-
 	}
 	
 	private function write_stream(&$fp, &$str) {
@@ -180,9 +125,8 @@ class SystemUtil {
 		if (isset($limits['process limit'])) $actual_args []= "--nproc=" . $limits['process limit'];
 		// no coredumps
 		$actual_args []= "--no-core";
-		// error output
 		// user
-		if (RUNGUARD_USER !== false) $actual_args []= "--user=" . RUNGUARD_USER;
+		if (isset($limits['as nobody']) && RUNGUARD_USER !== false) $actual_args []= "--user=" . RUNGUARD_USER;
 		// run
 		$actual_args []= $cmd;
 		$actual_args = array_merge($actual_args,$args);

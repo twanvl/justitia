@@ -187,6 +187,7 @@ class Entity {
 			'memory limit'   => intval($this->attribute('memory limit')),
 			'filesize limit' => intval($this->attribute('filesize limit') * 2), // fudge factor, so we can detect and warn about problems
 			'process limit'  => intval($this->attribute('process limit')),
+			'as nobody'      => true
 		);
 	}
 	function filesize_limit() {
