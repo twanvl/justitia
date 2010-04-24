@@ -178,7 +178,8 @@ abstract class JudgementBase {
 		// compile
 		$limits = $this->entity->compile_limits();
 		unset($limits['as nobody']); // run compiler under our own userid
-		$result = SystemUtil::safe_command($this->tempdir->dir, $compiler, array($compiled_files_list, $this->exe_file, $compile_err_file, $flags), $limits);
+		$args = array($compiled_files_list, $this->exe_file, $compile_err_file, $flags, getcwd())
+		$result = SystemUtil::safe_command($this->tempdir->dir, $compiler, $args, $limits);
 		
 		// did compilation succeed?
 		if ($result && !file_exists($this->exe_file)) {
