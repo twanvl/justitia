@@ -81,7 +81,6 @@ class SystemUtil {
 		$previous_dir = getcwd();
 		$command = SystemUtil::build_command($cmd,$args,$error_out);
 		if ($working_dir) chdir($working_dir);
-		echo "Running: $command\n";
 		system($command, $retval);
 		chdir($previous_dir);
 		return $retval == 0;

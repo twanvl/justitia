@@ -82,7 +82,7 @@ if (! -f "$classname.class") {
 
 # Calculate Java program memlimit as MEMLIMIT - max. JVM memory usage:
 my $memlimit = $ARGV[$#ARGV];
-my $memlimit_java = $memlimit;
+my $memlimit_java = $memlimit - 262144000;
 
 # Write executing script:
 # Executes java byte-code interpreter with following options
