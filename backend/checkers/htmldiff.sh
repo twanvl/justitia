@@ -11,5 +11,5 @@
 
 export FILE1="your output"
 export FILE2="expected output"
-perl $JUSTITIA_BACKEND_DIR/bin/htmldiff.pl $4 $1 $2 >$3
+perl `dirname $0`/../bin/htmldiff.pl $4 $1 $2 >$3
 exit $?

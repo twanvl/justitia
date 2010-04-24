@@ -9,8 +9,8 @@
 SOURCE="$1"
 DEST="$2"
 ERROR="$3"
-MEMLIMIT="$4"
-JUSTITIA_BACKEND_DIR="$5"
+FLAGS="$4"
+MEMLIMIT="$5"
 
 if [ "$TERM" = cygwin ]; then
 	# We are on windows, where shell scripts must be named .sh
@@ -30,7 +30,7 @@ if [ $exitcode_compile -ne "0" ]; then
 fi
 
 # Find the classname in the output, and write executing script
-perl $JUSTITIA_BACKEND_DIR/compilers/java_make_runner.pl $SOURCE $MEMLIMIT < verbose.log > $DEST 2> $ERROR
+perl `dirname $0`/java_make_runner.pl $SOURCE $MEMLIMIT < verbose.log > $DEST 2> $ERROR
 result=$?
 
 # Done

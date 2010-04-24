@@ -93,7 +93,7 @@ print <<EOF;
 #!/bin/sh
 # Generated shell-script to execute java interpreter on source.
 
-exec java -Xrs -Xmx${memlimit_java}k $classname
+exec java -Xrs -Xmx${memlimit_java} $classname
 EOF
 
 exit 0;

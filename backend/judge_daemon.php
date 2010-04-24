@@ -13,9 +13,6 @@ if (!isset($_SERVER['argv'])) {
 
 define('VERBOSE', true);
 
-// for shell scripts
-putenv("JUSTITIA_BACKEND_DIR=" . getcwd());
-
 // Identity of this host (database object)
 $self = JudgeDaemon::add();
 

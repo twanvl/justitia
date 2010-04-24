@@ -178,7 +178,9 @@ abstract class JudgementBase {
 		// compile
 		$limits = $this->entity->compile_limits();
 		unset($limits['as nobody']); // run compiler under our own userid
-		$args = array($compiled_files_list, $this->exe_file, $compile_err_file, $flags, getcwd());
+		// the java compile script needs to know the runtime memory limit
+		$run_limits = $this->entity->run_limits();
+		$args = array($compiled_files_list, $this->exe_file, $compile_err_file, $flags, $run_limits['memory limit']);
 		$result = SystemUtil::safe_command($this->tempdir->dir, $compiler, $args, $limits);
 		
 		// did compilation succeed?
