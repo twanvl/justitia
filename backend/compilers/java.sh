@@ -19,6 +19,7 @@ if [ "$TERM" = cygwin ]; then
 fi
 
 # Compile with -verbose, stop in case of error
+# This allows us to determine the name of the main class
 javac -verbose $SOURCE 2>verbose.log
 exitcode_compile=$?
 if [ $exitcode_compile -ne "0" ]; then
@@ -28,6 +29,8 @@ if [ $exitcode_compile -ne "0" ]; then
 fi
 
 # Find the classname in the output, and write executing script
+echo JUSTITIA_BACKEND_DIR:$JUSTITIA_BACKEND_DIR
+env
 perl $JUSTITIA_BACKEND_DIR/compilers/java_make_runner.pl $SOURCE $MEMLIMIT < verbose.log > $DEST 2> $ERROR
 result=$?
 
