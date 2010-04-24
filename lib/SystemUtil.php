@@ -77,11 +77,11 @@ class SystemUtil {
 	
 	// Run a shell command more conveniently
 	function run_command($working_dir,$cmd,$args, $error_out = NULL) {
-		echo "Running: $cmd\n";
 		// change dir and execute
 		$previous_dir = getcwd();
 		$command = SystemUtil::build_command($cmd,$args,$error_out);
 		if ($working_dir) chdir($working_dir);
+		echo "Running: $command\n";
 		system($command, $retval);
 		chdir($previous_dir);
 		return $retval == 0;
