@@ -97,7 +97,8 @@ class JudgeDaemon {
 			                    "VALUES (:judge_host, :status, :start_time, :ping_time)");
 		$query->execute($data);
 		if ($query->rowCount() != 1) {
-			throw new InternalException("Create judge daemon failed");
+                        $jemoeder=$query->errorInfo();
+			throw new InternalException("Create judge daemon failed. (".($jemoeder[2]).")");
 		}
 		$data['judgeid'] = DB::get()->lastInsertId();
 		$query->closeCursor();
