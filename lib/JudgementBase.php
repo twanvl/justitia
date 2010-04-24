@@ -168,15 +168,19 @@ abstract class JudgementBase {
 			if ($this->language->should_compile($file)) {
 				$compiled_files []= $file;
 			}
+			// the compiler needs read permissions for all source files
+			make_file_readable($file);
 		}
 		$compiled_files_list = implode(' ',$compiled_files); // space separated list of filenames
 		
-		// compile
+		// files produced by the compiler, they must be writable
 		$this->exe_file = $this->tempdir->file('compiled_program.exe');
 		$compile_err_file = $this->tempdir->file('compiler.err');
-		foreach ($this->source_files as $f) make_file_readable($f);
 		make_file_writable($this->exe_file);
 		make_file_writable($compile_err_file);
+		make_file_writable($this->tempdir->file('verbose.log')); // the java compile script uses this file
+		
+		// compile
 		$limits = $this->entity->compile_limits();
 		$result = SystemUtil::safe_command($this->tempdir->dir, $compiler, array($compiled_files_list, $this->exe_file, $compile_err_file, $flags), $limits);
 		
