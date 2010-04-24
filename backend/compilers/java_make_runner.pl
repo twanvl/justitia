@@ -38,7 +38,7 @@ while(<STDIN>) {
 	# This regex matches  "[wrote Something.class]"
 	# Note: \w doesn't match "$", which Java uses for inner classes
 	#
-	if (/^\[wrote (\w*)\.class\]/) {
+	if (/^\[wrote (?:.*?)?(\w*)\.class\]/) {
 		push @classes, $1;
 		if (has_main($1)) {
 			push @classes_with_main, $1;
