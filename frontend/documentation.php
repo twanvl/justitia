@@ -75,15 +75,17 @@ class View extends Template {
 	function get_nav() {
 		$result [] = array(
 			$this->nav_item('User documentation', '/user'),
-			$this->nav_item('Course administration', '/courses'),
+			$this->nav_item('Writing courses', '/courses'),
 			$this->nav_item('Results & grading', '/results'),
-			$this->nav_item('Program design', '/design')
+			$this->nav_item('Administration', '/admin'),
+			$this->nav_item('Program design', '/design'),
 		);
 		if ($this->is_path_prefix('/user'))
 		$result [] = array(
 			$this->nav_item('What is Justitia?', '/user/index'),
 			$this->nav_item('Logging in', '/user/login'),
-			$this->nav_item('Submitting programs', '/user/submit')
+			$this->nav_item('Submitting programs', '/user/submitting'),
+			$this->nav_item('Feedback explained', '/user/feedback'),
 		);
 		if ($this->is_path_prefix('/courses'))
 		$result [] = array(
@@ -91,17 +93,28 @@ class View extends Template {
 			$this->nav_item('Test cases', '/courses/test_cases'),
 			$this->nav_item('Attribute reference', '/courses/attributes'),
 			$this->nav_item('Language notes', '/courses/languages'),
-			$this->nav_item('Example', '/courses/example')
+			$this->nav_item('FAQ / HOWTO', '/courses/howto'),
+			$this->nav_item('Example', '/courses/example'),
+		);
+		if ($this->is_path_prefix('/results'))
+		$result [] = array(
+			$this->nav_item('Introduction', '/results/index'),
+			$this->nav_item('Viewing submissions', '/results/submissions'),
+			$this->nav_item('Result table', '/admin/results'),
+			$this->nav_item('Printing and exporting', '/results/export')
 		);
 		if ($this->is_path_prefix('/admin'))
 		$result [] = array(
-			$this->nav_item('Introduction', 'TODO'),
-			$this->nav_item('Users', 'TODO'),
-			$this->nav_item('Viewing results', 'TODO')
+			$this->nav_item('Introduction', '/admin/index'),
+			$this->nav_item('Installation', '/admin/install'),
+			$this->nav_item('Judge daemons', '/admin/daemons'),
+			$this->nav_item('User administration', '/admin/users'),
+			$this->nav_item('Bugs / issues / features', '/admin/bugs'),
 		);
 		if ($this->is_path_prefix('/design'))
 		$result [] = array(
-			$this->nav_item('Introduction', '/design/index'),
+			$this->nav_item('Design overview', '/design/index'),
+			$this->nav_item('Classes', '/design/classes'),
 			$this->nav_item('Security considerations', '/design/security')
 		);
 		return $result;
