@@ -1,7 +1,10 @@
 <?php
 
 // -----------------------------------------------------------------------------
+// Utility class
 // Turn a tree into a series of layer, for outputing a HTML table header
+// 
+// This is used in the admin_results page
 // -----------------------------------------------------------------------------
 
 class LayerItem {
