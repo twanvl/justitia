@@ -1,0 +1,89 @@
+
+@page {
+	margin:		1cm;
+}
+
+body {
+	font-family:	sans-serif;
+	color:		black;
+	background:	white;
+}
+
+@media print {
+	body {
+		margin:		0;
+		padding:	0 .2em;
+	}
+}
+
+/* -----------------------------------------------------------------------------
+ * Headings
+ * ----------------------------------------------------------------------------- */
+
+.submission + .submission {
+	page-break-before:	always;
+}
+.double-sided .submission + .submission {
+	page-break-before:	right; /* only works in opera */
+}
+.submission-head {
+	page-break-inside:	avoid ;
+	border:			3px double black;
+	padding:		5px;
+	margin:			0 -.2em;
+	margin-bottom:		1em;
+}
+.file-head {
+	page-break-inside:	avoid ;
+	border:			1px solid black;
+	padding:		5px;
+	margin:			0 -.1em;
+	margin-bottom:		1em;
+}
+td {
+	padding-right:		5px;
+}
+
+.skipped pre {
+	display:		none;
+}
+.skipped .file-head {
+	margin-bottom:		.5em;
+	border:			1px dotted black;
+}
+.skipped .file-head span {
+	font-style:		italic;
+}
+
+/* -----------------------------------------------------------------------------
+ * Indentation, etc.
+ * ----------------------------------------------------------------------------- */
+
+pre {
+	white-space:		pre;
+	width:			100%;
+}
+
+.line {
+	display:		table;
+	width:			100%;
+	margin-left:		-1px;
+}
+.indent {
+	display:		table-cell;
+	white-space:		pre;
+	width:			1px; /* opera doesn't like width: 0 */
+}
+.indent b { /* tab indicator */
+	border-left:		1px dotted rgb(100,100,100);
+	position:		relative;
+	left:			4px;
+	font-weight:		normal;
+}
+.rest {
+	display:		inline-block;
+	white-space:		pre-wrap;
+	display:		table-cell;
+	text-indent:		-30px;
+	padding-left:		30px;
+}

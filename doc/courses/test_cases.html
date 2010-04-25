@@ -1,0 +1,39 @@
+<h1>Adding test cases</h1>
+
+<p>
+Test cases are specified by files named "<tt>*.in</tt>", in the directory of an assignment.
+The compiled program is run once for each of these files, with the contents of the file on stdin.
+
+<p>
+The output is compared to the corresponding file "<tt>*.out</tt>".
+This output file can be either made manual, or a reference implementation can be provided to generate them automatically.
+
+<p>
+In terms of a unix command line:
+<pre>
+student-implemenation < test.in > test.student-out
+reference-implemenation < test.in > test.out
+diff test.student-out test.out
+</pre>
+
+<h2>Feedback</h2>
+<p>
+When a student's program fails on some testcase "test.in",
+and a file "<tt>test.desc</tt>" exists, then that is used as feedback for students.
+
+<p>
+More feedback can be specified with the <tt>show run errors</tt> and <tt>show input/output</tt> attributes in the <tt>info</tt> file.
+Both are a list of test case names, without file extension.
+So to specify that feedback should be provided for the testcases in "1.in" and "2.in", the info file should contain:
+<pre>
+show input/output: 1 2
+</pre>
+
+<h2>Order of test cases</h2>
+<p>
+Testcases are always run in alphabetical order.
+
+<h2>Programs that don't use stdin/stdout</h2>
+<p>
+If no testcase exists, the program will <em>not</em> be run.
+To test programs that do not use standard input and output, the simplest solution is to create an empty file "run-the-program.in".

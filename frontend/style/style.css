@@ -1,0 +1,502 @@
+
+/* -----------------------------------------------------------------------------
+ * Main
+ * ----------------------------------------------------------------------------- */
+
+body {
+	margin:		0;
+	padding:	0;
+	font-family:	sans-serif;
+	font-size:	90%;
+	color:		black;
+	background:	white;
+}
+#header {
+	margin:		0;
+	background:	rgb(40,60,180);
+	color:		white;
+	padding:	.3em;
+	overflow:	hidden;
+}
+#header a {
+	color:		white;
+}
+#appname {
+	float:		left;
+}
+#user {
+	float:		right;
+}
+h1 {
+	margin-top:	.2em;
+	margin-bottom:	.2em;
+}
+#main {
+	padding:	1em;
+	padding-top:	0;
+}
+
+/* -----------------------------------------------------------------------------
+ * Navigation
+ * ----------------------------------------------------------------------------- */
+
+#nav-wrap {
+	background:	rgb(210,230,255);
+	margin:		0;
+	padding:	5px;
+	padding-left:	10px;
+}
+#nav {
+	list-style:	none;
+	padding:	0;
+	overflow:	hidden;
+	display:	table;
+	font-family:	sans-serif, arial;
+	font-size:	93%;
+	margin:		3px 0;
+	border-spacing:	5px 0;
+}
+#nav > li {
+	background:	white;
+	display:	table-cell;
+	vertical-align:	top;
+	margin:		5px;
+	border:		2px solid rgb(176,196,240);
+}
+#nav ul {
+	min-width:	8em;
+	float:		left;
+	list-style:	none;
+	margin:		0;
+	padding:	0;
+}
+#nav ul li {
+	margin:		1px;
+}
+#nav a {
+	min-width:	8em;
+	display:	block;
+	padding:	1px;
+	padding-right:	5px;
+	color:		black;
+	text-decoration:none;
+}
+
+#nav .ancestor,
+#nav .current {
+	font-weight:	bold;
+}
+#nav .ancestor {
+	background-image:	url(chevron-right-30.png);
+	background-repeat:	no-repeat;
+	background-position:	100% 50%;
+	padding-right:		17px;
+}
+
+#nav .inactive {
+	color:			rgb(128,128,128);
+}
+
+#nav a,
+#nav .inactive.skipped {
+	border:			1px solid rgb(240,240,240);
+	background-color:	white;
+}
+#nav .skipped {
+	border:			1px solid rgb(192,192,192);
+	background-color:	rgb(220,220,220);
+}
+#nav .failed {
+	border-color:		rgb(255,120,120);
+	background-color:	rgb(255,193,193);
+}
+#nav .passed {
+	border-color:		rgb(120,255,100);
+	background-color:	rgb(213,255,193);
+}
+#nav .pending {
+	border-color:		rgb(255,255,50);
+	background-color:	rgb(255,255,173);
+}
+
+#nav a:hover,
+#nav .inactive.skipped:hover,
+#nav a.current,
+#nav .inactive.skipped.current {
+	border-color:		rgb(220,220,220);
+	background-color:	rgb(245,245,245);
+}
+#nav .skipped:hover,
+#nav .skipped.current {
+	border-color:		rgb(140,140,140);
+	background-color:	rgb(200,200,200);
+}
+#nav .failed:hover,
+#nav .failed.current {
+	border-color:		rgb(255,50,50);
+	background-color:	rgb(255,146,146);
+}
+#nav .passed:hover,
+#nav .passed.current {
+	border-color:		rgb(60,255,50);
+	background-color:	rgb(181,255,146);
+}
+#nav .pending:hover,
+#nav .pending.current {
+	border-color:		rgb(255,255,0);
+	background-color:	rgb(255,255,111);
+}
+
+/* -----------------------------------------------------------------------------
+ * Admin pages
+ * ----------------------------------------------------------------------------- */
+
+#tabbar {
+	background:	black;
+	color:		rgb(128,128,128);
+	padding:	4px;
+	padding-top:	4px;
+	padding-left:	.6em;
+}
+#tabbar a {
+	color:		white;
+	text-decoration:	none;
+	padding:	2px 5px;
+	margin-left:	.4em;
+	margin-right:	.4em;
+}
+#tabbar a:hover {
+	background:	rgb(210,230,255);
+	color:		black;
+	-moz-border-radius: 5px;
+}
+#tabbar a.current {
+	background:	rgb(210,230,255);
+	color:		black;
+	margin-bottom:	-2px;
+	padding-bottom:	3px;
+	padding-top:	3px;
+	position:	relative;
+	top:		1px;
+	-moz-border-radius: 5px 5px 0 0;
+}
+
+.admin #header {
+	background:	rgb(100,40,140);
+}
+.admin #nav-wrap,
+.admin #tabbar a:hover,
+.admin #tabbar a.current {
+	background:	rgb(230,210,255);
+}
+
+.admin #nav > li {
+	background:	white;
+	border-color:	rgb(196,176,240);
+}
+
+.admin #nav a {
+	border-color:		rgb(240,240,240) !important;
+	background-color:	white !important;
+}
+.admin #nav a:hover,
+.admin #nav a.current {
+	border-color:		rgb(190,190,190) !important;
+	background-color:	rgb(240,240,240) !important;
+}
+
+/* -----------------------------------------------------------------------------
+ * Blocks
+ * ----------------------------------------------------------------------------- */
+
+.block {
+	border:		2px solid rgb(210,210,210);
+	margin-top:	0em;
+	margin:		1em;
+	-moz-border-radius: .2em;
+}
+.block .title {
+	background:	rgb(210,210,210);
+	padding:	.1em;
+	padding-left:	.2em;
+	padding-top:	0;
+}
+.block .title span,
+.block .title a {
+	font-size:	130%;
+	font-weight:	normal;
+}
+.block .title a {
+	text-decoration:none;
+	color:		black;
+	display:	block;
+}
+.block .content {
+	padding:	.5em;
+}
+.collapsed .content {
+	display:	none;
+}
+
+.collapsable .title {
+	background-image:	url(chevron-up-50.png);
+	background-repeat:	no-repeat;
+	background-position:	100% 40%;
+}
+.collapsable .title:hover {
+	background-image:	url(chevron-up-100.png);
+}
+.collapsed.collapsable .title {
+	background-image:	url(chevron-down-50.png);
+	background-position:	100% 50%;
+}
+.collapsed.collapsable .title:hover {
+	background-image:	url(chevron-down-100.png);
+}
+
+
+.block.failed		{ border-color:		rgb(255,100,100); }
+.block.failed .title	{ background-color:	rgb(255,100,100); }
+.block.passed		{ border-color:		rgb(120,255,100); }
+.block.passed .title	{ background-color:	rgb(120,255,100); }
+.block.pending		{ border-color:		rgb(255,255,50); }
+.block.pending .title	{ background-color:	rgb(255,255,50); }
+
+.block.collapsable         .title:hover,
+.block.linky               .title:hover { background-color:	rgb(190,190,190); }
+.block.collapsable.failed  .title:hover,
+.block.linky.failed        .title:hover { background-color:	rgb(255,50,50); }
+.block.collapsable.passed  .title:hover,
+.block.linky.passed        .title:hover { background-color:	rgb(60,255,50); }
+.block.collapsable.pending .title:hover,
+.block.linky.pending       .title:hover { background-color:	rgb(255,255,10); }
+
+.block.pending .content {
+	background:		url(ajax-loader.gif) no-repeat 99% 10px;
+}
+
+/* -----------------------------------------------------------------------------
+ * Testcases table
+ * ----------------------------------------------------------------------------- */
+
+.testcase-details .skipped {
+	background:	rgb(192,192,192);
+}
+.testcase-details .failed {
+	background:	rgb(255,100,100);
+}
+.testcase-details .passed {
+	background:	rgb(120,255,100);
+}
+
+/* -----------------------------------------------------------------------------
+ * Results table
+ * ----------------------------------------------------------------------------- */
+
+.results {
+	border:		1px solid rgb(128,128,128);
+	border-collapse:collapse;
+	margin-top:	.5em;
+	font-size:	90%;
+}
+.results td, .results th {
+	border:		1px solid rgb(128,128,128);
+	padding:	2px 3px;
+}
+#main .results a {
+	color:			black;
+	text-decoration:	none;
+	display:		block;
+}
+#main .results a:hover {
+	text-decoration:	underline;
+}
+.results tr > td:first-child,
+.results .user {
+	border-right:	3px double rgb(128,128,128);
+}
+.results tbody > tr:first-child {
+	border-top:	3px double rgb(128,128,128);
+}
+.results th {
+	text-align:	center;
+}
+.results .user {
+	text-align:	left;
+	vertical-align:	bottom;
+}
+.results .submitable-parent {
+	border-top:	hidden;
+}
+
+.results .skipped {
+	background:	rgb(192,192,192);
+}
+.results .failed {
+	background:	rgb(255,50,50);
+}
+.results .passed {
+	background:	rgb(120,255,100);
+}
+.results .pending {
+	background:	rgb(245,245,80);
+}
+
+/* -----------------------------------------------------------------------------
+ * Other
+ * ----------------------------------------------------------------------------- */
+
+td, th {
+	padding-right:	.5em;
+	text-align:	left;
+	vertical-align:	top;
+}
+
+a:link {
+	color:		rgb(0,20,180);
+}
+a:visited {
+	color:		rgb(100,0,140);
+}
+
+.list-like {
+	color:		rgb(128,128,128);
+}
+a.file {
+	padding-left:	18px;
+	min-height:	16px;
+	background:	url(page_white.png) left center no-repeat;
+}
+.file.java { background-image: url(page_white_cup.png) }
+.file.c    { background-image: url(page_white_c.png) }
+.file.h    { background-image: url(page_white_h.png) }
+.file.cpp, .file.cc, .file.hpp, .file.hh, .file.hxx,
+.file.cxx  { background-image: url(page_white_cplusplus.png) }
+.file.cs   { background-image: url(page_white_cs.png) }
+.file.txt  { background-image: url(page_white_text.png) }
+.file.doc  { background-image: url(page_white_word.png) }
+.file.pdf  { background-image: url(page_white_acrobat.png) }
+.file.tar, .file.gz, .file.bz2, .file.rar,
+.file.zip  { background-image: url(page_white_zip.png) }
+
+.user-list {
+	margin-top:	1em;
+}
+.user-group {
+	list-style:	disc url(user.png);
+	margin:		0;
+	padding:	0;
+	margin-bottom:	.5em;
+}
+.user-group li {
+	display:	block;
+	background:	url(user.png) left center no-repeat;
+	padding:	2px 0;
+	padding-left:	20px;
+}
+.user-group li.self {
+	background-image:	url(user2.png);
+}
+.user-group li.add {
+	background:	none;
+}
+#main .user-group a {
+	text-decoration:none;
+	color:		rgb(0,20,180);
+}
+#main .user-group a:hover {
+	background:	rgb(0,20,180);
+	color:		white;
+}
+.user-group-error {
+	margin-top:	-.2em;
+	margin-bottom:	.5em;
+	color:		red;
+}
+
+.multi-upload {
+	display:	block;
+	margin-bottom:	.1em;
+}
+
+.error-message {
+	background:	rgb(255,200,200);
+	border:		2px solid red;
+	padding:	.5em;
+	margin:		1em;
+}
+.confirm-message {
+	background:	rgb(200,255,200);
+	border:		2px solid rgb(0,255,0);
+	padding:	.5em;
+	margin:		1em;
+}
+
+/* -----------------------------------------------------------------------------
+ * Documentation
+ * ----------------------------------------------------------------------------- */
+
+.doc {
+	border-collapse:	collapse;
+}
+.doc td, .doc th {
+	padding-top:	.2em;
+	border:		1px solid rgb(192,192,192);
+}
+.doc td ul {
+	margin-top:	0;
+	margin-bottom:	0;
+}
+.doc th[colspan] {
+	padding-top:	2px;
+	text-align:	center;
+	background:	rgb(192,192,192);
+	border-bottom:	hidden;
+	border-top:	10px solid white;
+}
+.doc .legend {
+	background:	rgb(192,192,192);
+	font-size:	80%;
+	font-weight:	normal;
+}
+.doc .legend th {
+	padding:	1px;
+}
+
+.dirtree, .dirtree ul {
+	margin:		0;
+	padding:	0;
+	margin-left:	1.5em;
+	list-style:	disc;
+}
+.dirtree li {
+	margin-bottom:	.2em;
+}
+
+#viewer pre {
+	border:		1px solid black;
+	margin:		0;
+	margin-top:	.2em;
+	margin-bottom:	.5em;
+	padding:	2px;
+	padding-right:	5px;
+}
+#viewer-table h2 {
+	margin:		.5em 0;
+	font-size:	100%;
+}
+#viewer {
+	min-width:	400px;
+	padding-left:	2em;
+}
+#viewer-table td:first-child {
+	border-right:	1px solid black;
+	padding-right:	2em;
+}
+.to-viewer {
+	display:	block;
+}
+.to-viewer.shown {
+	background:	rgb(210,230,255);
+	color:		black;
+}

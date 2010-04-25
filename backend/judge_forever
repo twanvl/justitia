@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Change directory to the directory of this script
+cd `dirname $0`
+
+# Judge forever, or at least until someone tells us to stop :)
+while true; do
+      php -f judge_daemon.php;
+      exitcode=$?
+      if [ "$exitcode" -eq 100 ]; then
+	  echo "The judge daemon should STOP."
+	  exit
+      elif [ "$exitcode" -eq 101 ]; then
+	  echo "The judge daemon will be RESTARTED."
+      else
+	  echo "The judge daemon died unexpectedly :(, starting it again";
+      fi
+      sleep 1;
+done
