@@ -36,7 +36,7 @@ abstract class PageWithEntity extends Template {
 			$class = '';
 			if ($e == $this->entity) {
 				$class .= 'current ';
-				if (count($e->children()) > 0) {
+				if ($e->has_visible_children()) {
 					$class .= 'ancestor ';
 				}
 			} else if ($e->is_ancestor_of($this->entity)) {
@@ -61,7 +61,8 @@ abstract class PageWithEntity extends Template {
 	function get_nav() {
 		$result = array();
 		foreach ($this->entity->ancestors() as $e) {
-			$result []= $this->get_nav_children($e);
+			$on_this_level = $this->get_nav_children($e);
+			if ($on_this_level) $result []= $on_this_level;
 		}
 		return $result;
 	}

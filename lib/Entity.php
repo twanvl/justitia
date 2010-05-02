@@ -233,6 +233,15 @@ class Entity {
 		$this->load_children();
 		return $this->_children;
 	}
+	// are there any visible children?
+	function has_visible_children() {
+		$this->load_children();
+		foreach ($this->_children as $c) {
+			if ($c->visible()) return true;
+		}
+		return false;
+	}
+	
 	// gets a single child entity, if it exists (null otherwise)
 	function get_child($name, $require_exists = true) {
 		$this->load_children(); // a bit overkill
@@ -493,8 +502,10 @@ class Entity {
 
 function parse_attribute_file(&$attributes, $filename) {
 	$lines = @file($filename, FILE_IGNORE_NEW_LINES);
-	if (!isset($lines) || $lines == false) {
+	if (!isset($lines) || $lines === false) {
 		// No info file, not an error
+		// but assume that this directory is not intended to be used; hide it
+		$attributes['visible'] = false;
 		return;
 	}
 	// parse it
