@@ -58,8 +58,7 @@ function write_submission($subm, $entity = null, $include_entity = false) {
 		$files[] = "<a href=\"download_submission.php/$subm->submissionid/".htmlspecialchars($code_name).'" class="file '.$ext.'">' . htmlspecialchars($name) . "</a>";
 	}
 	if (count($files) > 1) {
-		// TODO: this is not yet implemented in download_sumission.php
-		//array_unshift($files, "<a href=\"download_submission.php/$subm->submissionid/code_$subm->submissionid.zip\" class=\"file zip\">all files as zip</a>");
+		array_unshift($files, "<a href=\"download_submission.php/$subm->submissionid/code.zip\" class=\"file zip\">All files as zip</a>");
 	}
 	echo "<tr><td>Files</td><td class=\"list-like\">" . implode(' | ',$files) . "</td></tr>";
 	

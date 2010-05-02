@@ -140,7 +140,7 @@ class View extends PageWithEntity {
 				             . '</a>';
 			}
 			if (count($files) > 1) {
-				array_unshift($downloads, '<a href="download_entity.php' . htmlspecialchars($this->entity->path()) . '?all=1" class="file zip">all files as zip</a>');
+				array_unshift($downloads, '<a href="download_entity.php' . htmlspecialchars($this->entity->path()) . '?all=1" class="file zip">All files as zip</a>');
 			}
 			echo "<tr><td>Files</td><td class=\"list-like\">" . implode(' | ', $downloads) . "</td></tr>";
 		}
