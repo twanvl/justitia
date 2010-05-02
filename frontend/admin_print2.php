@@ -55,7 +55,7 @@ class View extends PageWithEntity {
 		
 		$this->write_block_begin("Settings");
 		
-		$this->write_form_begin('admin_print.php' . $this->entity->path(), 'get');
+		$this->write_form_begin('admin_print2.php' . $this->entity->path(), 'get');
 		$this->write_form_hidden('filled',1);
 		$this->write_form_table_begin();
 		$this->write_form_table_field('text',    'user_filter',    'Only for users', @$_REQUEST['user_filter']);
@@ -169,7 +169,7 @@ class View extends PageWithEntity {
 		
 		// submission header
 		echo "\section*{Submission \\#" . $subm->submissionid . " for " . htmlspecialchars($subm->entity_path) . "}\n";
-		echo        "by " . User::names_html($subm->users()) . ",";
+		echo        "by " . User::names_html($subm->users()) . ", ";
 		echo        "on " . format_date($subm->time)         . "\n\n";
 		if (!Status::is_passed($subm->status)) {
 			echo "(status " . Status::to_text($subm) . ")";
