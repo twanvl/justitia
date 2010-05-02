@@ -17,4 +17,7 @@ class Tempdir {
 	function file($name) {
 		return $this->dir . '/' . $name;
 	}
+	function create_parent_dirs($name) {
+		@mkdir(dirname($this->file($name)), 0777, true);
+	}
 }

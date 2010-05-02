@@ -103,6 +103,9 @@ class View extends PageWithEntity {
 	
 	function write_submitable_entity_info() {
 		echo "<table>";
+		if ($this->entity->description()) {
+			echo "<tr><td>Description</td><td>" . nl2br(htmlspecialchars($this->entity->description())) . "</td>";
+		}
 		echo "<tr><td>Can submit</td><td>" . format_bool($this->entity->active()) . "</td>";
 		$active_range = $this->entity->active_range();
 		if ($active_range->start > now()) {
@@ -110,7 +113,6 @@ class View extends PageWithEntity {
 		}
 		echo "<tr><td>Deadline</td><td>"   . format_date($active_range->end, true) . "</td>";
 		echo "<tr><td>Language</td><td>"   . $this->entity->language()->name . "</td>";
-		//echo "<tr><td>Archives allowed</td><td>" . format_bool($this->entity->attribute_bool('allow archives')) . "</td>";
 		echo "<tr><td>Judging</td><td>";
 		if ($this->entity->compile()) {
 			if ($this->entity->has_testcases()) {

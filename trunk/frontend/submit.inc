@@ -41,17 +41,11 @@ function check_upload($entity, &$files) {
 	
 	// is submission allowed?
 	if (!$entity->submitable()) {
-		Template::add_message('submit','error', "No submissions can be made here.");
+		Template::add_message('submit','error', "No submissions can be made here, this is not an assignment.");
 		return false;
 	}
 	if (!$entity->active()) {
 		Template::add_message('submit','error', "The deadline has passed for this assignment.");
-		return false;
-	}
-	
-	// are multiple files allowed?
-	if (count($files) > 1 && !$entity->allow_multiple_files()) {
-		Template::add_message('submit','error', "Only single-file submissions are allowed.");
 		return false;
 	}
 	
@@ -64,19 +58,53 @@ function check_upload($entity, &$files) {
 	}
 	
 	// are the uploads okay?
-	$file_regex = $entity->filename_regex();
+	$filenames = array();
 	foreach ($files as $file) {
 		if ($file['error'] != UPLOAD_ERR_OK) {
 			Template::add_message('submit','error', file_upload_error_message($file['error']));
 			return false;
 		}
+		// is this an archive?
+		if (substr($file['name'],-4) == '.zip') {
+			// zip archive, try to open it to check if it is valid
+			$zip = zip_open($file['tmp_name']);
+			if (!is_resource($zip)) {
+				Template::add_message('submit','error', "Not a valid zip file (\"" . $file['tmp_name'] . "\")");
+				return false;
+			}
+			// get all filenames, so we can check if they match the supplied regex
+			while ($entry = zip_read($zip)) {
+				$entry_name = zip_entry_name($entry);
+				$entry_name = str_replace('\\','/',$entry_name);
+				if (substr($entry_name,1) == '/' || strpos($entry_name,'./') !== false) {
+					// this is an invalid filename
+					Template::add_message('submit','error', "Invalid filename in zip archive (\"$entry_name\")");
+					return false;
+				} else if (substr($entry_name,-1) == '/') {
+					// this is a directory name, don't count it
+				} else {
+					$filenames[] = $entry_name;
+				}
+			}
+			zip_close($zip);
+		} else {
+			$filenames[] = $file['name'];
+		}
+	}
+	
+	
+	// are multiple files allowed?
+	if (count($filenames) > 1 && !$entity->allow_multiple_files()) {
+		Template::add_message('submit','error', "Only single-file submissions are allowed.");
+		return false;
 	}
 	
 	// match filename with regex
+	$file_regex = $entity->filename_regex();
 	if ($file_regex != '') {
-		foreach ($files as $file) {
-			if(!preg_match("/^($file_regex)$/",$file['name'])) {
-				Template::add_message('submit','error',	"Uploaded file does not match specified filename pattern, $file_regex");
+		foreach ($filenames as $filename) {
+			if (!preg_match("/^($file_regex)$/",$filename)) {
+				Template::add_message('submit','error',	"Uploaded file does not match specified filename pattern, \"$filename\" does not match pattern \"$file_regex\"");
 				return false;
 			}
 		}
@@ -85,14 +113,56 @@ function check_upload($entity, &$files) {
 	return true;
 }
 
+function put_zipfile_contents($subm, $zip_filename) {
+	$zip = zip_open($zip_filename);
+	while ($entry = zip_read($zip)) {
+		// sanatize filename
+		$entry_name = zip_entry_name($entry);
+		$entry_name = str_replace('\\','/',$entry_name);
+		$entry_name = str_replace('./','',$entry_name); // don't want things like ../
+		while ($entry_name[0] == '/') $entry_name = substr($entry_name,1);
+		
+		// is this a directory?
+		if (substr($entry_name,-1) == '/') continue;
+		
+		// read contents
+		$entry_body = '';
+		if (!zip_entry_open($zip,$entry)) {
+			// error
+			zip_close($zip);
+			Template::add_message('submit','error',	"Can't read zip file");
+			return false;
+		}
+		while (true) {
+			$part = zip_entry_read($entry);
+			if ($part === false || $part === '') break;
+			$entry_body .= $part;
+		}
+		zip_entry_close($entry);
+		
+		// store
+		$subm->put_file($subm->code_filename($entry_name), $entry_body);
+	}
+	zip_close($zip);
+	return true;
+}
+
+function put_normal_file_contents($subm, $temp_filename, $filename) {
+	$filename = str_replace('/','',$filename);
+	$subm->put_file($subm->code_filename($filename), file_get_contents($temp_filename));
+}
+
 function perform_upload($entity, $files) {
 	// add to database
 	$subm = Submission::make_new($entity);
 	
 	// add files
 	foreach ($files as $file) {
-		$filename = str_replace('/','',$file['name']);
-		$subm->put_file($subm->code_filename($filename), file_get_contents($file['tmp_name']));
+		if (substr($file['name'],-4) == '.zip') {
+			if (!put_zipfile_contents($subm, $file['tmp_name'])) return false;
+		} else {
+			put_normal_file_contents($subm, $file['tmp_name'], $file['name']);
+		}
 		unlink($file['tmp_name']);
 	}
 	
@@ -129,10 +199,10 @@ function handle_uploaded_submission($entity) {
 	$files = unshuffle($_FILES['files']);
 	$ok = check_upload($entity, $files);
 	if ($ok) {
-		perform_upload($entity, $files);
-	} else {
-		foreach ($files as $file) @unlink($file['tmp_name']);
-		return false;
+		$ok = perform_upload($entity, $files);
 	}
-	return false;
+	if (!$ok) {
+		foreach ($files as $file) @unlink($file['tmp_name']);
+	}
+	return $ok;
 }

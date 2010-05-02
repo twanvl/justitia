@@ -31,6 +31,9 @@ An attribute <tt>child <em>xxx</em>: <em>yyy</em></tt> means that attribute <em>
   <tr><th><tt>title</tt>
       <td>Title of the entity/directory/assignment
       <td>the filename
+  <tr><th><tt>description</tt>
+      <td>A description of the assignment, this will be shown to users at the top of the page.
+      <td><em>none</em>
   <tr><th><tt>order</tt>
       <td>Position in which this element should appear in the sorted list (note: string comparison is used).
           <br>For example, setting <tt>order: baz</tt> places this item after "bar" but before "foo", regardless of the filename or title.
@@ -90,11 +93,9 @@ An attribute <tt>child <em>xxx</em>: <em>yyy</em></tt> means that attribute <em>
       <td>Regular expression that filename of submissions is matched against.
           By default based on <tt>language</tt>
       <td><i>by language</i>
-  <!--<tr><th><tt>allow archives</tt>
-      <td>Can multi-file archives be submitted?
-      <td><tt>false</tt>-->
   <tr><th><tt>allow multiple files</tt>
       <td>Can more than one file be submitted?
+          This also applies to multiple files inside a zip file.
       <td><tt>false</tt>
   <tr><th><tt>compile</tt>
       <td>Should submissions be compiled?

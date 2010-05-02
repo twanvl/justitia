@@ -102,6 +102,9 @@ class Entity {
 			return $this->_dir_name;
 		}
 	}
+	function description() {
+		return $this->attribute("description");
+	}
 	
 	// get the visible date range
 	function visible_range() {
@@ -506,6 +509,7 @@ function parse_attribute_file(&$attributes, $filename) {
 		// No info file, not an error
 		// but assume that this directory is not intended to be used; hide it
 		$attributes['visible'] = false;
+		$attributes['submitable'] = false;
 		return;
 	}
 	// parse it
