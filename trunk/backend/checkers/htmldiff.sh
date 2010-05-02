@@ -9,7 +9,13 @@
 # <diff>      File where to write the diff.
 # <flags>     Extra flags.
 
+MYDIR=`dirname "$0"`
+if [ "$TERM" = cygwin ]; then
+	# Fix to handle paths with backslashes
+	MYDIR=`echo "$0" | sed 's/\\\\/\//g' | xargs dirname`
+fi
+
 export FILE1="your output"
 export FILE2="expected output"
-perl `dirname $0`/../bin/htmldiff.pl $4 $1 $2 >$3
+perl $MYDIR/../bin/htmldiff.pl $4 $1 $2 >$3
 exit $?

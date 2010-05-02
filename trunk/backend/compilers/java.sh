@@ -11,12 +11,14 @@ DEST="$2"
 ERROR="$3"
 FLAGS="$4"
 MEMLIMIT="$5"
+MYDIR=`dirname "$0"`
 
 if [ "$TERM" = cygwin ]; then
 	# We are on windows, where shell scripts must be named .sh
 	echo "(Using windows shell script workaround)"
-	rm $DEST
+	[ -f "$DEST" ] && rm "$DEST"
 	DEST="$DEST.sh"
+	MYDIR=`echo "$0" | sed 's/\\\\/\//g' | xargs dirname`
 fi
 
 # Compile with -verbose, stop in case of error
@@ -30,7 +32,7 @@ if [ $exitcode_compile -ne "0" ]; then
 fi
 
 # Find the classname in the output, and write executing script
-perl `dirname $0`/java_make_runner.pl $SOURCE $MEMLIMIT < verbose.log > $DEST 2> $ERROR
+perl $MYDIR/java_make_runner.pl "$SOURCE" $MEMLIMIT < verbose.log > $DEST 2> $ERROR
 result=$?
 
 # Done
