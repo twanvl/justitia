@@ -130,15 +130,17 @@ class View extends PageWithEntity {
 		// downloadable files?
 		$files = $this->entity->downloadable_files();
 		if ($files) {
-			$downloads = '';
+			$downloads = array();
 			foreach ($files as $file) {
 				$ext = pathinfo($file, PATHINFO_EXTENSION);
-				$downloads .= '<a href="download_entity.php' . htmlspecialchars($this->entity->path()) . '?f=' . urlencode($file) . '" class="file '.$ext.'">'
-				           .  htmlspecialchars(basename($file))
-				           .  '</a> | ';
+				$downloads[] = '<a href="download_entity.php' . htmlspecialchars($this->entity->path()) . '?f=' . urlencode($file) . '" class="file '.$ext.'">'
+				             . htmlspecialchars($file)
+				             . '</a>';
 			}
-			$downloads = substr($downloads,0,-3); // strip last " | "
-			echo "<tr><td>Files</td><td class=\"list-like\">$downloads</td></tr>";
+			if (count($files) > 1) {
+				array_unshift($downloads, '<a href="download_entity.php' . htmlspecialchars($this->entity->path()) . '?all=1" class="file zip">all files as zip</a>');
+			}
+			echo "<tr><td>Files</td><td class=\"list-like\">" . implode(' | ', $downloads) . "</td></tr>";
 		}
 		echo "</td>";
 		echo "</table>";
