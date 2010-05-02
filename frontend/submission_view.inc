@@ -57,7 +57,11 @@ function write_submission($subm, $entity = null, $include_entity = false) {
 		$ext = pathinfo($name, PATHINFO_EXTENSION);
 		$files[] = "<a href=\"download_submission.php/$subm->submissionid/".htmlspecialchars($code_name).'" class="file '.$ext.'">' . htmlspecialchars($name) . "</a>";
 	}
-	echo "<tr><td>Files</td><td>" . implode(' | ',$files) . "</td></tr>";
+	if (count($files) > 1) {
+		// TODO: this is not yet implemented in download_sumission.php
+		//array_unshift($files, "<a href=\"download_submission.php/$subm->submissionid/code_$subm->submissionid.zip\" class=\"file zip\">all files as zip</a>");
+	}
+	echo "<tr><td>Files</td><td class=\"list-like\">" . implode(' | ',$files) . "</td></tr>";
 	
 	// status
 	echo "<tr><td>Status</td><td>" . Status::to_text($subm);
@@ -72,7 +76,7 @@ function write_submission($subm, $entity = null, $include_entity = false) {
 			echo ", on " . format_date($subm->judge_start);
 			echo "</td></tr>";
 		}
-		echo "<tr><td>Actions</td><td>";
+		echo "<tr><td>Actions</td><td class=\"list-like\">";
 		if ($subm->status() != Status::PENDING) {
 			echo "<a href=\"admin_view_submission.php?rejudge=1&amp;submissionid=$subm->submissionid\">rejudge</a> | ";
 		}
@@ -111,41 +115,40 @@ function write_testset_details($subm, $entity) {
 		}
 		
 		// input/output/error downloads
-		$downloads = '';
+		$downloads = array();
 		if ($class != 'skipped') {
 			if ($subm->input_exists("$case.in")) {
-				$downloads .= download_link($subm,"in/$case.in", 'input',  $entity->show_input_output_for($case), '',' | ');
+				$downloads []= download_link($subm,"in/$case.in", 'input',  $entity->show_input_output_for($case));
 			}
 			if ($case_status == 'Runtime error') {
 				// don't show output at all for runtime errors
 			} else if ($class == 'failed') {
 				if ($subm->input_exists("$case.out")) {
-					$downloads .= download_link($subm,"in/$case.out",'expected output',  $entity->show_input_output_for($case), '',' | ');
+					$downloads []= download_link($subm,"in/$case.out",'expected output',  $entity->show_input_output_for($case));
 				}
 				if ($subm->output_exists("$case.out")) {
-					$downloads .= download_link($subm,"out/$case.out",'your output',  $entity->show_input_output_for($case), '',' | ');
+					$downloads []= download_link($subm,"out/$case.out",'your output',  $entity->show_input_output_for($case));
 				}
 				if ($subm->output_exists("$case.diff")) {
-					$downloads .= download_link($subm,"out/$case.diff",'difference',  $entity->show_input_output_for($case), '',' | ');
+					$downloads []= download_link($subm,"out/$case.diff",'difference',  $entity->show_input_output_for($case));
 				}
 			} else {
 				if ($subm->input_exists("$case.out")) {
-					$downloads .= download_link($subm,"in/$case.out",'output',  $entity->show_input_output_for($case), '',' | ');
+					$downloads []= download_link($subm,"in/$case.out",'output',  $entity->show_input_output_for($case));
 				}
 			}
 		}
 		if ($case_status == 'Runtime error') {
 			if ($subm->output_exists("$case.err")) {
-				$downloads .= download_link($subm,"out/$case.err",'error message',  $entity->show_runtime_errors_for($case), '',' | ');
+				$downloads []= download_link($subm,"out/$case.err",'error message',  $entity->show_runtime_errors_for($case));
 			}
 		}
-		$downloads = substr($downloads,0,-3);
 		
 		// write it
-		$rows  = 1 + (strlen($desc) > 0 ? 1 : 0) + (strlen($downloads) > 0 ? 1 : 0);
+		$rows  = 1 + (strlen($desc) > 0 ? 1 : 0) + (count($downloads) > 0 ? 1 : 0);
 		echo "<tr class=\"$class\"><td rowspan=\"$rows\">Test case " . htmlspecialchars($case) . "</td><td><span>$case_status</span></td></tr>";
-		if (strlen($desc) > 0)      echo "<tr><td>$desc</td></tr>";
-		if (strlen($downloads) > 0) echo "<tr><td>$downloads</td></tr>";
+		if (strlen($desc) > 0)     echo "<tr><td>$desc</td></tr>";
+		if (count($downloads) > 0) echo "<tr><td>", implode(' | ',$downloads) ,"</td></tr>";
 	}
 	echo "</table>";
 }

@@ -55,13 +55,12 @@ class ReferenceJudgement extends JudgementBase {
 		$filenames = explode_whitespace($this->entity->reference_implementation());
 		$files = array();
 		foreach($filenames as $name) {
-			$basename = pathinfo($name,PATHINFO_BASENAME);
 			$full_path = $this->entity->data_path() . $name;
 			if (!file_exists($full_path)) {
 				throw new Exception("Reference implementation not found: $name");
 			}
 			$contents = file_get_contents($full_path);
-			$files[$basename] = $contents;
+			$files[$name] = $contents;
 		}
 		return $files;
 	}

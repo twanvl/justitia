@@ -27,7 +27,7 @@ class Util {
 	// ---------------------------------------------------------------------
 	
 	static function current_url() {
-		$script = pathinfo($_SERVER['SCRIPT_NAME'],PATHINFO_BASENAME);
+		$script = basename($_SERVER['SCRIPT_NAME']);
 		return $script . @$_SERVER['PATH_INFO'];
 	}
 	

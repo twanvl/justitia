@@ -236,6 +236,7 @@ class Submission {
 	
 	// Get an array of all code filenames
 	// array entries are of the form ("code/<SOMETHING>" => "<SOMETHING>");
+	// the key can be passed to get_file, the value is the filename
 	function get_code_filenames() {
 		DB::prepare_query($query,
 			"SELECT filename FROM `file` WHERE `submissionid`=? AND `filename` LIKE 'code/%' ORDER BY `filename`");

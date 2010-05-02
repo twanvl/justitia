@@ -72,8 +72,8 @@ abstract class JudgementBase {
 		if (!$this->determine_language()) {
 			return Status::FAILED_LANGUAGE;
 		}
-		if (!$this->extract_archive()) {
-			return Status::FAILED_LANGUAGE;
+		if (!$this->prepare_files()) {
+			return Status::FAILED_INTERNAL;
 		}
 		if (!$this->compile()) {
 			return Status::FAILED_COMPILE;
@@ -99,36 +99,48 @@ abstract class JudgementBase {
 	// Store source in tempdir
 	protected function download_source() {
 		$files = $this->get_source_files();
-		if (empty($files)) return false;
+		if (empty($files)) {
+			throw new Exception("Submission has no source files");
+		}
 		$this->source_files = array();
 		foreach($files as $name => $contents) {
+			$this->tempdir->create_parent_dirs($name);
 			$temp_name = $this->tempdir->file($name);
+			// write files
 			if ($contents === false) return false;
-			file_put_contents($temp_name, $contents);
+			if (!file_put_contents($temp_name, $contents)) {
+				throw new InternalException("Failed to write submission source file");
+			}
 			$this->source_files []= $temp_name;
 		}
 		return true;
 	}
 	
-	protected function extract_archive() {
-		// extract archive?
-		$is_archive = false;
-		if (isset($this->language->archive_extract)) {
-			if ($this->entity->attribute_bool('allow archives')) {
-				// TODO: Check this during submit
-				return false;
-			}
-			throw new InternalException("TODO: archives");
-			$source_file_list = implode(' ',$this->source_files); // space separated list of filenames
-			SystemUtil::run_command(false, $this->language->archive_extract, $source_file_list);
-			// look for the actual source file
-		}
-		return true;
-	}
-	
-	// Prepare files
+	// Store other files in tempdir
 	protected function prepare_files() {
-		  // TODO zooi hierheen verplaatsen
+		// copy provided files
+		$files_to_copy = $this->entity->compiler_files();
+		foreach ($files_to_copy as $filename) {
+			$this->tempdir->create_parent_dirs($filename);
+			$local_name = $this->tempdir->file($filename);
+			// error if file can't be copied
+			if (!copy($this->entity->data_path() . $filename, $local_name)) {
+				throw new Exception("Failed to copy file: $filename");
+			}
+			echo "copying $local_name\n";
+			make_file_readable($local_name);
+		}
+		
+		// Make some files writable
+		$files_to_touch = $this->entity->writable_files();
+                foreach ($files_to_touch as $filename) {
+                        $local_name = $this->tempdir->file($filename);
+                        touch($local_name);
+                        echo "making $local_name writable\n";
+                        make_file_writable($local_name);
+                }
+                
+                return true;
 	}
 	
 	// Compile $source_files to $exe_file
@@ -139,26 +151,6 @@ abstract class JudgementBase {
 		$compiler = getcwd() . "/compilers/$compiler.sh";
 		// flags?
 		$flags = $this->entity->compiler_flags();
-		
-		// copy some files?
-		$files_to_copy = $this->entity->compiler_files();
-		foreach ($files_to_copy as $filename) {
-			$local_name = $this->tempdir->file($filename);
-			// warn if file can't be copied
-			if (!copy($this->entity->data_path() . $filename, $local_name)) {
-			   //throw new InternalError("");
-			}
-			echo "copying $local_name\n";
-			make_file_readable($local_name);
-		}
-		// Make some files writable
-		$files_to_touch = $this->entity->writable_files();
-                foreach ($files_to_touch as $filename) {
-                        $local_name = $this->tempdir->file($filename);
-                        touch($local_name);
-                        echo "making $local_name writable\n";
-                        make_file_writable($local_name);
-                }
 		
 		// which files to compile?
 		$compiled_files = array();

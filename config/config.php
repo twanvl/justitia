@@ -51,9 +51,9 @@ define('GLOBAL_FILESIZE_LIMIT', 5*1000*1000); // 5 MB
 // default attribute values
 // -----------------------------------------------------------------------------
 
-$attribute_defaults['allow archives']		= false;
 $attribute_defaults['submitable']		= false;
 $attribute_defaults['allow multiple files']	= false;
+$attribute_defaults['allow archives']		= false;
 $attribute_defaults['compile']			= true;
 $attribute_defaults['filename regex']		= '';
 $attribute_defaults['visible']			= true;
