@@ -315,7 +315,11 @@ h1 {
 .results .user {
 	border-right:	3px double rgb(128,128,128);
 }
-.results tbody > tr:first-child {
+.results .summary {
+	font-style:	italic;
+}
+.results tbody > tr:first-child,
+.results tr.first-child {
 	border-top:	3px double rgb(128,128,128);
 }
 .results th {

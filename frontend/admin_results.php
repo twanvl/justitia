@@ -109,20 +109,11 @@ class View extends PageWithEntity {
 	
 	
 	function write_get_submission_results($entities) {
-		// statistics
-		$num_submissions = 0;
-		$num_passed = 0;
-		$num_failed = 0;
 		// find submissions
 		$users = array();
 		foreach($entities as $e => $entity) {
 			// *all* submissions
 			$all_subms = $entity->all_submissions();
-			foreach ($all_subms as $subm) {
-				$num_submissions++;
-				if (Status::is_passed($subm->status)) $num_passed++;
-				if (Status::is_failed($subm->status)) $num_failed++;
-			}
 			// for each userid => subm
 			$subms = $entity->all_final_submissions_from($all_subms);
 			foreach ($subms as $userid => $subm) {
@@ -133,6 +124,7 @@ class View extends PageWithEntity {
 			}
 		}
 		Timer::after("find submissions");
+		
 		// sort users by name
 		$users_sorted = array();
 		foreach($users as $user) {
@@ -140,12 +132,7 @@ class View extends PageWithEntity {
 		}
 		ksort($users_sorted);
 		Timer::after("sort");
-		// write statistics
-		echo "<table>\n";
-		echo "<tr><th>Number of submissions</th><td>$num_submissions</td>";
-		echo "<tr><th>Number passed</th><td>$num_passed</td>";
-		echo "<tr><th>Number failed</th><td>$num_failed</td>";
-		echo "</table>\n";
+		
 		// write table
 		$this->write_submission_results($entities,$users_sorted);
 		Timer::after("write");
@@ -157,22 +144,20 @@ class View extends PageWithEntity {
 		echo "<table class=\"results\">\n";
 		// heading
 		echo "<thead>";
-		/*
-		echo "<tr><th>User</th>";
-		foreach($entities as $entity) {
-			echo "<th><a href=\"admin_results.php" . htmlspecialchars($entity->path()) ."\">"
-			   . htmlspecialchars($entity->title()) . "</a></th>";
-		}
-		echo "</tr>\n";
-		*/
 		$entity_layers = layered_descendants($this->entity);
 		print_layers_header($entity_layers);
 		echo "</thead><tbody>\n";
 		// user results
+		$first = true;
 		foreach ($users as $userinfo) {
 			$subms = $userinfo['subms'];
 			$user  = $userinfo['user'];
-			echo "<tr>";
+			if ($first) {
+				echo '<tr class="first-child">';
+				$first = false;
+			} else {
+				echo '<tr>';
+			}
 			// username
 			echo '<td><a href="admin_user.php?edit='.urlencode($user->userid).'">' . htmlspecialchars($user->name_and_login()) . '</a></td>';
 			// submissions
@@ -187,7 +172,43 @@ class View extends PageWithEntity {
 			}
 			echo "</tr>\n";
 		}
+		$this->write_submission_summary($entities,$users);
 		echo "</tbody></table>\n";
+	}
+	function write_submission_summary($entities,$users) {
+		// determine summary
+		$num_passed = array();
+		$num_failed = array();
+		$num_none   = array();
+		foreach($entities as $e => $entity) {
+			$num_passed[$e] = $num_failed[$e] = $num_none[$e] = 0;
+			foreach ($users as $userinfo) {
+				$subms = $userinfo['subms'];
+				$subm = isset($subms[$e]) ? $subms[$e] : false;
+				if (Status::is_passed(Status::to_status($subm))) {
+					$num_passed[$e]++;
+				} else if (Status::is_failed(Status::to_status($subm))) {
+					$num_failed[$e]++;
+				} else {
+					$num_none[$e]++;
+				}
+			}
+		}
+		echo '<tr class="first-child"><td class="summary">passed</td>';
+		foreach($entities as $e => $entity) {
+			echo '<td>', $num_passed[$e], '</td>';
+		}
+		echo "</tr>\n";
+		echo '<tr><td class="summary">failed</td>';
+		foreach($entities as $e => $entity) {
+			echo '<td>', $num_failed[$e], '</td>';
+		}
+		echo "</tr>\n";
+		echo '<tr><td class="summary">not submitted</td>';
+		foreach($entities as $e => $entity) {
+			echo '<td>', $num_none[$e], '</td>';
+		}
+		echo "</tr>\n";
 	}
 	
 }
