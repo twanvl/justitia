@@ -11,8 +11,8 @@ if (!isset($_SERVER['argv'])) {
 	die("This program must be started from the console.");
 }
 if (count($_SERVER['argv']) < 2) {
-	die("Usage: try_to_judge_submission.php <SUBMISSIONID>.\n\n" .
-	    "For debug purposes, try to judge a submission and don't discard the temporary files.");
+	die("Usage: try_to_judge_submission <SUBMISSIONID>.\n\n" .
+	    "For debug purposes, try to judge a submission and don't discard the temporary files.\n");
 } else {
 	$submissionid = $_SERVER['argv'][1];
 }
