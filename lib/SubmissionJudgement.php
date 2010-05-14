@@ -18,10 +18,10 @@ class SubmissionJudgement extends JudgementBase {
 	}
 	
 	// Judge the submission, and update the database
-	function judge() {
+	function judge($cleanup = true) {
 		$status = $this->do_judge();
 		$this->subm->set_status($status);
-		$this->__destruct();
+		if ($cleanup) $this->__destruct();
 	}
 	
 	// Judge the submission, return status
