@@ -42,6 +42,10 @@ abstract class JudgementBase {
 	protected abstract function put_output_file_contents($file,$contents);
 	
 	
+	// ---------------------------------------------------------------------
+	// Wrapper functions
+	// ---------------------------------------------------------------------
+	
 	function __construct($entity) {
 		$this->entity = $entity;
 	}
@@ -80,6 +84,24 @@ abstract class JudgementBase {
 		}
 		return 0;
 	}
+	
+	public function get_and_keep_tempdir() {
+		if (isset($this->tempdir)) {
+			return $this->tempdir->get_and_keep();
+		} else {
+			return "";
+		}
+	}
+	public function get_source_file_names() {
+		return $this->source_files;
+	}
+	public function get_exe_file_name() {
+		return $this->exe_file;
+	}
+	
+	// ---------------------------------------------------------------------
+	// Steps in the judging
+	// ---------------------------------------------------------------------
 	
 	// What language is the source code in? store in $this->language
 	protected function determine_language() {

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# Change directory to the directory of this script
+cd `dirname $0`
+
+php -f try_to_judge_single_submission.php $*;
+exitcode=$?
+exit $exitcode;
