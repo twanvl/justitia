@@ -54,7 +54,8 @@ An attribute <tt>child <em>xxx</em>: <em>yyy</em></tt> means that attribute <em>
           Can be an ISO date, or a date relative to the <tt>show date</tt>. For example "<tt>+ 7 days</tt>" or "<tt>next Tuesday</tt>".
       <td><tt>never</tt>
   <tr><th><tt>downloadable files</tt>
-      <td>A whitespace separated list of files that can be downloaded by students.
+      <td>A whitespace separated list of files that can be downloaded by students.<br>
+          The files must be located in the directory of this entity.
       <td><em>none</em>
           
   <tr><th colspan="3">Submitting
@@ -108,6 +109,7 @@ An attribute <tt>child <em>xxx</em>: <em>yyy</em></tt> means that attribute <em>
       <td><em>none</em>
   <tr><th><tt>compiler files</tt>
       <td>Files that should be made available to the compiler and the runner.<br>
+          The files must be located in the directory of this entity.<br>
           Note: you also have to pass the names as <tt>compiler flags</tt> to link them in.
       <td><em>none</em>
       
