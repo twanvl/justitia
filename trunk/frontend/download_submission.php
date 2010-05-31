@@ -66,7 +66,7 @@ if ($sub_dir == 'code.zip' && $sub_file == '') {
 	$delete_temp_file = $filename;
 	// create a zip file
 	$zip = new ZipArchive();
-	$result = $zip->open($filename,ZIPARCHIVE::CREATE);
+	$result = $zip->open($filename,ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE);
 	if ($result !== true) {
 		die("Failed to open zip file '$filename', error code $result");
 	}
