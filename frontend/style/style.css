@@ -383,6 +383,16 @@ a.file {
 .file.tar, .file.gz, .file.bz2, .file.rar,
 .file.zip  { background-image: url(page_white_zip.png) }
 
+.hidden-inner {
+	display: none;
+}
+.hidden-outer:hover .hidden-detail {
+	display: none;
+}
+.hidden-outer:hover .hidden-inner {
+	display: inline;
+}
+
 .user-list {
 	margin-top:	1em;
 }
