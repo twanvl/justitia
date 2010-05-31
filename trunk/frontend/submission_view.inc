@@ -58,6 +58,12 @@ function write_submission($subm, $entity = null, $include_entity = false) {
 		$files[] = "<a href=\"download_submission.php/$subm->submissionid/".htmlspecialchars($code_name).'" class="file '.$ext.'">' . htmlspecialchars($name) . "</a>";
 	}
 	if (count($files) > 1) {
+		if (count($files) > 5) {
+			// don't list all filenames, that would become too cluttered, only show them on hover
+			$all_files = implode(' | ',$files);
+			$all_files = "<span class=\"hidden-outer\">" . count($files) . " files<span class=\"hidden-detail\">, mouse over to show</span><span class=\"hidden-inner\">: " . $all_files . "</span></span>";
+			$files = array( $all_files );
+		}
 		array_unshift($files, "<a href=\"download_submission.php/$subm->submissionid/code.zip\" class=\"file zip\">All files as zip</a>");
 	}
 	echo "<tr><td>Files</td><td class=\"list-like\">" . implode(' | ',$files) . "</td></tr>";
