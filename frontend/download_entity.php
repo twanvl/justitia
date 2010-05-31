@@ -15,7 +15,10 @@ if (isset($_REQUEST['all'])) {
 	$filepath = tempnam('','zip');
 	$delete_temp_file = $filepath;
 	$zip = new ZipArchive();
-	$zip->open($filepath,ZIPARCHIVE::CREATE);
+	$result = $zip->open($filepath,ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE);
+	if ($result !== true) {
+		die("Failed to open zip file '$filepath', error code $result");
+	}
 	$files = $entity->downloadable_files();
 	foreach($files as $filename) {
 		$zip->addFile($entity->data_path() . $filename, $filename);
