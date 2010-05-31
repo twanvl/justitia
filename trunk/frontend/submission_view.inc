@@ -38,10 +38,10 @@ function write_submission($subm, $entity = null, $include_entity = false) {
 		echo " <small>(" . htmlspecialchars($entity->path()) . ")</small>";
 		echo "</td></tr>\n";
 	}
-	echo "<tr><td>Submitted on</td><td>" . format_date($subm->time) . "</td></tr>";
+	echo "<tr><td>Submitted&nbsp;on</td><td>" . format_date($subm->time) . "</td></tr>";
 	
 	// users
-	echo "<tr><td>Submitted by</td><td>" . User::names_html($subm->users());
+	echo "<tr><td>Submitted&nbsp;by</td><td>" . User::names_html($subm->users());
 	if (Authentication::is_admin()) {
 		$mail_link = User::emails_url($subm->users());
 		if ($mail_link) {
