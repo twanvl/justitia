@@ -68,7 +68,7 @@ if ($sub_dir == 'code.zip' && $sub_file == '') {
 	$zip = new ZipArchive();
 	$result = $zip->open($filename,ZIPARCHIVE::CREATE);
 	if ($result !== true) {
-		die("Failed to open zip file, error code $result");
+		die("Failed to open zip file '$filename', error code $result");
 	}
 	foreach ($subm->get_code_filenames() as $code_name => $name) {
 		$file = $subm->get_file($code_name);
