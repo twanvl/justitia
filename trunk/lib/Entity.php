@@ -454,13 +454,19 @@ class Entity {
 		$this->load_attributes();
 		if (!array_key_exists($key, $this->_attributes)) {
 			if (isset($this->_parent)) {
-				// if it is not set, look in the parent
+				// attribute is not set, look in the parent
 				// note: key not set != null value
 				//       the latter indicates the parent doesn't have the attribute either
 				// "child key" overrides "key"
 				$attr = $this->_parent->attribute("child $key");
 				if ($attr === NULL) {
-					$attr = $this->_parent->attribute($key);
+					// are we allowed to inherit?
+					$inherit = $this->_parent->attribute("inherit $key");
+					if ($inherit === NULL || $inherit) {
+						$attr = $this->_parent->attribute($key);
+					} else {
+						$attr = NULL;
+					}
 				}
 			} else {
 				$attr = NULL;
@@ -484,17 +490,15 @@ class Entity {
 	// load the attributes from a file
 	private function load_attributes() {
 		if (isset($this->_attributes)) return;
-		// default attributes
-		$this->_attributes = array(
-			'title' => $this->_dir_name
-		);
 		// load info file
 		try {
-			parse_attribute_file($this->_attributes, $this->data_path() . "info");
+			$this->_attributes = parse_attribute_file($this->data_path() . "info");
 		} catch (Exception $e) {
 			// on failure: log message, but don't die
 			LogEntry::log($e,$this);
 		}
+		// default attributes
+		if (!isset($this->_attributes['title'])) $this->_attributes['title'] = ucfirst($this->_dir_name);
 	}
 	
 	function data_path() {
@@ -503,16 +507,18 @@ class Entity {
 	
 };
 
-function parse_attribute_file(&$attributes, $filename) {
+function parse_attribute_file($filename) {
 	$lines = @file($filename, FILE_IGNORE_NEW_LINES);
 	if (!isset($lines) || $lines === false) {
 		// No info file, not an error
 		// but assume that this directory is not intended to be used; hide it
-		$attributes['visible'] = false;
-		$attributes['submitable'] = false;
-		return;
+		return array(
+			'visible'    => false,
+			'submitable' => false,
+		);
 	}
-	// parse it
+	// parse the file
+	$attributes = array();
 	foreach($lines as $i => $line) {
 		$line = trim($line, " \r\n\0"); // keep tabs
 		if ($line == '' || $line{0} == '#') {

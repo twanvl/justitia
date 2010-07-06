@@ -7,6 +7,8 @@ require_once('../lib/bootstrap.inc');
 // The documentation is loaded from files in ../doc
 // -----------------------------------------------------------------------------
 
+define('DOC_DIR','../doc');
+
 class View extends Template {
 	private $path;
 	private $title;
@@ -29,9 +31,9 @@ class View extends Template {
 		// default path
 		if ($path=='' || $path=='/') $path = '/user';
 		// does the file exist?
-		if (file_exists("../doc$path.html")) {
+		if (file_exists(DOC_DIR . $path . ".html")) {
 			$this->read_file($path);
-		} elseif (file_exists("../doc$path/index.html")) {
+		} elseif (file_exists(DOC_DIR . $path . "/index.html")) {
 			$this->read_file("$path/index");
 		} else {
 			throw new NotFoundException("File not found: $path");
@@ -39,7 +41,7 @@ class View extends Template {
 	}
 	
 	function read_file($path) {
-		$filename = "../doc$path.html";
+		$filename = DOC_DIR . $path . ".html";
 		$this->path  = $path;
 		$this->title = "Documentation";
 		$this->body = file_get_contents($filename);
@@ -100,13 +102,13 @@ class View extends Template {
 		$result [] = array(
 			$this->nav_item('Introduction', '/results/index'),
 			$this->nav_item('Viewing submissions', '/results/submissions'),
-			$this->nav_item('Result table', '/admin/results'),
+			$this->nav_item('Result table', '/results/results'),
 			$this->nav_item('Printing and exporting', '/results/export')
 		);
 		if ($this->is_path_prefix('/admin'))
 		$result [] = array(
 			$this->nav_item('Introduction', '/admin/index'),
-			$this->nav_item('Installation', '/admin/install'),
+			$this->nav_item('Installation', '/admin/installation'),
 			$this->nav_item('Judge daemons', '/admin/daemons'),
 			$this->nav_item('User administration', '/admin/users'),
 			$this->nav_item('Bugs / issues / features', '/admin/bugs'),
