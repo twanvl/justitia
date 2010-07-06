@@ -87,7 +87,6 @@ class View extends Template {
 			$this->nav_item('What is Justitia?', '/user/index'),
 			$this->nav_item('Logging in', '/user/login'),
 			$this->nav_item('Submitting programs', '/user/submitting'),
-			$this->nav_item('Feedback explained', '/user/feedback'),
 		);
 		if ($this->is_path_prefix('/courses'))
 		$result [] = array(

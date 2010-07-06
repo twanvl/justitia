@@ -1,3 +1,54 @@
 <h1>Submitting programs</h1>
 
-<em>To be written</em>
+<h2>How do I submit a program?</h2>
+
+To submit a program you wrote for an assignment:
+<ul>
+ <li>Navigate to the assignment.
+ <li>Select the file in the "submit" box.
+ <li>Click on "submit".
+</ul>
+
+<h2>Programs with multiple files</h2>
+
+For some assignments you will create more than one source file.
+All files should be submited to justitia.
+
+<p>
+You can also bundle multiple files and directories in a ZIP archive, and submit that instead.
+
+
+<h2>How are programs judged?</h2>
+
+Justitia judges submitted programs by compiling them, and then executing them with a predefined testset.
+
+<p>
+After a submitted program has been judged by Justitia, you will get feedback.
+The amount of feedback depends on the settings by the course administator.
+
+<p>
+The possible status codes are:
+<table>
+ <tr><th>Pending
+     <td>The submission has been received, but is not yet being judged.
+         
+ <tr><th>Judging
+     <td>The submission is currently being compiled or run.
+     
+ <tr><th>Passed
+     <td>The answer is correct.
+     
+ <tr><th>Failed: unknown language
+     <td>There are no source files in the submission, at least not in a language that Justitia understands.
+     
+ <tr><th>Failed: compile error
+     <td>Your submission failed to compile.
+         The compiler error message will be available if you click on the "view error message" link.
+     
+ <tr><th>Failed: runtime error
+     <td>There was a runtime error when the program was executed, for example "out of mememory", "division by zero" or "NullPointerException".
+     
+ <tr><th>Failed: wrong answer
+     <td>Your answer did not match that of the reference implementation.
+     
+</table>
