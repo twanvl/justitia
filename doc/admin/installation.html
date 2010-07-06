@@ -1,12 +1,58 @@
 <h1>Installation instructions</h1>
 
+These are instructions on how to install justitia on a server.
 
+<h2>0. Prerequisites</h2>
+Justitia needs to following programs:
+<ul>
+ <li>A database server, e.g. MySql
+ <li>A webserver, e.q. Apache
+ <li>PHP 5.3 or later  (version 5.2 also works, but 5.3 is preferred)
+ <li>Any required compilers (GCC, Javac, Ghc, octave, etc.)
+</ul>
+
+<h2>1. Creating directories</h2>
+<ol>
+<li>
+Unpack the justitia files to some directory, then create a symbolic link from for example <tt>WEBSITE_ROOT/justitia</tt> to <tt>JUSTITIA_DIR/frontend</tt>.
+<li>
+Create a new directory for courses, or use the provided <tt>JUSTITIA_DIR/courses</tt> directory.
+</ol>
+
+<h2>2. Creating database</h2>
+(assuming mysql)
+<ol>
+<li>Create a database and database user with the mysql command line program.
+<li>Initialize the database, by executing
 <pre>
  mysql -p -u DB_USER DB_NAME < install/database.sql
 </pre>
+<li>The default administrative user is
+    <table><tr><td>Username: <td>admin
+           <tr><td>Password: <td>password</table>
+    Change this ASAP.
+</ol>
 
+<h2>3. Configuring</h2>
+<ol>
+<li>
+Change the database and directory settings in <tt>config/config.php</tt>.
+</ol>
 
- *  Username: admin
- *  Password: password
-
-Change this ASAP
+<h2>4. Setting up backends</h2>
+<ol>
+<li>
+Create a user account with no permissions, under which the submitted programs will be run.
+For example <tt>corrector</tt>.
+<li>
+Set this username in <tt>VALID_USERS</tt> in <tt>config/config.h</tt>.
+<li>
+In the <tt>backend/bin</tt> directory run
+<pre>
+make
+sudo make suid
+</pre>
+This creates the <tt>runguard</tt> executable, chowns it to root, and sets the SetUID flag.
+<li>
+Place a call to <tt>JUSTITIA_DIR/backend/judge_forever</tt> in the startup script of machines that will function as judges.
+</ol>
