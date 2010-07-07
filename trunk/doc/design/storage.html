@@ -1,0 +1,73 @@
+<h1>Data storage (database and filesystem)</h1>
+
+<h2>Introduction</h2>
+Justitia uses both a database and a filesystem to story files.
+Roughly: courses go in the filesystem, user submitted things go in the database.
+
+
+
+<h2>Database</h2>
+The database has these tables:
+<dl>
+  <dt>user
+  <dd>
+    The users in the system.
+    Each user has a unique <tt>userid</tt>.
+  
+  <dt>submission
+  <dd>
+    The users in the system.
+    Each submission has a unique <tt>submissionid</tt>.
+  
+  <dt>user_submission
+  <dd>
+    Links users and submissions.
+  
+  <dt>file
+  <dd>
+    Files belonging to submissions.
+    This contains both the submitted files, as well as the testcase outputs.
+    <p>
+    Files are named:
+    <table ID="Table1">
+      <tr><td><tt>code/<em>something</em></tt>
+          <td>A file submitted by the user.<br>
+              These can be named anything.
+      <tr><td><tt>out/<em>something</em></tt>
+          <td>A file generated during judging.<br>
+              Possible names are:
+      <tr><td><tt>out/compile.err</tt>
+          <td>stderr output of the compiler.
+      <tr><td><tt>out/<em>case</em>.err</tt>
+          <td>stderr output of the runner for testcase <em>case</em>.
+      <tr><td><tt>out/<em>case</em>.out</tt>
+          <td>stdout output of the runner.
+      <tr><td><tt>out/<em>case</em>.diff</tt>
+          <td>diff between the stdout and the reference output
+      <tr><td><tt>testcases</tt>
+          <td>Summary of the results on the testcases. This is a <a href="http://php.net/serialize">serialized</a> php array.
+              For example <tt>serialize(array('case1'=>Status::PASSED, 'case2'=>Status::FAILED))</tt>
+    </table>
+    
+  <dt>judge_daemon
+  <dd>
+    A list of the active judge daemons and their status.
+    Each judge daemon polls its own entry to see if it should commit suicide.
+  
+  <dt>error_log
+  <dd>
+    Error messages go here.
+  
+</dl>
+See <tt>install/database.sql</tt> for the details of the database.
+
+
+<h2>Filesystem: entities</h2>
+The filesystem under the <tt>COURSE_DIR</tt> forms a hierarchy of <em>Entities</em>.
+Each entity is a directory, and is displayed in the navigation bar at the top of the website.
+
+<p>
+Entities correspond to the <tt>Entity</tt> class.
+This class loads entities by reading the <tt>info</tt> file, and by looking for subdirectories, which are child entities.
+
+Entities are loaded on demand by the <tt>Entity::get</tt> function, and are cached.

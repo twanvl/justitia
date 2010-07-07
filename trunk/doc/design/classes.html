@@ -1,3 +1,53 @@
 <h1>Source code overview (classes)</h1>
 
-<em>To be written</em>
+The most interesting classes are:
+
+<dl>
+  <dt><tt>Entity</tt>
+  <dd>
+    Corresponds to entities read from the filesystem.
+    
+  <dt><tt>Submission</tt>, <tt>User</tt>, <tt>LogEntry</tt>
+  <dd>
+    Each instance of one of these objects is a single object from a database table.
+    The classes have methods for finding instances in the database, adding and updating.
+    
+  <dt><tt>Template</tt>
+  <dd>
+    Template for HTML pages.
+    <br>
+    Each frontend page has a class <tt>View</tt> that inherits from <tt>Template</tt>.
+    
+  <dt><tt>PageWithEntity</tt>
+  <dd>
+    Template for HTML pages that show a single Entity in some way.
+    
+  <dt><tt>InternalException</tt>, <tt>NotAuthorizedException</tt>, <tt>NotFoundException</tt>
+  <dd>
+    Exceptions that can be thrown.
+    
+  <dt><tt>Authentication</tt>
+  <dd>
+    Keeps track of the currently logged in user via the PHP sessions mechanism.
+    <br>
+    This class has methods <tt>Authentication::require_user()</tt> that navigates to the login page if the user is not logged in.
+    And <tt>Authentication::require_admin()</tt> that throws an error if the user is not an administrator.
+    
+  <dt><tt>UserGroup</tt>
+  <dd>
+    Keeps track of the current group of users. This group always contain the current user, but users can submit for multiple students at once.
+    
+  <dt><tt>Status</tt>
+  <dd>
+    Status codes of submissions.
+    
+  <dt><tt>JudgementBase</tt>, <tt>SubmissionJudgement</tt>, <tt>ReferenceJudgement</tt>
+  <dd>
+    Judging of submissions. Only used from the backend.
+    
+  <dt><tt>DB</tt>
+  <dd>
+    Utility class for dealing with the database.
+    Justitia uses <a href="http://php.net/pdo">PHP Data Objects (PDO)</a> and prepared statements for all database queries.
+    
+</dl>

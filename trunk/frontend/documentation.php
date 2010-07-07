@@ -115,8 +115,10 @@ class View extends Template {
 		if ($this->is_path_prefix('/design'))
 		$result [] = array(
 			$this->nav_item('Design overview', '/design/index'),
+			$this->nav_item('Storage (database & filesystem)', '/design/storage'),
+			$this->nav_item('Backend (judge daemons)', '/design/daemons'),
 			$this->nav_item('Classes', '/design/classes'),
-			$this->nav_item('Security considerations', '/design/security')
+			//$this->nav_item('Security considerations', '/design/security')
 		);
 		return $result;
 	}

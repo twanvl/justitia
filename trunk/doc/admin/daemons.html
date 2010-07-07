@@ -1,3 +1,21 @@
 <h1>Judge daemons</h1>
 
-<em>To be written</em>
+The judge daemon is located in <tt>JUSTITIA_DIR/backend</tt>.
+There are several scripts to run judges:
+
+<dl>
+ <dt><tt>judge_once</tt>
+ <dd>Starts a judge daemon.
+     The daemon sits in a loop, polling for new submissions. When a new submission arrives the daemon will judge it.
+     <br>
+     When the judge daemon exits (either because of a crash or because of a graceful exit), the script ends.
+ 
+ <dt><tt>judge_forever</tt>
+ <dd>Starts a judge daemon. When the daemon exits it is restarted, unless a stop is requested from the web interface.
+ 
+ <dt><tt>try_to_judge_single_submission</tt>
+ <dd>Judge a single submission, this is useful for debugging.
+ 
+ <dt><tt>judge_daemon.php</tt>
+ <dd>This is the actual judge daemon, writen in PHP. You should never call it directly.
+</dl>

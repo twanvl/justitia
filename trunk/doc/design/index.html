@@ -6,40 +6,41 @@ Justitia is written in PHP5.
 
 <h2>Directories</h2>
 <dl>
-  <dt>lib</dt>
+  <dt><tt>lib/</tt>
   <dd>
     Contains the classes of the program, one class per file.
     <tt>bootstrap.inc</tt> sets up <a href="http://php.net/autoload">autoloading</a> of classes.
-  </dd>
-  <dt>frontend</dt>
+    
+  <dt><tt>frontend/</tt>
   <dd>
     Files visble from the website.
-    Each .php file
-  </dd>
+    Each .php file is a different page.
+    <p>
+    Pages intended only for administrators are called <tt>admin_*.php</tt>.
+    Pages which are intended to be called from javascript as part of the gui are called <tt>ajax_*.php</tt>.
+    
+  <dt><tt>backend/</tt>
+  <dd>
+    The judge daemons.
+    
+  <dt><tt>config/</tt>
+  <dd>
+    Configuration files, see <a href="documentation.php/admin/install">installation instructions</a>.
+
+  <dt><tt>install/</tt>
+  <dd>
+    Database construction script.
+
+  <dt><tt>doc/</tt>
+  <dd>
+    This documentation.
 </dl>
 
 
-<h2>Database</h2>
-The database has these tables:
-<dl>
-  <dt>user</dt>
-  <dd>
-    The users in the system.
-    Each user has a unique <tt>userid</tt>.
-  </dd>
-  <dt>submission</dt>
-  <dd>
-    The users in the system.
-    Each submission has a unique <tt>submissionid</tt>.
-  </dd>
-</dl>
-
-<h2>Classes</h2>
-<dl>
-  <dt>Entity</dt>
-  <dd>
-    The users in the system. Each user has a unique <tt>userid</tt>.
-  </dd>
-</dl>
-
-<h2>The deamon</h2>
+<h2>More</h2>
+Read further about
+<ul>
+ <li><a href="documentation.php/design/storage">How data is stored</a>
+ <li><a href="documentation.php/design/daemons">The design of judge daemons</a>
+ <li><a href="documentation.php/design/classes">Classes that occur in the source code</a>
+</ul>
