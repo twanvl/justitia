@@ -1,0 +1,36 @@
+<h1>Judge daemons: how they work</h1>
+
+The judge daemon is a script (<tt>backend/judge_daemon.php</tt>).
+It sits in a loop, and polls for new submissions. When it finds one it will be judged.
+
+<h2>Unique Ids</h2>
+
+Each judge host gets a unique identifier at startup.
+This is a combination of the hostname and some additional random characters.
+
+<h2>Claiming submissions</h2>
+
+To try to claim a new submission, the daemon calls <tt>Submission::get_pending_submission</tt>.
+This function has 3 steps:
+<ol>
+ <li> Check if there are any unclaimed submissions, stop if there are none.
+      <p>
+      A submission is unclaimed if its status is PENDING (i.e. not yet judged), and the last time it was claimed is at least REJUDGE_TIMEOUT seconds ago.
+      <br>
+      This means that if a daemon dies during judging, another one will pick up the submission again later.
+ <li> Try to claim 1 submission, by setting <tt>judge_start</tt> and <tt>judge_host</tt> fields.
+ <li> Check if there was indeed a submission claimed this way, and if so, return it.
+</ol>
+
+<h2>Judging submissions</h2>
+
+Judging is handled by the <tt>JudgementBase</tt> class, see the source code for details.
+
+<p>
+There are two classes that inherit from <tt>JudgementBase</tt>:
+<ul>
+ <li><tt>SubmissionJudgement</tt>, for judging submissions by users.
+ <li><tt>ReferenceJudgement</tt>, for 'judging' the reference implementation.
+</ul>
+
+The first thing <tt>SubmissionJudgement</tt> does is check whether the reference output exists, and if not it creates a <tt>ReferenceJudgement</tt> for the current entity.
