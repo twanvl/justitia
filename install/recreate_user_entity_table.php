@@ -32,7 +32,7 @@ foreach($users as $user) {
 		$qlast->execute(array($user['userid'], $entity_path['entity_path']));
 		$last = $qlast->fetch();
 //		print("Best: ".$best['submissionid']." last: ".$last['submissionid']."\n");
-		DB::prepare_query($insert, "INSERT INTO `justitia`.`user_entity` (`userid`, `entity_path`, `last_submissionid`, `best_submissionid`) VALUES (?, ?, ?, ?)");
+		DB::prepare_query($insert, "INSERT INTO `user_entity` (`userid`, `entity_path`, `last_submissionid`, `best_submissionid`) VALUES (?, ?, ?, ?)");
 		$insert->execute(array($user['userid'], $entity_path['entity_path'], $last['submissionid'], $best['submissionid']));
 	}
 	
