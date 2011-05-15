@@ -210,7 +210,7 @@ class Submission {
 			$qlast->execute(array($user->userid, $this->entity_path));
 			$last = $qlast->fetch();
 			$qlast->closeCursor();
-			DB::prepare_query($insert, "REPLACE INTO `justitia`.`user_entity` (`userid`, `entity_path`, `last_submissionid`, `best_submissionid`) VALUES (?, ?, ?, ?)");
+			DB::prepare_query($insert, "REPLACE INTO `user_entity` (`userid`, `entity_path`, `last_submissionid`, `best_submissionid`) VALUES (?, ?, ?, ?)");
 			$insert->execute(array($user->userid, $this->entity_path, $last['submissionid'], $best['submissionid']));
 			$insert->closeCursor();
 		}
