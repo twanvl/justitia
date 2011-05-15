@@ -112,10 +112,11 @@ class View extends PageWithEntity {
 		// find submissions
 		$users = array();
 		foreach($entities as $e => $entity) {
-			// *all* submissions
-			$all_subms = $entity->all_submissions();
-			// for each userid => subm
-			$subms = $entity->all_final_submissions_from($all_subms);
+//			// *all* submissions
+//			$all_subms = $entity->all_submissions();
+//			// for each userid => subm
+//			$subms = $entity->all_final_submissions_from($all_subms);
+			$subms = $entity->all_final_submissions_quick();
 			foreach ($subms as $userid => $subm) {
 				if (!isset($users[$userid])) {
 					$users[$userid]['user'] = User::by_id($userid);

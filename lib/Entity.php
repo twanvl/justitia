@@ -424,6 +424,32 @@ class Entity {
 		}
 		return $result;
 	}
+
+	/** 
+	 * All last/best submissions for each user
+	 * returns an array (userid => submission)
+	 * this implementation uses the user_entity table, which is a lot faster
+	 */
+	function all_final_submissions_quick($min_status = 0) {
+		if ($this->attribute_bool('keep best')) {
+			$join_on = "best";
+		} else {
+			$join_on = "last";
+		}
+		static $query;
+		DB::prepare_query($query, "SELECT * FROM user_entity as ue JOIN submission as s ON ue.".$join_on."_submissionid = s.submissionid".
+			" WHERE ue.`entity_path` = ? AND `status` >= ?".
+			" ORDER BY `time` ASC"
+		);
+		$query->execute(array($this->path(), $min_status));
+		$subs = Submission::fetch_all($query);
+		$result = array();
+		foreach($subs as $s) {
+			$result[$s->userid] = $s;
+		}
+		return $result;
+	}
+
 	
 	// Are there pending submissions?
 	function count_pending_submissions() {
