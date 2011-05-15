@@ -130,7 +130,7 @@ abstract class JudgementBase {
 			$temp_name = $this->tempdir->file($name);
 			// write files
 			if ($contents === false) return false;
-			if (!file_put_contents($temp_name, $contents)) {
+			if (file_put_contents($temp_name, $contents) === false) {
 				throw new InternalException("Failed to write submission source file");
 			}
 			$this->source_files []= $temp_name;

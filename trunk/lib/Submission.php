@@ -101,6 +101,7 @@ class Submission {
 		return DB::fetch_all('Submission',$query);
 	}
 	
+	
 	// ---------------------------------------------------------------------
 	// Updating
 	// ---------------------------------------------------------------------
@@ -153,7 +154,7 @@ class Submission {
 		$query->closeCursor();
 		// update object
 		$this->status = $new_status;
-		
+		$this->update_user_entity_table();
 	}
 	
 	function rejudge() {
@@ -193,6 +194,26 @@ class Submission {
 		$query = DB::prepare("DELETE FROM `submission` WHERE submissionid=?");
 		$query->execute(array($submissionid));
 		DB::check_errors($query);
+	}
+	
+	/* 
+	 * This function (re)generates the entries in the user_entity table, which is used to speed things up
+	 */
+	function update_user_entity_table() {
+		// TODO: clean up code
+		foreach($this->users() as $user) {
+			DB::prepare_query($qbest, "SELECT * FROM submission AS s JOIN user_submission AS us ON s.submissionid = us.submissionid WHERE us.userid = ? AND s.entity_path = ? ORDER BY `s`.`status` DESC, `s`.`submissionid` DESC LIMIT 1");
+			$qbest->execute(array($user->userid, $this->entity_path));
+			$best = $qbest->fetch();
+			$qbest->closeCursor();
+			DB::prepare_query($qlast, "SELECT * FROM submission AS s JOIN user_submission AS us ON s.submissionid = us.submissionid WHERE us.userid = ? AND s.entity_path = ? ORDER BY `s`.`submissionid` DESC LIMIT 1");
+			$qlast->execute(array($user->userid, $this->entity_path));
+			$last = $qlast->fetch();
+			$qlast->closeCursor();
+			DB::prepare_query($insert, "REPLACE INTO `justitia`.`user_entity` (`userid`, `entity_path`, `last_submissionid`, `best_submissionid`) VALUES (?, ?, ?, ?)");
+			$insert->execute(array($user->userid, $this->entity_path, $last['submissionid'], $best['submissionid']));
+			$insert->closeCursor();
+		}
 	}
 	
 	

@@ -80,6 +80,17 @@ CREATE TABLE `error_log`
 , PRIMARY KEY(`logid`)
 ) DEFAULT CHARSET=utf8;
 
+/*
+ * User entity_path lookup table, used for fast results table
+ */
+CREATE TABLE `user_entity`
+( `userid`       int(4) unsigned NOT NULL
+, `entity_path`  varchar(255)    NOT NULL                COMMENT 'Path to the problem'
+, `last_submissionid` int(4) unsigned NOT NULL
+, `best_submissionid` int(4) unsigned NOT NULL
+, PRIMARY KEY(`userid`,`entity_path`)
+) DEFAULT CHARSET=utf8;
+
 
 /* -----------------------------------------------------------------------------
  * Initial user
