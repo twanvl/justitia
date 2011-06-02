@@ -158,30 +158,35 @@ class Submission {
 	}
 	
 	function rejudge() {
-		self::rejudge_by_id($this->submissionid);
-		$this->judge_start = 0;
-		$this->judge_host  = NULL;
-		$this->status      = Status::PENDING;
+		if(!$this->is_archived()) {
+			self::rejudge_by_id($this->submissionid);
+			$this->judge_start = 0;
+			$this->judge_host  = NULL;
+			$this->status      = Status::PENDING;
+		}
 	}
 	static function rejudge_by_id($submissionid) {
-		// delete output files
-		$query = DB::prepare(
-			"DELETE FROM `file` WHERE submissionid=? AND (`filename` LIKE 'out/%' OR `filename`='testcases')"
-		);
-		$query->execute(array($submissionid));
-		DB::check_errors($query);
-		// set status to pending
-		$query = DB::prepare(
-			"UPDATE `submission` SET `judge_start`=0, `judge_host`=NULL, status=? WHERE submissionid=?"
-		);
-		$query->execute(array(Status::PENDING,$submissionid));
-		DB::check_errors($query);
+		if(!$this->is_archived()) {
+			// delete output files
+			$query = DB::prepare(
+				"DELETE FROM `file` WHERE submissionid=? AND (`filename` LIKE 'out/%' OR `filename`='testcases')"
+			);
+			$query->execute(array($submissionid));
+			DB::check_errors($query);
+			// set status to pending
+			$query = DB::prepare(
+				"UPDATE `submission` SET `judge_start`=0, `judge_host`=NULL, status=? WHERE submissionid=?"
+			);
+			$query->execute(array(Status::PENDING,$submissionid));
+			DB::check_errors($query);
+		}
 	}
 	
 	function delete() {
 		self::delete_by_id($this->submissionid);
 	}
 	static function delete_by_id($submissionid) {
+		// TODO this function does not yet work with the filesystem!!!
 		// delete files
 		$query = DB::prepare("DELETE FROM `file` WHERE submissionid=?");
 		$query->execute(array($submissionid));
@@ -227,19 +232,44 @@ class Submission {
 	// ---------------------------------------------------------------------
 	
 	function put_file($filename,$data) {
-		DB::prepare_query($query,
-			// this is a mysql-ism
-			"REPLACE INTO `file` (`submissionid`,`filename`,`data`)".
-			            " VALUES (:submissionid, :filename, :data)");
-		$query->execute(array(
-			'submissionid' => $this->submissionid,
-			'filename'     => $filename,
-			'data'         => $data,
-		));
-		DB::check_errors($query);
+		if(SUBMISSION_STORAGE == 'database') {
+			DB::prepare_query($query,
+				// this is a mysql-ism
+				"REPLACE INTO `file` (`submissionid`,`filename`,`data`)".
+				            " VALUES (:submissionid, :filename, :data)");
+			$query->execute(array(
+				'submissionid' => $this->submissionid,
+				'filename'     => $filename,
+				'data'         => $data,
+			));
+			DB::check_errors($query);
+		} else { // SUBMISSION_STORAGE == 'filesystem'
+			$submission_path = substr(SUBMISSION_PATH, -1) == "/" ? substr(SUBMISSION_PATH, 0, -1) : SUBMISSION_PATH;
+			$absolute_file = $submission_path . $this->entity()->path()."submission_".$this->submissionid.'/'.$filename;
+			// make sure there is a directory
+			$dir = implode("/", explode("/", $absolute_file, -1));
+			if(!file_exists($dir)) {
+				mkdir($dir, 0777, true); // TODO CHANGE!
+			}
+			file_put_contents($absolute_file, $data);
+		}
 	}
 	
 	function get_file($filename) {
+		if(SUBMISSION_SOURCE == 'database') {
+			return $this->get_file_database($filename);
+		} else if(SUBMISSION_SOURCE == 'filesystem') {
+			return $this->get_file_filesystem($filename);
+		} else { // SUBMISSION_SOURCE == 'both'
+			if($this->file_exists_database($filename)) {
+				return $this->get_file_database($filename);
+			} else {
+				return $this->get_file_filesystem($filename);
+			}
+		}
+	}
+	
+	private function get_file_database($filename) {
 		DB::prepare_query($query,
 			"SELECT `data` FROM `file` WHERE `submissionid`=? AND `filename`=?");
 		$query->execute(array($this->submissionid,$filename));
@@ -247,7 +277,23 @@ class Submission {
 		return $query->fetchColumn();
 	}
 	
+	private function get_file_filesystem($filename) {
+		$submission_path = substr(SUBMISSION_PATH, -1) == "/" ? substr(SUBMISSION_PATH, 0, -1) : SUBMISSION_PATH;
+		return file_get_contents($submission_path.$this->entity()->path()."submission_".$this->submissionid."/".$filename);
+	}
+	
 	function file_exists($filename) {
+		print(file_exists($filename));
+		if(SUBMISSION_SOURCE == 'database') {
+			return $this->file_exists_database($filename);
+		} else if(SUBMISSION_SOURCE == 'filesystem') {
+			return $this->file_exists_filesystem($filename);
+		} else { // SUBMISSION_SOURCE == 'both'
+			return $this->file_exists_database($filename) OR $this->file_exists_filesystem($filename);
+		}
+	}
+
+	function file_exists_database($filename) {
 		DB::prepare_query($query,
 			"SELECT COUNT(*) FROM `file` WHERE `submissionid`=? AND `filename`=?");
 		$query->execute(array($this->submissionid,$filename));
@@ -255,10 +301,36 @@ class Submission {
 		return $query->fetchColumn();
 	}
 	
+	function file_exists_filesystem($filename) {
+		return file_exists($this->entity()->path()."submission_".$this->submissionid."/".$filename);
+	}
+	
+	/**
+	 * When a submission is archived the source files are backupped and not available anymore 
+	 * for justitia. Only the state of the submission is saved.
+	 */
+	function is_archived() {
+		return count($this->get_code_filenames()) == 0;
+	}
+	
 	// Get an array of all code filenames
 	// array entries are of the form ("code/<SOMETHING>" => "<SOMETHING>");
 	// the key can be passed to get_file, the value is the filename
 	function get_code_filenames() {
+		if(SUBMISSION_SOURCE == 'database') {
+			return $this->get_code_filenames_database();
+		} else if(SUBMISSION_SOURCE == 'filesystem') {
+			return $this->get_code_filenames_filesystem();
+		} else { // SUBMISSION_SOURCE == 'both'
+			if($this->file_exists_database($filename)) {
+				return $this->get_code_filenames_database();
+			} else {
+				return $this->get_code_filenames_filesystem();
+			}
+		}
+	}
+	
+	function get_code_filenames_database() {
 		DB::prepare_query($query,
 			"SELECT filename FROM `file` WHERE `submissionid`=? AND `filename` LIKE 'code/%' ORDER BY `filename`");
 		$query->execute(array($this->submissionid));
@@ -271,6 +343,32 @@ class Submission {
 			$names[$code_name] = $name;
 		}
 		return $names;
+	}
+	
+	function get_code_filenames_filesystem() {
+		$submission_path = substr(SUBMISSION_PATH, -1) == "/" ? substr(SUBMISSION_PATH, 0, -1) : SUBMISSION_PATH;
+		$submission_path .= $this->entity_path . "submission_".$this->submissionid . '/code';
+		return $this->get_code_filenames_filesystem_helper($submission_path, 'code/');
+	}
+	
+	function get_code_filenames_filesystem_helper($path, $base) {
+		if(is_dir($path)) {
+			$files = scandir($path);
+			$result = array();
+			foreach($files as $f) {
+				if($f != "." AND $f != "..") {
+					if(is_dir($f)) {
+						$result = array_merge($result, $this->get_code_filenames_filesystem_helper($path.$f.'/', $base.$f.'/'));
+					} else {
+						$result[$base.$f] = $f;
+					}
+				}
+			}
+			return $result;
+		} else {
+			// code dir is missing
+			return array();
+		}
 	}
 	
 	// ---------------------------------------------------------------------
