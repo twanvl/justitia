@@ -22,6 +22,24 @@ define('DB_PASSWORD', 'Klqonhtak7');
 define('DB_PERSISTENT', true);
 
 // -----------------------------------------------------------------------------
+// Submission storage options
+// -----------------------------------------------------------------------------
+
+// Location for storing the submissions. The database is more efficient (in both
+// storage and performance), but storing files an the filesystem allows you to
+// archive submissions more easily. If you choose to save the submissions on the
+// filesystem, make sure the user that servers the website (the webserver) as 
+// well as the user judging the submissions (the judgment daemon) can access and
+// modify the submissions.
+
+// Can be either 'database' or 'filesystem'
+define('SUBMISSION_STORAGE', 'database');
+// Where should justitia search for submissions? Can be 'database', 'filesystem' or 'both'.
+define('SUBMISSION_SOURCE', 'database');
+// Only relevant if SUBMISSION_SOURCE is 'filesystem' or 'both'
+define('SUBMISSION_PATH', 'I:/i/justitia/submissions/'); 
+
+// -----------------------------------------------------------------------------
 // LDAP authentication
 // -----------------------------------------------------------------------------
 

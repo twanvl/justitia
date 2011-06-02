@@ -51,47 +51,52 @@ function write_submission($subm, $entity = null, $include_entity = false) {
 		}
 	}
 	echo "</td></tr>";
-	
-	// files
-	$files = array();
-	foreach ($subm->get_code_filenames() as $code_name => $name) {
-		$ext = pathinfo($name, PATHINFO_EXTENSION);
-		$files[] = "<a href=\"download_submission.php/$subm->submissionid/".htmlspecialchars($code_name).'" class="file '.$ext.'">' . htmlspecialchars($name) . "</a>";
-	}
-	if (count($files) > 1) {
-		if (count($files) > 5) {
-			// don't list all filenames, that would become too cluttered, only show them on hover
-			$all_files = implode(' | ',$files);
-			$all_files = "<span class=\"hidden-outer\">" . count($files) . " files<span class=\"hidden-detail\">, mouse over to show</span><span class=\"hidden-inner\">: " . $all_files . "</span></span>";
-			$files = array( $all_files );
-		}
-		array_unshift($files, "<a href=\"download_submission.php/$subm->submissionid/code.zip\" class=\"file zip\">All files as zip</a>");
-	}
-	echo "<tr><td>Files</td><td class=\"list-like\">" . implode(' | ',$files) . "</td></tr>";
-	
+
 	// status
 	echo "<tr><td>Status</td><td>" . Status::to_text($subm);
-	if ($type == Status::FAILED_COMPILE) {
+	if ($type == Status::FAILED_COMPILE && !$subm->is_archived()) {
 		echo download_link($subm,'out/compiler.err','view error message',  $entity->show_compile_errors(),  ' (',')');
 	}
 	echo "</td></tr>";
 	
-	if (Authentication::is_admin()) {
-		if ($subm->status() != Status::PENDING) {
-			echo "<tr><td>Judged</td><td>by <tt>" . htmlspecialchars($subm->judge_host) . "</tt>";
-			echo ", on " . format_date($subm->judge_start);
-			echo "</td></tr>";
+	if($subm->is_archived()) {
+		echo "<tr><td colspan=\"2\"><strong>This submission has been archived</strong></td></tr></table>";
+	} else {
+		// files
+		$files = array();
+		foreach ($subm->get_code_filenames() as $code_name => $name) {
+			$ext = pathinfo($name, PATHINFO_EXTENSION);
+			$files[] = "<a href=\"download_submission.php/$subm->submissionid/".htmlspecialchars($code_name).'" class="file '.$ext.'">' . htmlspecialchars($name) . "</a>";
 		}
-		echo "<tr><td>Actions</td><td class=\"list-like\">";
-		if ($subm->status() != Status::PENDING) {
-			echo "<a href=\"admin_view_submission.php?rejudge=1&amp;submissionid=$subm->submissionid\">rejudge</a> | ";
+			if (count($files) > 1) {
+				if (count($files) > 5) {
+					// don't list all filenames, that would become too cluttered, only show them on hover
+					$all_files = implode(' | ',$files);
+					$all_files = "<span class=\"hidden-outer\">" . count($files) . " files<span class=\"hidden-detail\">, mouse over to show</span><span class=\"hidden-inner\">: " . $all_files . "</span></span>";
+					$files = array( $all_files );
+				}
+				array_unshift($files, "<a href=\"download_submission.php/$subm->submissionid/code.zip\" class=\"file zip\">All files as zip</a>");
+			}
+			echo "<tr><td>Files</td><td class=\"list-like\">" . implode(' | ',$files) . "</td></tr>";
+			
+			
+			if (Authentication::is_admin()) {
+				if ($subm->status() != Status::PENDING) {
+					echo "<tr><td>Judged</td><td>by <tt>" . htmlspecialchars($subm->judge_host) . "</tt>";
+					echo ", on " . format_date($subm->judge_start);
+					echo "</td></tr>";
+				}
+				echo "<tr><td>Actions</td><td class=\"list-like\">";
+				if ($subm->status() != Status::PENDING) {
+					echo "<a href=\"admin_view_submission.php?rejudge=1&amp;submissionid=$subm->submissionid\">rejudge</a> | ";
+				}
+				echo "<a href=\"admin_view_submission.php?delete=1&amp;submissionid=$subm->submissionid\">delete</a>";
+				echo "</td></tr>";
+			}
+			echo "</table>";
+			//if ($type == Status::FAILED_COMPARE || $type == Status::FAILED_RUN) // only write testset if failed?
+			write_testset_details($subm, $entity);
 		}
-		echo "<a href=\"admin_view_submission.php?delete=1&amp;submissionid=$subm->submissionid\">delete</a>";
-		echo "</td></tr>";
-	}
-	echo "</table>";
-	//if ($type == Status::FAILED_COMPARE || $type == Status::FAILED_RUN) // only write testset if failed?
-	write_testset_details($subm, $entity);
 }
 
 // ---------------------------------------------------------------------

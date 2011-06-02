@@ -2,7 +2,7 @@
 require_once('../lib/bootstrap.inc');
 
 /**
- * This is a simple inefficient script that refills the table users_entity
+ * This is a simple inefficient script that repopulates the 'users_entity' table
  */
 
 DB::prepare_query($t, "TRUNCATE `user_entity`");
