@@ -20,6 +20,9 @@ class SubmissionJudgement extends JudgementBase {
 	// Judge the submission, and update the database
 	function judge($cleanup = true) {
 		$status = $this->do_judge();
+		if(Status::is_passed($status) AND $this->subm->entity()->deadline_passed()) {
+			$status = Status::MISSED_DEADLINE;
+		}
 		$this->subm->set_status($status);
 		if ($cleanup) $this->__destruct();
 	}

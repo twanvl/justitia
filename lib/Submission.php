@@ -166,7 +166,7 @@ class Submission {
 		}
 	}
 	static function rejudge_by_id($submissionid) {
-		if(!$this->is_archived()) {
+		if(!self::by_id($submissionid)->is_archived()) {
 			// delete output files
 			$query = DB::prepare(
 				"DELETE FROM `file` WHERE submissionid=? AND (`filename` LIKE 'out/%' OR `filename`='testcases')"

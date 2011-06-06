@@ -118,6 +118,10 @@ h1 {
 	border-color:		rgb(255,255,50);
 	background-color:	rgb(255,255,173);
 }
+#nav .misseddeadline {
+	border-color:		rgb(125,125,255);
+	background-color:	rgb(125,125,255);
+}
 
 #nav a:hover,
 #nav .inactive.skipped:hover,
@@ -145,6 +149,11 @@ h1 {
 #nav .pending.current {
 	border-color:		rgb(255,255,0);
 	background-color:	rgb(255,255,111);
+}
+#nav .misseddeadline:hover,
+#nav .misseddeadline.current {
+	border-color:		rgb(125,125,255);
+	background-color:	rgb(125,125,255);
 }
 
 /* -----------------------------------------------------------------------------
@@ -261,6 +270,8 @@ h1 {
 .block.passed .title	{ background-color:	rgb(120,255,100); }
 .block.pending		{ border-color:		rgb(255,255,50); }
 .block.pending .title	{ background-color:	rgb(255,255,50); }
+.block.misseddeadline		{ border-color:		rgb(125,125,255); }
+.block.misseddeadline .title	{ background-color:	rgb(125,125,255); }
 
 .block.collapsable         .title:hover,
 .block.linky               .title:hover { background-color:	rgb(190,190,190); }
@@ -270,6 +281,8 @@ h1 {
 .block.linky.passed        .title:hover { background-color:	rgb(60,255,50); }
 .block.collapsable.pending .title:hover,
 .block.linky.pending       .title:hover { background-color:	rgb(255,255,10); }
+.block.collapsable.misseddeadline .title:hover,
+.block.linky.misseddeadline       .title:hover { background-color:	rgb(125,125,255);; }
 
 .block.pending .content {
 	background:		url(ajax-loader.gif) no-repeat 99% 10px;
@@ -344,6 +357,9 @@ h1 {
 }
 .results .pending {
 	background:	rgb(245,245,80);
+}
+.results .misseddeadline {
+	background:	rgb(125,125,255);
 }
 
 /* -----------------------------------------------------------------------------

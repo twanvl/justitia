@@ -27,6 +27,7 @@ class Status {
 	const FAILED_COMPARE  = 14000000;
 	const PENDING         = 20000000; // submission still in judge queue
 	const JUDGING         = 21000000; // submission still in judge queue, but being processed
+	const MISSED_DEADLINE = 29000000; // submission has passed, but only after the deadline
 	const PASSED          = 30000000;
 	const PASSED_DEFAULT  = 30000000; // accepted without compiling
 	const PASSED_COMPARE  = 31000000;
@@ -60,6 +61,7 @@ class Status {
 			case Status::NOT_DONE:         return "Not submitted";
 			case Status::PENDING:          return "Pending";
 			case Status::JUDGING:          return "Judging";
+			case Status::MISSED_DEADLINE:  return "Missed deadline";
 			case Status::PASSED_DEFAULT:   return "Passed (without checking)";
 			case Status::PASSED_COMPARE:   return "Passed";
 			case Status::FAILED_INTERNAL:  return "Failed: internal error, contact an administrator";
@@ -83,7 +85,7 @@ class Status {
 		$status = Status::to_status($status);
 		switch (Status::base_status_group($status)) {
 			case Status::NOT_DONE:         return "none";
-			case Status::PENDING:          return "pending";
+			case Status::PENDING:          return $status == STATUS::MISSED_DEADLINE ? "missed deadline" : "pending";
 			case Status::PASSED:           return "passed";
 			case Status::FAILED:           return "failed";
 			default:                       return "?";
@@ -94,7 +96,7 @@ class Status {
 		$status = Status::to_status($status);
 		switch (Status::base_status_group($status)) {
 			case Status::NOT_DONE:         return "skipped";
-			case Status::PENDING:          return "pending";
+			case Status::PENDING:          return $status == STATUS::MISSED_DEADLINE ? "misseddeadline" : "pending";
 			case Status::JUDGING:          return "judging";
 			case Status::PASSED:           return "passed";
 			case Status::FAILED:           return "failed";
