@@ -77,9 +77,10 @@ class View extends PageWithEntity {
 		
 		$this->write_block_begin("Tips");
 		echo "<ul>";
-		echo "<li>The 'include files' filter is a <a href=\"http://php.net/manual/en/reference.pcre.pattern.syntax.php\">regular expression</a>. For example, to exclude files use <tt>^(?!foo)</tt></li>";
+		echo "<li>The 'include files' filter is a <a href=\"http://php.net/manual/en/reference.pcre.pattern.syntax.php\">regular expression</a>. For example, to exclude files use <tt>^(?!foo)</tt>.</li>";
 		echo "<li>Disable all headers and footers in the <tt>File</tt> &rarr; <tt>Page Setup</tt> dialog.</li>";
 		echo "<li>Double sided printing only works in Opera.</li>";
+		echo "<li>Submissions that ware made after the deadline will also be printed, but will be marked as <em>missed deadline</em>.</li>";
 		echo "</ul>";
 		$this->write_block_end();
 	}
@@ -129,7 +130,7 @@ class View extends PageWithEntity {
 	function write_print_submission($subm) {
 		// include this submission?
 		if (!isset($_REQUEST['include_failed'])) {
-			if (!Status::is_passed($subm->status)) return;
+			if (!Status::is_passed($subm->status) AND !$subm->status == Status::MISSED_DEADLINE) return;
 		}
 		// does it match a user filter?
 		if (@$_REQUEST['user_filter'] != '') {
@@ -144,7 +145,7 @@ class View extends PageWithEntity {
 		echo        "<tr><td>by</td><td>" . User::names_html($subm->users()) . "</td></tr>";
 		echo        "<tr><td>on</td><td>" . format_date($subm->time)         . "</td></tr>";
 		if (!Status::is_passed($subm->status)) {
-			echo "<tr><td>status</td><td>" . Status::to_text($subm) . "</td></tr>";
+			echo "<tr><td>status</td><td><strong>" . strtoupper(Status::to_text($subm)) . "</strong></td></tr>";
 		}
 		echo "</table>";
 		echo "</div>\n";

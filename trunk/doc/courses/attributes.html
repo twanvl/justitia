@@ -68,8 +68,11 @@ An attribute <tt>child <em>xxx</em>: <em>yyy</em></tt> means that attribute <em>
   <tr><th><tt>start date</tt>
       <td>When does this assignment become available for submission?
       <td><tt>always</tt>
+  <tr><th><tt>deadline</tt>
+      <td>A soft deadline for an assignment. Should be before end date. After the deadline students can still submit code, but a warning will be shown and the submission will be marked as <em>missed deadline</em>. This attribute is optional.
+      <td><em>none</em>
   <tr><th><tt>end date</tt>
-      <td>When is the submission deadline? Can be relative to the <tt>start date</tt>.
+      <td>Students can submit code until the <tt>end date</tt>. Can be relative to the <tt>start date</tt>.
       <td><tt>never</tt>
   <tr><th><tt>keep best</tt>
       <td>Keep the best submission (as opposed to the last one)

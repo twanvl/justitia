@@ -122,6 +122,16 @@ class Entity {
 			$this
 		);
 	}
+	// has the deadline passed?
+	function deadline_passed() {
+		$deadline = $this->attribute("deadline");
+		if($deadline == NULL) {
+			return false;
+		} else {
+			return parse_date($this->attribute("deadline")) < now();
+		}
+	}
+	
 	// Is this entity visible?
 	function visible() {
 		return $this->attribute_bool("visible")
