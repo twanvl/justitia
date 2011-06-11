@@ -283,7 +283,6 @@ class Submission {
 	}
 	
 	function file_exists($filename) {
-		print(file_exists($filename));
 		if(SUBMISSION_SOURCE == 'database') {
 			return $this->file_exists_database($filename);
 		} else if(SUBMISSION_SOURCE == 'filesystem') {
