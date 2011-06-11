@@ -473,6 +473,14 @@ class Entity {
 		return $query->fetchColumn();
 	}
 	
+	// Find latest submission for this entity including children
+	function latest_submissions($start = 0, $num = 10) {
+		static $query;
+		DB::prepare_query($query, "SELECT * FROM `submission` WHERE `entity_path` LIKE ? ORDER BY `time` DESC LIMIT ".intval($start).", ".intval($num));
+		$query->execute(array($this->path().'%'));
+		return Submission::fetch_all($query);
+	}
+	
 	// ---------------------------------------------------------------------
 	// Attributes
 	// ---------------------------------------------------------------------
