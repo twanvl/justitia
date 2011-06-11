@@ -149,10 +149,18 @@ class View extends PageWithEntity {
 		}
 		echo "</table>";
 		echo "</div>\n";
-		
-		// submission files
-		foreach ($subm->get_code_filenames() as $code_name => $filename) {
-			$this->write_print_file($filename, $subm->get_file($code_name));
+
+		if($subm->is_archived()) {
+			// file header
+			echo "<div class=\"file\">";
+			echo '<div class="file-head">';
+			echo 'This submission has been archived';
+			echo '</div></div>';
+		} else {
+			// submission files
+			foreach ($subm->get_code_filenames() as $code_name => $filename) {
+				$this->write_print_file($filename, $subm->get_file($code_name));
+			}
 		}
 		
 		echo "</div>\n";
