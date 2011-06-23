@@ -104,8 +104,10 @@ function write_submission($subm, $entity = null, $include_entity = false) {
 // ---------------------------------------------------------------------
 
 function write_testset_details($subm, $entity) {
+	if(!$subm->file_exists('testcases')) {
+		return;
+	}
 	$cases = $subm->get_file('testcases');
-	if (!$cases) return;
 	$cases = unserialize($cases);
 	// testcase output
 	echo "<table class=\"testcase-details\">";
