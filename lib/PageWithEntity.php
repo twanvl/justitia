@@ -13,6 +13,14 @@ abstract class PageWithEntity extends Template {
 		// find active entity
 		$user = Authentication::require_user();
 		$this->entity = Entity::get(@$_SERVER['PATH_INFO'], !$user->is_admin);
+
+		// Redjudge all
+		if(isset($_REQUEST['rejudge_all']) AND Authentication::is_admin()) {
+			foreach($this->entity->all_submissions() as $subm) {
+				$subm->rejudge();
+			}
+			Util::redirect(str_replace('rejudge_all=1', '', $_SERVER['REQUEST_URI']));
+		}
 	}
 	
 	function title() {
@@ -66,5 +74,14 @@ abstract class PageWithEntity extends Template {
 		}
 		return $result;
 	}
-	
+
+	function write_rejudge_all() {
+		if(Authentication::is_admin() AND $this->entity->submitable()) {
+			$this->write_block_begin('Rejudge submissions');
+			$this->write_form_begin($this->nav_script(null).$this->entity->path()."?rejudge_all=1", 'post');
+			$this->write_form_end('Rejudge all submissions for this entity');
+			$this->write_block_end();
+		}
+	}
+
 }

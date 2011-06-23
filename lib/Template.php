@@ -229,6 +229,8 @@ abstract class Template {
 		}
 		echo '</ul>';
 	}
+	function write_rejudge_all() {
+	}
 	
 	// ---------------------------------------------------------------------
 	// Writing
@@ -289,6 +291,7 @@ abstract class Template {
     </div>
     <div id="main">
       <h1><?php echo $title; ?></h1>
+      <?php $this->write_rejudge_all(); ?>
       <?php $this->write_body(); ?>
     </div>
   </body>

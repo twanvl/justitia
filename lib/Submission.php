@@ -166,13 +166,11 @@ class Submission {
 		}
 	}
 	static function rejudge_by_id($submissionid) {
-		if(!self::by_id($submissionid)->is_archived()) {
+		// TODO
+		$subm = self::by_id($submissionid);
+		if($subm AND !$subm->is_archived()) {
 			// delete output files
-			$query = DB::prepare(
-				"DELETE FROM `file` WHERE submissionid=? AND (`filename` LIKE 'out/%' OR `filename`='testcases')"
-			);
-			$query->execute(array($submissionid));
-			DB::check_errors($query);
+			$subm->delete_output_files();
 			// set status to pending
 			$query = DB::prepare(
 				"UPDATE `submission` SET `judge_start`=0, `judge_host`=NULL, status=? WHERE submissionid=?"
@@ -186,22 +184,23 @@ class Submission {
 		self::delete_by_id($this->submissionid);
 	}
 	static function delete_by_id($submissionid) {
-		// TODO this function does not yet work with the filesystem!!!
-		// delete files
-		$query = DB::prepare("DELETE FROM `file` WHERE submissionid=?");
-		$query->execute(array($submissionid));
-		DB::check_errors($query);
-		// delete user_submission
-		$query = DB::prepare("DELETE FROM `user_submission` WHERE submissionid=?");
-		$query->execute(array($submissionid));
-		DB::check_errors($query);
-		// delete submission itself
-		$query = DB::prepare("DELETE FROM `submission` WHERE submissionid=?");
-		$query->execute(array($submissionid));
-		DB::check_errors($query);
+		// TODO test
+		$subm = self::by_id($submissionid);
+		if($subm) {
+			// delete files
+			$subm->delete_files();
+			// delete user_submission
+			$query = DB::prepare("DELETE FROM `user_submission` WHERE submissionid=?");
+			$query->execute(array($submissionid));
+			DB::check_errors($query);
+			// delete submission itself
+			$query = DB::prepare("DELETE FROM `submission` WHERE submissionid=?");
+			$query->execute(array($submissionid));
+			DB::check_errors($query);
+		}
 	}
-	
-	/* 
+
+	/*
 	 * This function (re)generates the entries in the user_entity table, which is used to speed things up
 	 */
 	function update_user_entity_table() {
@@ -249,7 +248,7 @@ class Submission {
 			// make sure there is a directory
 			$dir = implode("/", explode("/", $absolute_file, -1));
 			if(!file_exists($dir)) {
-				mkdir($dir, 0777, true); // TODO CHANGE!
+				mkdir($dir, 0770, true);
 			}
 			file_put_contents($absolute_file, $data);
 		}
@@ -301,7 +300,8 @@ class Submission {
 	}
 	
 	function file_exists_filesystem($filename) {
-		return file_exists($this->entity()->path()."submission_".$this->submissionid."/".$filename);
+		$submission_path = substr(SUBMISSION_PATH, -1) == "/" ? substr(SUBMISSION_PATH, 0, -1) : SUBMISSION_PATH;
+		return file_exists($submission_path.$this->entity()->path()."submission_".$this->submissionid."/".$filename);
 	}
 	
 	/**
@@ -350,7 +350,7 @@ class Submission {
 		return $this->get_code_filenames_filesystem_helper($submission_path, 'code/');
 	}
 	
-	function get_code_filenames_filesystem_helper($path, $base) {
+	private function get_code_filenames_filesystem_helper($path, $base) {
 		if(is_dir($path)) {
 			$files = scandir($path);
 			$result = array();
@@ -367,6 +367,62 @@ class Submission {
 		} else {
 			// code dir is missing
 			return array();
+		}
+	}
+	
+	/**
+	 * Deletes all files associated with this submission
+	 */
+	private function delete_files() {
+		// TODO test
+		if(SUBMISSION_SOURCE == 'database' OR SUBMISSION_SOURCE == 'both') {
+			$query = DB::prepare("DELETE FROM `file` WHERE submissionid=?");
+			$query->execute(array($this->submissionid));
+			DB::check_errors($query);
+		}
+		if(SUBMISSION_SOURCE == 'filesystem' OR SUBMISSION_SOURCE == 'both') {
+			$submission_path = substr(SUBMISSION_PATH, -1) == "/" ? substr(SUBMISSION_PATH, 0, -1) : SUBMISSION_PATH;
+			$submission_path .= $this->entity_path . "submission_".$this->submissionid;
+			self::rrmdir($submission_path);
+		}
+	}
+	
+	/**
+	 * Deletes all output files associated with this submission (so it can be rejudged)
+	 */
+	private function delete_output_files() {
+		if(SUBMISSION_SOURCE == 'database' OR SUBMISSION_SOURCE == 'both') {
+			$query = DB::prepare("DELETE FROM `file` WHERE submissionid=? AND (`filename` LIKE 'out/%' OR `filename`='testcases')");
+			$query->execute(array($this->submissionid));
+			DB::check_errors($query);
+		}
+		if(SUBMISSION_SOURCE == 'filesystem' OR SUBMISSION_SOURCE == 'both') {
+			$submission_path = substr(SUBMISSION_PATH, -1) == "/" ? substr(SUBMISSION_PATH, 0, -1) : SUBMISSION_PATH;
+			$submission_path .= $this->entity_path . "submission_".$this->submissionid;
+			// recursive delete out dir
+			self::rrmdir($submission_path.'/out');
+			// delete testcases file
+			$testcases = $submission_path.'/testcases';
+			if(file_exists($testcases)) {
+				unlink($testcases);
+			}
+		}
+	}
+
+	/**
+	 * Remove a directory that is not empty.
+	 * Function borrowed from http://php.net/manual/en/function.rmdir.php
+	 */
+	private static function rrmdir($dir) {
+		if (is_dir($dir)) {
+			$objects = scandir($dir);
+			foreach ($objects as $object) {
+				if ($object != "." && $object != "..") {
+					if (filetype($dir."/".$object) == "dir") self::rrmdir($dir."/".$object); else unlink($dir."/".$object);
+				}
+			}
+			reset($objects);
+			rmdir($dir);
 		}
 	}
 	

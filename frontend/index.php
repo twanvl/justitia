@@ -86,7 +86,7 @@ class View extends PageWithEntity {
 	
 	function write_submit_form() {
 		if($this->entity->deadline_passed()) {
-			echo "<div class=\"error-message\">The deadline for this problem has passed! You will probably not receive the full credits for this submission.</div>";
+			echo "<div class=\"error-message\">The deadline for this problem has passed! You can still make a submission, but you will probably not receive full credits.</div>";
 		}
 		
 		$this->write_messages('submit');
