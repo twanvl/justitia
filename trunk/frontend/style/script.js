@@ -1,4 +1,3 @@
-
 // -----------------------------------------------------------------------------
 // Collapsing blocks
 // -----------------------------------------------------------------------------
@@ -49,6 +48,70 @@ $(document).ready(function(){
 	// refresh pending submissions
 	$(".submission.pending .content").each(refresh_submission);
 });
+
+// -----------------------------------------------------------------------------
+// Update feed for latest submissions
+// -----------------------------------------------------------------------------
+
+function latest_submission_updates() {
+	// update page
+	$('#newsubmissionsbox').hide();
+	// entity
+	var entity;
+	index = window.location.pathname.indexOf("admin_submissions.php");
+	if(index > 0) {
+		entity = window.location.pathname.substring(index + "admin_submissions.php".length);
+	}
+	setInterval(function() {
+		// submission
+		var subm;
+		$("div.title span").each(function() {
+			if($(this).text().indexOf(":") > 0) {
+				subm = $(this).text().substring(0, $(this).text().indexOf(":"));
+				return false;
+			}
+		});
+		// ajax
+		var url = "ajax_latestsubmissions.php?entity=" + entity + "&submissionid=" + subm;
+		$.getJSON(url, function(data) {
+			new_submissions = data.new_ids;
+			update_box();
+		});
+	}, 5000);
+	// bind button
+	$('#newsubmissionsbox').click(function(event) {
+		event.preventDefault();
+		load_submissions();
+		$(this).hide();
+		return false;
+	});
+}
+
+function update_box() {
+	if(new_submissions.length > 0) {
+		$('#newsubmissionsbox').show();
+		if(new_submissions.length == 1) {
+			$('#newsubmissionsbox').text('There is 1 new submission. Click here to load.');
+		} else {
+			$('#newsubmissionsbox').text('There are '+new_submissions.length+' new submissions. Click here to load.');			
+		}
+	}
+}
+
+function load_submissions() {
+	var submissions = new_submissions.reverse();
+	new_submissions = null;
+	for(i = 0; i < submissions.length; i++) {
+		$.ajax({
+			url: "ajax_submission.php?submissionid="+submissions[i]+"&write_block=true",
+			async: false,
+			success: function(data, textStatus, jqXHR){
+				$(data).insertAfter('#newsubmissionsbox');
+			}
+		});
+	}
+	$(".submission.pending .content").each(refresh_submission);
+}
 
 // -----------------------------------------------------------------------------
 // Autosugest user filter

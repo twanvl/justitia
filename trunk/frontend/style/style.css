@@ -534,3 +534,14 @@ a.file {
 dd {
 	margin-bottom:	.5em;
 }
+
+#newsubmissionsbox {
+	display: block;
+	border: 2px solid #00b700;
+	padding: 10px;
+	margin: 25px;
+	text-decoration: none;
+	background: #e4ffe4;
+	color: #003100;
+	text-align: center;
+}

@@ -20,7 +20,8 @@ class View extends PageWithEntity {
 	}
 	
 	function write_body() {
-		// TODO: filters?
+		echo('<script type="text/javascript">$(document).ready(function(){latest_submission_updates();});</script>');
+		echo('<a id="newsubmissionsbox" href="#"></a>');
 		$this->write_submissions();
 	}
 	
@@ -31,7 +32,7 @@ class View extends PageWithEntity {
 			$entity = $subm->entity();
 			$this->write_block_begin(
 				$subm->submissionid . ': ' . $entity->title(),
-				'collapsable block submission ' . Status::to_css_class($subm)
+				'collapsable block submission ' . Status::to_css_class($subm), '', 'submission-'.$subm->submissionid
 			);
 			write_submission($subm,$entity,true);
 			$this->write_block_end();
