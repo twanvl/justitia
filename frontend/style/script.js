@@ -76,6 +76,7 @@ function latest_submission_updates() {
 		$.getJSON(url, function(data) {
 			new_submissions = data.new_ids;
 			update_box();
+			update_title();
 		});
 	}, 5000);
 	// bind button
@@ -83,6 +84,7 @@ function latest_submission_updates() {
 		event.preventDefault();
 		load_submissions();
 		$(this).hide();
+		update_title();
 		return false;
 	});
 }
@@ -93,8 +95,16 @@ function update_box() {
 		if(new_submissions.length == 1) {
 			$('#newsubmissionsbox').text('There is 1 new submission. Click here to load.');
 		} else {
-			$('#newsubmissionsbox').text('There are '+new_submissions.length+' new submissions. Click here to load.');			
+			$('#newsubmissionsbox').text('There are '+new_submissions.length+' new submissions. Click here to load.');
 		}
+	}
+}
+
+function update_title() {
+	if(new_submissions == null || new_submissions.length == 0) {
+		document.title = "Latest submissions";
+	} else {
+		document.title = "(" + new_submissions.length + ") Latest submissions";
 	}
 }
 
