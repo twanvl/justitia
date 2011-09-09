@@ -489,7 +489,7 @@ class Entity {
 	// Find latest submission with a higher submission id than $latest_submissionid
 	function submissions_after($latest_submissionid) {
 		static $query;
-		DB::prepare_query($query, "SELECT * FROM `submission` WHERE `entity_path` LIKE ? AND `submissionid` > ? ORDER BY `time` DESC");
+		DB::prepare_query($query, "SELECT * FROM `submission` WHERE `entity_path` LIKE ? AND `time` > (SELECT `time` FROM `submission` WHERE `submissionid` = ?) ORDER BY `time` DESC");
 		$query->execute(array($this->path().'%', $latest_submissionid));
 		return Submission::fetch_all($query);
 	}
