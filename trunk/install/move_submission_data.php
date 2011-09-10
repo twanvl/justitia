@@ -15,7 +15,7 @@ function move($entity, $submission_path) {
 function copy_submissions_for_entity($entity, $path) {
 	print($path."\n");
 	if(!file_exists($path)) {
-		mkdir($path, 0700, true);
+		mkdir($path, 0770, true);
 	}
 	DB::prepare_query($query, "SELECT * FROM `submission` as s JOIN `file` as f ON s.submissionid = f.submissionid WHERE s.`entity_path` = ?");
 	$query->execute(array($entity->path()));
@@ -32,7 +32,7 @@ function copy_submissions_for_entity($entity, $path) {
 function create_directory($path) {
 	$dir = implode("/", explode("/", $path, -1));
 	if(!file_exists($dir)) { 
-		mkdir($dir, 0700, true);
+		mkdir($dir, 0770, true);
 	}
 }
 
