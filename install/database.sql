@@ -69,14 +69,17 @@ CREATE TABLE `judge_daemon`
 ) DEFAULT CHARSET=utf8;
 
 /*
- * Error log
+ * Log
  */
-CREATE TABLE `error_log`
+CREATE TABLE `log`
 ( `logid`        int(4) unsigned NOT NULL auto_increment COMMENT 'Unique ID'
-, `judge_host`   varchar(255)                            COMMENT 'Name of the judge, if any'
-, `entity_path`  varchar(255)                            COMMENT 'Path to the problem, if any'
+, `level`        int(1)          NOT NULL                COMMENT 'Type of event'
 , `time`         int(8)          NOT NULL                COMMENT 'Date/Time this message was logged'
-, `message`      varchar(255)                            COMMENT 'The message'
+, `entity_path`  varchar(255)                            COMMENT 'Path to the problem, if any'
+, `judge_host`   varchar(255)                            COMMENT 'Name of the judge, if any'
+, `userid`       int(4) unsigned                         COMMENT 'User, if any'
+, `ip`           varchar(15)                             COMMENT 'IP-address, if any'
+, `message`      varchar(255)    NOT NULL                COMMENT 'The message'
 , PRIMARY KEY(`logid`)
 ) DEFAULT CHARSET=utf8;
 
