@@ -123,7 +123,7 @@ class User {
 		} else if ($auth_method == 'pass') {
 			return $this->do_check_password_pass($password);
 		} else {
-			LogEntry::log("Unsupported auth_method: '$auth_method' for user " . $this->login);
+			Log::error("Unsupported auth_method: '$auth_method' for user " . $this->login);
 			return false; // unsupported
 		}
 	}

@@ -32,7 +32,7 @@ class ErrorPage extends Template {
 	static function die_fancy($except) {
 		// Log the error?
 		if ($except instanceof InternalException) {
-			LogEntry::log($except);
+			Log::error($except->getMessage());
 		}
 		// Utility: error pages
 		$view = new ErrorPage($except);

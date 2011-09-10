@@ -32,6 +32,8 @@ class View extends Template {
 		echo '</label>';
 		$this->write_form_end('Show');
 		
+		echo '<small>Make sure your lab partner has logged in with Justitia at least once.</small>';
+		
 		if (!isset($_REQUEST['user_filter'])) return;
 		$filter = '%' . @$_REQUEST['user_filter'] . '%';
 		

@@ -25,6 +25,8 @@ class ReferenceJudgement extends JudgementBase {
 			} else {
 				$msg .= "<no message>\n";
 			}
+			file_put_contents($this->output_dir . "/buildresult", "Failed to build reference implementation.");
+			Log::warning("Failed to build reference implementation.", $this->entity->path());
 			throw new Exception($msg);
 		}
 		// Now build all testcases
@@ -35,11 +37,14 @@ class ReferenceJudgement extends JudgementBase {
 				if (file_exists($this->output_dir . "/$case.err")) {
 					$msg .= file_get_contents($this->output_dir . "/$case.err", 0,null,0, 10000);
 				}
+				file_put_contents($this->output_dir . "/buildresult", "Failed to run reference implementation.");
+				Log::warning("Failed to run reference implementation.", $this->entity->path());
 				throw new Exception($msg);
 			}
 		}
 		// Done
 		echo "Reference output generated successfully.\n\n";
+		file_put_contents($this->output_dir . "/buildresult", "Reference output generated successfully.");
 		return true;
 	}
 	
@@ -71,11 +76,9 @@ class ReferenceJudgement extends JudgementBase {
 	
 	// Warn when we truncate the output file
 	protected function truncate_file($file, $contents, $max_file_size, $actual_file_size) {
-		/*
 		// should we really warn about this?
 		$actual_file_size_up = intval( ($actual_file_size + 1000*10-1) / (1000*10) ) * (1000*10); // round up to get a nicer number
-		LogEntry::log("The reference implementation produced a file that is too large\n$file has size $actual_file_size, while max is $max_file_size\nTo suppress this warning, add  'filesize limit: $actual_file_size_up' to the into file", $this->entity);
-		*/
+		Log::warning("The reference implementation produced a file that is too large\n$file has size $actual_file_size, while max is $max_file_size\nTo suppress this warning, add  'filesize limit: $actual_file_size_up' to the into file", $this->entity->path());
 		return $contents; // don't actually truncate
 	}
 	protected function should_truncate_files() {

@@ -21,6 +21,7 @@ class View extends Template {
 		if ($_REQUEST['judgeid'] == 'all') {
 			JudgeDaemon::set_status_all($status);
 			$this->add_message('judge','confirm','Status of all judges set to ' . JudgeDaemon::status_to_text($status));
+			Log::info('Status of all judges set to ' . JudgeDaemon::status_to_text($status));
 		} else {
 			$judge = JudgeDaemon::by_id($_REQUEST['judgeid']);
 			if (!$judge) return; // it already died
@@ -28,7 +29,8 @@ class View extends Template {
 				$status = JudgeDaemon::STOPPED; // stop right now
 			}
 			$judge->set_status($status);
-			$this->add_message('judge','confirm','Status set to ' . $judge->status_text());
+			$this->add_message('judge','confirm','Status of judge "'.$judge->name.'" set to ' . $judge->status_text());
+			Log::info('Status of judge set to ' . $judge->status_text(), null, $judge->name);
 		}
 	}
 	

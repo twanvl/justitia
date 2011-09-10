@@ -36,16 +36,19 @@ function check_upload($entity, &$files) {
 	}
 	if (count($files) < 1) {
 		Template::add_message('submit','error', 'No file was uploaded');
+		Log::warning('New submission failed: No file was uploaded', $entity->path());
 		return false;
 	}
 	
 	// is submission allowed?
 	if (!$entity->submitable()) {
 		Template::add_message('submit','error', "No submissions can be made here, this is not an assignment.");
+		Log::warning('New submission failed: No submissions can be made here, this is not an assignment.', $entity->path());
 		return false;
 	}
 	if (!$entity->active()) {
 		Template::add_message('submit','error', "The deadline has passed for this assignment.");
+		Log::warning('New submission failed: The deadline has passed for this assignment.', $entity->path());
 		return false;
 	}
 	
@@ -54,6 +57,7 @@ function check_upload($entity, &$files) {
 	$max_size = $entity->max_group_size();
 	if (count($group) > $max_size) {
 		Template::add_message('submit','error', "There are too many students in this group, please remove someone.");
+		Log::warning('New submission failed: There are too many students in this group, please remove someone.', $entity->path());
 		return false;
 	}
 	
@@ -62,6 +66,7 @@ function check_upload($entity, &$files) {
 	foreach ($files as $file) {
 		if ($file['error'] != UPLOAD_ERR_OK) {
 			Template::add_message('submit','error', file_upload_error_message($file['error']));
+			Log::warning("Upload of new submission failed: " . file_upload_error_message($file['error']), $entity->path());
 			return false;
 		}
 		// is this an archive?
@@ -70,6 +75,7 @@ function check_upload($entity, &$files) {
 			$zip = zip_open($file['tmp_name']);
 			if (!is_resource($zip)) {
 				Template::add_message('submit','error', "Not a valid zip file (\"" . $file['tmp_name'] . "\")");
+				Log::warning('New submission failed: Not a valid zip file ("' . $file['tmp_name'] . '")', $entity->path());
 				return false;
 			}
 			// get all filenames, so we can check if they match the supplied regex
@@ -79,6 +85,7 @@ function check_upload($entity, &$files) {
 				if (substr($entry_name,1) == '/' || strpos($entry_name,'./') !== false) {
 					// this is an invalid filename
 					Template::add_message('submit','error', "Invalid filename in zip archive (\"$entry_name\")");
+					Log::warning("New submission failed: Invalid filename in zip archive (\"$entry_name\")" . file_upload_error_message($file['error']), $entity->path());
 					return false;
 				} else if (substr($entry_name,-1) == '/') {
 					// this is a directory name, don't count it
@@ -96,6 +103,7 @@ function check_upload($entity, &$files) {
 	// are multiple files allowed?
 	if (count($filenames) > 1 && !$entity->allow_multiple_files()) {
 		Template::add_message('submit','error', "Only single-file submissions are allowed.");
+		Log::warning("New submission failed: Only single-file submissions are allowed.", $entity->path());
 		return false;
 	}
 	
@@ -105,6 +113,7 @@ function check_upload($entity, &$files) {
 		foreach ($filenames as $filename) {
 			if (!preg_match("/^($file_regex)$/",$filename)) {
 				Template::add_message('submit','error',	"Uploaded file does not match specified filename pattern, \"$filename\" does not match pattern \"$file_regex\"");
+				Log::warning("New submission failed: Uploaded file does not match specified filename pattern, \"$filename\" does not match pattern \"$file_regex\"", $entity->path());
 				return false;
 			}
 		}
@@ -131,6 +140,7 @@ function put_zipfile_contents($subm, $zip_filename) {
 			// error
 			zip_close($zip);
 			Template::add_message('submit','error',	"Can't read zip file");
+			Log::warning("New submission failed: Can't read zip file");
 			return false;
 		}
 		while (true) {
@@ -174,6 +184,9 @@ function perform_upload($entity, $files) {
 	
 	// finalize
 	$subm->set_status(Status::PENDING);
+	
+	// Log
+	Log::info("Uploaded submission #" . $subm->submissionid, $entity->path());
 	
 	// success
 	Template::add_message('submit-confirm','confirm', 'Submission received, it will be judged shortly.');

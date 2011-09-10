@@ -11,22 +11,6 @@ class View extends Template {
 	function __construct() {
 		Authentication::require_admin();
 		$this->is_admin_page = true;
-		// delete stuff
-		$this->delete_log_entries();
-	}
-	
-	function delete_log_entries() {
-		if (isset($_REQUEST['clear_log_entity'])) {
-			LogEntry::delete_by_entity($_REQUEST['clear_log_entity']);
-			$this->add_message('log','confirm','Log messages deleted');
-		}
-		if (isset($_REQUEST['delete_logid'])) {
-			LogEntry::delete_by_id($_REQUEST['delete_logid']);
-			$this->add_message('log','confirm','Log message deleted');
-		}
-		if (isset($_REQUEST['redirect'])) {
-			Util::redirect($_REQUEST['redirect']);
-		}
 	}
 	
 	function title() {
@@ -34,18 +18,21 @@ class View extends Template {
 	}
 	
 	function write_body() {
-		$this->write_messages('log');
-		$this->write_entries(LogEntry::all());
+		echo('<p>Only messages stored in the database are shown here. The type of messages that are stored in the database depends on the configuration.</p>');
+		$this->write_entries(Log::fetch_last(100));
 	}
 	function write_entries($entries) {
 		echo "<table>";
-		echo "<tr><th>Time</th><th>Entity</th><th>Message</th><th> </th></tr>";
+		echo "<tr><th>Time</th><th>Type</th><th>Entity</th><th>Message</th><th>Judge host</th><th>User</th><th>IP</th></tr>";
 		foreach($entries as $entry) {
 			echo "<tr>";
 			echo "<td>" . format_date_compact($entry->time);
+			echo "<td>" . htmlspecialchars(LogLevel::toString($entry->level));
 			echo "<td>" . ($entry->entity_path ? "<a href=\"index.php" . htmlspecialchars($entry->entity_path) . "\">" . $entry->entity_path . "</a>" : "-");
 			echo "<td>" . nl2br(htmlspecialchars($entry->message));
-			echo "<td>" . "<a href=\"admin_view_log.php?delete_logid=$entry->logid\">[delete]</a>";
+			echo "<td>" . ($entry->judge_host ? htmlspecialchars($entry->judge_host) : '-');
+			echo "<td>" . ($entry->userid ? htmlspecialchars(User::by_id($entry->userid, false)->name_and_login()) : '-');
+			echo "<td>" . ($entry->ip ? htmlspecialchars($entry->ip) : '-');
 			echo "</tr>";
 		}
 		echo "</table>";

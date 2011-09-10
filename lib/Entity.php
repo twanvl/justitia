@@ -554,7 +554,7 @@ class Entity {
 			$this->_attributes = parse_attribute_file($this->data_path() . "info");
 		} catch (Exception $e) {
 			// on failure: log message, but don't die
-			LogEntry::log($e,$this);
+			Log::error($e, $this->path());
 		}
 		// default attributes
 		if (!isset($this->_attributes['title'])) $this->_attributes['title'] = ucfirst($this->_dir_name);

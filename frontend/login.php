@@ -20,6 +20,7 @@ if (isset($_REQUEST['login'],$_REQUEST['password'])) {
 		ErrorPage::die_fancy($e);
 	} catch (Exception $e) {
 		Template::add_message('login','error', "Incorrect username or password.");
+		Log::info("Login failed for username '" . $_REQUEST['login'] . "'");
 	}
 }
 
