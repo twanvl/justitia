@@ -38,16 +38,26 @@ class View extends PageWithEntity {
 	// ---------------------------------------------------------------------
 	// Errors
 	// ---------------------------------------------------------------------
-	
+
 	function write_error_log() {
-		$errors = LogEntry::all_for_entity($this->entity);
-		if (!$errors) return;
+		// Check for errors
+		$output_dir = $this->entity->data_path() . ".generated";
+		if(file_exists($output_dir . "/buildresult")) {
+			$content = file_get_contents($output_dir . "/buildresult");
+			if(strstr($content, 'success')) {
+				// If reference output was generated successfully we don't have to show an error
+				return;
+			}
+		} else {
+			// File buildresult not found, this is probably an old problem then...
+			return;
+		}
 		
 		$this->write_block_begin('Errors in the problem configuration','block failed');
 		
 		echo "<ul>";
-		foreach($errors as $e) {
-			echo "<li>" . nl2br(htmlspecialchars($e->message)) . "</li>";
+		foreach(explode("\n", $content) as $err) {
+			echo "<li>" . nl2br(htmlspecialchars($err)) . "</li>";
 		}
 		echo "</ul>";
 		

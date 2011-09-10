@@ -7,6 +7,9 @@
 require_once('../config/config.php');
 
 function __autoload($class_name) {
+	if($class_name == 'LogLevel') {
+		$class_name = 'Log';
+	}
 	require_once "../lib/$class_name.php";
 }
 
@@ -15,6 +18,11 @@ function __autoload($class_name) {
 // -----------------------------------------------------------------------------
 
 function fancy_exception_handler($e) {
+	if($e instanceof InternalException) {
+		Log::error($e->__toString());
+	} else {
+		Log::warning($e->__toString());
+	}
 	ErrorPage::die_fancy($e);
 }
 
@@ -46,5 +54,5 @@ if (get_magic_quotes_gpc()) {
 	array_walk_recursive($_POST, 'stripslashes_gpc');
 	array_walk_recursive($_COOKIE, 'stripslashes_gpc');
 	array_walk_recursive($_REQUEST, 'stripslashes_gpc');
-	LogEntry::log("Please set 'magic_quotes_gpc = Off', thank you.");
+	Log::error("Please set 'magic_quotes_gpc = Off', thank you.");
 }

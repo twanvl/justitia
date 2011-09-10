@@ -93,3 +93,22 @@ $attribute_defaults['runner']			= 'run';
 $attribute_defaults['checker']			= 'htmldiff';
 $attribute_defaults['checker flags']		= '-b';
 $attribute_defaults['allow view results']	= true;
+
+
+// -----------------------------------------------------------------------------
+// Logging
+// -----------------------------------------------------------------------------
+
+// database
+define('LOG_DATABASE_ENABLED', true);
+define('LOG_DATABASE_LEVEL', LogLevel::VERBOSE);
+
+// file
+define('LOG_FILE_ENABLED', false);
+define('LOG_FILE_LEVEL', LogLevel::VERBOSE);
+define('LOG_FILE_DIR', 'I:/i/justitia/log');
+
+// e-mail
+define('LOG_EMAIL_ENABLED', false);
+define('LOG_EMAIL_LEVEL', LogLevel::ERROR);
+define('LOG_EMAIL_EMAIL_ADRESSES', 'admin@justitiahost.com');

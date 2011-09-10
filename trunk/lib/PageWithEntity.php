@@ -16,6 +16,7 @@ abstract class PageWithEntity extends Template {
 
 		// Redjudge all
 		if(isset($_REQUEST['rejudge_all']) AND Authentication::is_admin()) {
+			Log::info("Requested redjudgement for all submissions in this entity", $this->entity->path());
 			foreach($this->entity->all_submissions() as $subm) {
 				$subm->rejudge();
 			}

@@ -66,7 +66,7 @@ function judge_a_single_submission() {
 		$judgement = new SubmissionJudgement($subm);
 		$judgement->judge();
 	} catch (Exception $e) {
-		LogEntry::log($e,$subm->entity_path,$self);
+		Log::error($e, $subm->entity_path, $self->name);
 		echo "Error during judging!\n", $e;
 	}
 	if (VERBOSE) {

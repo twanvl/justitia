@@ -43,7 +43,7 @@ class Language {
 		if (isset($languages[$name])) {
 			return $languages[$name];
 		} else {
-			LogEntry::log("Unknown language: \"$name\"", $log_info);
+			Log::warning("Unknown language: \"$name\"");
 			return $languages['any'];
 		}
 	}
