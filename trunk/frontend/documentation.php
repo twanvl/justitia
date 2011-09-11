@@ -78,7 +78,6 @@ class View extends Template {
 		$result [] = array(
 			$this->nav_item('User documentation', '/user'),
 			$this->nav_item('Writing courses', '/courses'),
-			$this->nav_item('Results & grading', '/results'),
 			$this->nav_item('Administration', '/admin'),
 			$this->nav_item('Program design', '/design'),
 		);
@@ -97,19 +96,13 @@ class View extends Template {
 			$this->nav_item('FAQ / HOWTO', '/courses/howto'),
 			$this->nav_item('Example', '/courses/example'),
 		);
-		if ($this->is_path_prefix('/results'))
-		$result [] = array(
-			$this->nav_item('Introduction', '/results/index'),
-			$this->nav_item('Viewing submissions', '/results/submissions'),
-			$this->nav_item('Result table', '/results/results'),
-			$this->nav_item('Printing and exporting', '/results/export')
-		);
 		if ($this->is_path_prefix('/admin'))
 		$result [] = array(
 			$this->nav_item('Introduction', '/admin/index'),
 			$this->nav_item('Installation', '/admin/installation'),
 			$this->nav_item('Judge daemons', '/admin/daemons'),
 			$this->nav_item('User administration', '/admin/users'),
+			$this->nav_item('Logging', '/admin/logging'),
 			$this->nav_item('Bugs / issues / features', '/admin/bugs'),
 		);
 		if ($this->is_path_prefix('/design'))

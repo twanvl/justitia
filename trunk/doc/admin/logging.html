@@ -1,0 +1,23 @@
+<h1>Logging</h1>
+
+<h2>Events</h2>
+Justitia has a build-in system for logging events. Events can be logged in a log file, in the database or events can be sent through e-mail.
+
+There are four types of events:
+<ol>
+ <li>Verbose: Events used for debugging .
+ <li>Info: Normal events that might be useful to analyze the usage of Justitia, for example failed logins or uploaded submissions.
+ <li>Warning: Problems Justitia encountered while executing.
+ <li>Error: Problems that need to be investigated by the system administrator.
+</ol>
+
+<h2>Reporting</h2>
+Justitia can report events in three ways:
+<ul>
+ <li>Log files: Events are stored in a flat text file on the filesystem. For every month a new file is created.
+ <li>Database: Events are stored in the <em>log</em> table in the database.
+ <li>E-mail: Events are directly mailed to the configured e-mail address. 
+</ul>
+With every event, the time is stored, the user currently logged in (if any), the entity (if any), the remote IP-address (if any) and the entity-path.
+
+Justitia can be configured to report events depending on their type. For example, all events could be stored in a log file, while error events are reported by e-mail directly to the system administrator. Logging can be configured in <tt>in config/config.php</tt>.
