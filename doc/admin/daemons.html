@@ -1,7 +1,11 @@
 <h1>Judge daemons</h1>
 
-The judge daemon is located in <tt>JUSTITIA_DIR/backend</tt>.
-There are several scripts to run judges:
+<p>A judge daemon is a separate process that compiles and runs programs and comperes them to the reference implementation. The judge daemon communicates with the backand using the filesystem and the MySQL database. A judge daemon runs one submission at a time.</p>
+
+<p>It is very well possible to run multiple judge daemons. Multiple instances of the judge daemon can be spawned on a single machine to make efficient use of multiple processors. When the Justitia directory tree is mounted on multiple machines and all these machines have access to the MySQL database, all these machines can run one or multiple judge daemons.</p>
+
+<p>The judge daemon is located in <tt>JUSTITIA_DIR/backend</tt>.
+There are several scripts to run judges:</p>
 
 <dl>
  <dt><tt>judge_once</tt>
