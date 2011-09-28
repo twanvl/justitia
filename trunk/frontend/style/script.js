@@ -74,6 +74,9 @@ function latest_submission_updates() {
 		// ajax
 		var url = "ajax_latestsubmissions.php?entity=" + entity + "&submissionid=" + subm;
 		$.getJSON(url, function(data) {
+			if (typeof(data.logout) !== 'undefined') {
+				document.location = "logout.php";
+			}
 			new_submissions = data.new_ids;
 			update_box();
 			update_title();
