@@ -125,7 +125,11 @@ class View extends PageWithEntity {
 		if ($active_range->start > now()) {
 			echo "<tr><td>Starts</td><td>" . format_date($active_range->start) . "</td>";
 		}
-		echo "<tr><td>Deadline</td><td>"   . format_date($active_range->end, true) . "</td>";
+		if($this->entity->attribute("deadline") == NULL) {
+			echo "<tr><td>Deadline</td><td>" . format_date($active_range->end, true) . "</td>";
+		} else {
+			echo "<tr><td>Deadline</td><td>" . format_date(parse_date($this->entity->attribute("deadline")), true) . "</td>";
+		}
 		echo "<tr><td>Language</td><td>"   . $this->entity->language()->name . "</td>";
 		echo "<tr><td>Judging</td><td>";
 		if ($this->entity->compile()) {

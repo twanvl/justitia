@@ -131,7 +131,6 @@ class Entity {
 			if($time == -1) {
 				return parse_date($this->attribute("deadline")) < now();
 			} else {
-				file_put_contents("/home/wilco/submissions/debug", parse_date($this->attribute("deadline")) ."deadline\n". $time . " ingeleverd");
 				return parse_date($this->attribute("deadline")) < $time;
 			}
 		}
