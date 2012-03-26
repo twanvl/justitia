@@ -180,9 +180,10 @@ class View extends PageWithEntity {
 		// determine summary
 		$num_passed = array();
 		$num_failed = array();
+		$num_missed_deadline = array();
 		$num_none   = array();
 		foreach($entities as $e => $entity) {
-			$num_passed[$e] = $num_failed[$e] = $num_none[$e] = 0;
+			$num_passed[$e] = $num_failed[$e] = $num_missed_deadline[$e] = $num_none[$e] = 0;
 			foreach ($users as $userinfo) {
 				$subms = $userinfo['subms'];
 				$subm = isset($subms[$e]) ? $subms[$e] : false;
@@ -190,6 +191,8 @@ class View extends PageWithEntity {
 					$num_passed[$e]++;
 				} else if (Status::is_failed(Status::to_status($subm))) {
 					$num_failed[$e]++;
+				} else if (Status::is_missed_deadline(Status::to_status($subm))) {
+					$num_missed_deadline[$e]++;
 				} else {
 					$num_none[$e]++;
 				}
@@ -200,11 +203,19 @@ class View extends PageWithEntity {
 			echo '<td>', $num_passed[$e], '</td>';
 		}
 		echo "</tr>\n";
+		
 		echo '<tr><td class="summary">failed</td>';
 		foreach($entities as $e => $entity) {
 			echo '<td>', $num_failed[$e], '</td>';
 		}
 		echo "</tr>\n";
+		
+		echo '<tr><td class="summary">missed deadline</td>';
+		foreach($entities as $e => $entity) {
+			echo '<td>', $num_missed_deadline[$e], '</td>';
+		}	
+		echo "</tr>\n";
+		
 		echo '<tr><td class="summary">not submitted</td>';
 		foreach($entities as $e => $entity) {
 			echo '<td>', $num_none[$e], '</td>';

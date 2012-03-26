@@ -49,6 +49,10 @@ class Status {
 	static function is_failed($status) {
 		return Status::base_status_group($status) == Status::FAILED;
 	}
+	// Is it a 'missed deadline' status?
+	static function is_missed_deadline($status) {
+		return $status == Status::MISSED_DEADLINE;
+	}
 	// Is it a pending status?
 	static function is_pending($status) {
 		return Status::base_status_group($status) == Status::PENDING;
