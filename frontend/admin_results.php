@@ -198,27 +198,32 @@ class View extends PageWithEntity {
 				}
 			}
 		}
+		$sum = array();
+		foreach($entities as $e => $entity) {
+			$sum[$e] = $num_passed[$e] + $num_failed[$e] + $num_missed_deadline[$e] + $num_none[$e];
+		}
+		
 		echo '<tr class="first-child"><td class="summary">passed</td>';
 		foreach($entities as $e => $entity) {
-			echo '<td>', $num_passed[$e], '</td>';
+			echo('<td>'.$num_passed[$e].' ('.number_format(100.0*$num_passed[$e]/$sum[$e],1).'%)</td>');
 		}
 		echo "</tr>\n";
 		
 		echo '<tr><td class="summary">failed</td>';
 		foreach($entities as $e => $entity) {
-			echo '<td>', $num_failed[$e], '</td>';
+			echo('<td>'.$num_failed[$e].' ('.number_format(100.0*$num_failed[$e]/$sum[$e],1).'%)</td>');
 		}
 		echo "</tr>\n";
 		
 		echo '<tr><td class="summary">missed deadline</td>';
 		foreach($entities as $e => $entity) {
-			echo '<td>', $num_missed_deadline[$e], '</td>';
+			echo('<td>'.$num_missed_deadline[$e].' ('.number_format(100.0*$num_missed_deadline[$e]/$sum[$e],1).'%)</td>');
 		}	
 		echo "</tr>\n";
 		
 		echo '<tr><td class="summary">not submitted</td>';
 		foreach($entities as $e => $entity) {
-			echo '<td>', $num_none[$e], '</td>';
+			echo('<td>'.$num_none[$e].' ('.number_format(100.0*$num_none[$e]/$sum[$e],1).'%)</td>');
 		}
 		echo "</tr>\n";
 	}
